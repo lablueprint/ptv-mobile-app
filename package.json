@@ -11,9 +11,12 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/app": "6.0.4",
+    "@react-native-firebase/app": "^6.2.0",
+    "@react-native-firebase/auth": "^6.2.0",
     "react": "16.8.6",
-    "react-native": "0.60.5"
+    "react-native": "0.60.5",
+    "react-native-gesture-handler": "^1.5.2",
+    "react-navigation": "^4.0.10"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
