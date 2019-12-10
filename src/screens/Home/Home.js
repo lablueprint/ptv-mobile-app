@@ -17,7 +17,7 @@ export default class Home extends React.Component {
     return (
       <View style={styles.container}>
         <Text>
-          Hi {currentUser && currentUser.email}! React-Native sucks.
+          Hi {currentUser && currentUser.email}! React-Native is great.
         </Text>
       </View>
     )

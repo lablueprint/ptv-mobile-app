@@ -26,10 +26,9 @@ import Firebase, { FirebaseProvider } from './config/Firebase'
 
 export default function App() {
   return (
-    // <FirebaseProvider value={Firebase}>
-    //   <AppContainer />
-    // </FirebaseProvider>
-    <AppContainer />
+    <FirebaseProvider value={Firebase}>
+      <AppContainer />
+    </FirebaseProvider>
   )
 }
 
