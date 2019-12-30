@@ -2,7 +2,8 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import { withFirebase } from '../../config/Firebase'
-export default class SignIn extends React.Component {
+
+class SignIn extends React.Component {
   state = { email: '', password: '', errorMessage: null }
   handleLogin = () => {
     const { email, pasword } = this.state
@@ -58,3 +59,5 @@ const styles = StyleSheet.create({
     marginTop: 8
   }
 })
+
+export default SignIn

@@ -1,19 +1,52 @@
 // SignUp.js
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
-import auth from '@react-native-firebase/auth';
+import auth, { firebase } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-export default class SignUp extends React.Component {
-  state = { email: '', password: '', errorMessage: null }
+class SignUp extends React.Component {
+  state = { email: '', password: '', name: '', errorMessage: null }
 
-  handleSignUp = () => {
+  handleSignUp = async() => {
     auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
+      .catch(error => this.setState({ errorMessage: error.message }));
+    auth().onAuthStateChanged(async function(user) {
+      if (user) {
+        const ref = firestore().collection('users').doc(user.uid);
+        try {
+          await ref.set({
+            email: this.state.email,
+            id: user.uid,
+            isAdmin: false,
+            name: this.state.name,
+            role: "UNAUTHORIZED",
+            updatedAt: new Date()
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        console.log("No users logged in");
+      }
+    });
+    try {
+      await ref.set({
+        email: this.state.email,
+        id: user.uid,
+        isAdmin: false,
+        name: this.state.name,
+        role: "UNAUTHORIZED",
+        updatedAt: new Date()
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render() {
+    const ref = firestore().collection('users').doc('DnDen00gYAfRT31g23HNVBsVslh1').get();
     return (
       <View style={styles.container}>
         <Text>Sign Up</Text>
@@ -21,6 +54,13 @@ export default class SignUp extends React.Component {
           <Text style={{ color: 'red' }}>
             {this.state.errorMessage}
           </Text>}
+        <TextInput
+          placeholder="Name"
+          autoCapitalize="words"
+          style={styles.textInput}
+          onChangeText={name => this.setState({ name })}
+          value={this.state.name}
+        />
         <TextInput
           placeholder="Email"
           autoCapitalize="none"
@@ -57,5 +97,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     marginTop: 8
-  }
+  },
 })
+
+export default SignUp;

@@ -3,7 +3,7 @@ import React from 'react'
 import { StyleSheet, Platform, Image, Text, View } from 'react-native'
 import auth from '@react-native-firebase/auth';
 
-export default class Home extends React.Component {
+class Home extends React.Component {
   state = { currentUser: null }
 
   componentDidMount() {
@@ -30,3 +30,5 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
+
+export default Home;

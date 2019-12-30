@@ -3,7 +3,7 @@ import React from 'react'
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import auth from '@react-native-firebase/auth';
 
-export default class Landing extends React.Component {
+class Landing extends React.Component {
   componentDidMount() {
     auth().onAuthStateChanged(user => {
       this.props.navigation.navigate(user ? 'Home' : 'SignUp')
@@ -26,3 +26,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }
 })
+
+export default Landing
