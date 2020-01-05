@@ -119,6 +119,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     splits {
         abi {
@@ -176,7 +177,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
 	implementation 'com.google.firebase:firebase-analytics:17.2.0'
-
+    compile 'com.android.support:multidex:1.0.0'
     // JSC from node_modules
     if (useIntlJsc) {
         implementation 'org.webkit:android-jsc-intl:+'
