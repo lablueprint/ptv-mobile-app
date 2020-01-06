@@ -3,7 +3,7 @@
 // import "firebase/firestore";
 // import "firebase/auth";
 import * as firebase from '@react-native-firebase/app';
-//import "@react-native-firebase/firestore";
+import "@react-native-firebase/firestore";
 import "@react-native-firebase/auth";
 
 // const config = {
@@ -17,14 +17,20 @@ import "@react-native-firebase/auth";
 //   measurementId: process.env.REACT_APP_MEASUREMENT_ID
 // };
 
-export default class Firebase {
-  constructor() {
-    //this.firestore = firebase.firestore();
-    this.auth = firebase.auth();
-    this.doSignOut = this.doSignOut.bind(this);
-  }
-
-  doSignOut() {
-    return this.auth.signOut();
-  }
+const Firebase = {
+  // constructor() {
+  //   this.firestore = firebase.firestore();
+  //   this.auth = firebase.auth();
+  //   this.doSignOut = this.doSignOut.bind(this);
+  //   //this.getCategories = this.getCategories.bind(this);
+  // }
+  getCategories: async () => {
+    collection = firebase.firestore().collection('resource_categories')
+    console.log("this is a problem")
+    return await collection.get()
+  },
+  // doSignOut() {
+  //   return this.auth.signOut();
+  // }
 }
+export default Firebase;

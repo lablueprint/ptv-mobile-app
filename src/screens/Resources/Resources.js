@@ -1,5 +1,13 @@
 import React from 'react'
-import { View, FlatList, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native';
+import {  View, 
+          FlatList, 
+          StyleSheet, 
+          Text, 
+          Dimensions, 
+          TouchableOpacity,
+          ImageBackground } from 'react-native';
+// import { withFirebase } from '../../config/Firebase';
+import firestore from '@react-native-firebase/firestore';
 
 const DATA = [
   {
@@ -48,15 +56,51 @@ function Item({ title, navigate }) {
   );
 }
 
+function getCategories(docs) {
+  result = []
+  docs.forEach(doc => {
+    result.push(doc.data())
+  });
+  return result
+}
+
 class Resources extends React.Component {
   constructor(props) {
     super(props)
     this.navigation = this.props.navigation
+    this.state = {
+      loading : true,
+      categories : []
+    }
   }
+
+  componentDidMount() {
+    collection = firestore().collection('resource_categories')
+    collection.get().then(result => {
+      this.setState({ 
+        loading : false,
+        categories: getCategories(result) });
+      console.log(this.state.categories);
+    });
+  }
+
   render () {
-    return(
+    if (this.state.loading) {
+      return (
+        <View style={styles.wrapper}>
+          <ImageBackground
+            source={{
+              uri:
+                "https://miro.medium.com/max/441/1*9EBHIOzhE1XfMYoKz1JcsQ.gif"
+            }}
+            style={styles.gif}
+          ></ImageBackground>
+        </View>
+      );
+    } else {
+      return (
       <FlatList
-        data={DATA}
+        data={this.state.categories}
         renderItem={({ item }) => 
         <View style={styles.container}>
           <Item title={item.title} navigate={this.navigation.navigate} />
@@ -65,6 +109,7 @@ class Resources extends React.Component {
         numColumns={2}
       />
     )}
+      }
 }
 
 const styles = StyleSheet.create({
@@ -80,6 +125,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
+  },
+  gif: {
+    padding: 50
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
   },
 });
 
