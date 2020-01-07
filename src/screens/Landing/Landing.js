@@ -1,13 +1,18 @@
 // Landing.js
-import React from 'react'
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
+import React from 'react';
+import {
+  View, Text, ActivityIndicator, StyleSheet,
+} from 'react-native';
+import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 
 class Landing extends React.Component {
   componentDidMount() {
-    auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'Home' : 'SignUp')
-    })
+    const unsubscribe = auth().onAuthStateChanged((user) => {
+      unsubscribe();
+      const { navigation } = this.props;
+      navigation.navigate(user ? 'Home' : 'SignUp');
+    });
   }
 
   render() {
@@ -16,7 +21,7 @@ class Landing extends React.Component {
         <Text>Loading</Text>
         <ActivityIndicator size="large" />
       </View>
-    )
+    );
   }
 }
 const styles = StyleSheet.create({
@@ -24,7 +29,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
-})
+  },
+});
 
-export default Landing
+Landing.propTypes = {
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+};
+
+export default Landing;

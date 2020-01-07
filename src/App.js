@@ -16,13 +16,12 @@
 
 // import firebase from '@react-native-firebase/app';
 
-/////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////
 // Raymond Changes
-/////////////////////////////////////////////////////////////
- 
-import React from 'react'
-import AppContainer from './navigation'
-import Firebase, { FirebaseProvider } from './config/Firebase'
+// ///////////////////////////////////////////////////////////
+
+import React from 'react';
+import AppContainer from './navigation';
 
 export default function App() {
   return (
@@ -30,10 +29,10 @@ export default function App() {
     //   <AppContainer />
     // </FirebaseProvider>
     <AppContainer />
-  )
+  );
 }
 
-/////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////
 
 
 // TODO(you): import any additional firebase services that you require for your app, e.g for auth:

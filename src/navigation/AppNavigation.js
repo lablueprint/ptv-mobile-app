@@ -1,13 +1,15 @@
-import { createStackNavigator } from 'react-navigation-stack'
-import Home from '../screens/Home'
+import { createStackNavigator } from 'react-navigation-stack';
+import Home from '../screens/Home';
+import EditProfile from '../screens/EditProfile';
 
 const AppNavigation = createStackNavigator(
   {
-    Home: Home
+    Home,
+    EditProfile,
   },
   {
-    initialRouteName: 'Home'
-  }
-)
+    initialRouteName: 'Home',
+  },
+);
 
-export default AppNavigation
+export default AppNavigation;
