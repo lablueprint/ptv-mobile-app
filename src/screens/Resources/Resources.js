@@ -9,50 +9,18 @@ import {  View,
 // import { withFirebase } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second',
-  },
-  {
-    id: '58694a0f-3da1-491f-bd96-145571e29d72',
-    title: 'Third',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Fourth',
-  },
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First',
-  },
-  {
-    id: '3ac68afc-c605-42d3-a4f8-fbd91aa97f63',
-    title: 'Second',
-  },
-  {
-    id: '58694a0f-3da1-411f-bd96-145571e29d72',
-    title: 'Third',
-  },
-  {
-    id: '58694a0f-3da1-451f-bd96-145571e29d72',
-    title: 'Fourth',
-  },
-];
 const size = Dimensions.get('window').width/2;
 
 function Item({ title, navigate }) {
   return (
+    <View style={styles.itemContainer}>
     <TouchableOpacity
-      onPress={() => navigate('Home')} >
-      <View style={styles.item}>
+      onPress={() => navigate('Home')}
+      style={styles.item} >
         <Text>{title}</Text>
-      </View>
     </TouchableOpacity>
+    </View>
+    
   );
 }
 
@@ -114,11 +82,18 @@ class Resources extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    // width: size,
-    // height: size
+    width: size,
+    height: size,
     flex: 1
   },
   item: {
+    flex: 1,
+    margin: 3,
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  itemContainer: {
     flex: 1,
     margin: 3,
     backgroundColor: 'lightblue',
