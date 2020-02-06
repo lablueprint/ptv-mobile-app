@@ -1,4 +1,4 @@
-// Home.js
+// HomeScreen.js
 import React from 'react';
 import {
   StyleSheet, Text, View, Button,
@@ -10,7 +10,7 @@ const INITIAL_STATE = {
   name: '',
 };
 
-class Home extends React.Component {
+class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = INITIAL_STATE;
@@ -27,7 +27,7 @@ class Home extends React.Component {
     const { navigation } = this.props;
     auth()
       .signOut()
-      .then(() => navigation.navigate('SignUp'))
+      .then(() => navigation.navigate('SignUpScreen'))
       .catch((error) => console.log(error));
   }
 
@@ -44,7 +44,7 @@ class Home extends React.Component {
           {name}
 !
         </Text>
-        <Button title="Edit profile" onPress={() => navigation.navigate('EditProfile')} />
+        <Button title="Edit profile" onPress={() => navigation.navigate('EditProfileScreen')} />
       </View>
     );
   }
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
   },
 });
 
-Home.propTypes = {
+HomeScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default Home;
+export default HomeScreen;

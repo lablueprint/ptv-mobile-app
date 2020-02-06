@@ -1,14 +1,14 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import Home from '../screens/Home';
-import EditProfile from '../screens/EditProfile';
+import HomeScreen from '../screens/Home';
+import EditProfileScreen from '../screens/Profile';
 
 const AppNavigation = createStackNavigator(
   {
-    Home,
-    EditProfile,
+    HomeScreen,
+    EditProfileScreen,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'HomeScreen',
   },
 );
 

@@ -1,3 +1,3 @@
-import SignIn from './SignIn';
+import SignInScreen from './SignInScreen';
 
-export default SignIn;
+export default SignInScreen;
