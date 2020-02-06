@@ -1,4 +1,4 @@
-// SignUp.js
+// SignUpScreen.js
 import React from 'react';
 import {
   StyleSheet, Text, TextInput, View, Button,
@@ -15,7 +15,7 @@ const INITAL_STATE = {
   unmount: null,
 };
 
-class SignUp extends React.Component {
+class SignUpScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = INITAL_STATE;
@@ -27,7 +27,7 @@ class SignUp extends React.Component {
     this.state.unmount = auth().onAuthStateChanged(async (user) => {
       if (user) {
         user.updateProfile({ displayName: self.state.name })
-          .then(() => self.props.navigation.navigate('Home'))
+          .then(() => self.props.navigation.navigate('HomeScreen'))
           .catch((error) => console.log(error));
         const ref = firestore().collection('users').doc(user.uid);
         try {
@@ -101,7 +101,7 @@ class SignUp extends React.Component {
         <Button title="Sign Up" onPress={this.handleSignUp} />
         <Button
           title="Already have an account? Login"
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={() => navigation.navigate('SignInScreen')}
         />
       </View>
     );
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
   },
 });
 
-SignUp.propTypes = {
+SignUpScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default SignUp;
+export default SignUpScreen;

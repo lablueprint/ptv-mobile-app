@@ -1,4 +1,4 @@
-// EditProfile.js
+// EditProfileScreen.js
 import React from 'react';
 import {
   StyleSheet, Text, TextInput, View, Button, Alert,
@@ -11,7 +11,7 @@ const INITIAL_STATE = {
   currentPassword: '',
 };
 
-class EditProfile extends React.Component {
+class EditProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = INITIAL_STATE;
@@ -103,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditProfile;
+export default EditProfileScreen;

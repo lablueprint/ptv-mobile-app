@@ -1,4 +1,4 @@
-// Landing.js
+// LoadingScreen.js
 import React from 'react';
 import {
   View, Text, ActivityIndicator, StyleSheet,
@@ -6,12 +6,12 @@ import {
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 
-class Landing extends React.Component {
+class LoadingScreen extends React.Component {
   componentDidMount() {
     const unsubscribe = auth().onAuthStateChanged((user) => {
       unsubscribe();
       const { navigation } = this.props;
-      navigation.navigate(user ? 'Home' : 'SignUp');
+      navigation.navigate(user ? 'HomeScreen' : 'SignUpScreen');
     });
   }
 
@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
   },
 });
 
-Landing.propTypes = {
+LoadingScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default Landing;
+export default LoadingScreen;

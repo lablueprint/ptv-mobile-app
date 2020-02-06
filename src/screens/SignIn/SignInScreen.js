@@ -1,4 +1,4 @@
-// Login.js
+// SignInScreen.js
 import React from 'react';
 import {
   StyleSheet, Text, TextInput, View, Button,
@@ -12,7 +12,7 @@ const INITIAL_STATE = {
   errorMessage: null,
 };
 
-class SignIn extends React.Component {
+class SignInScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = INITIAL_STATE;
@@ -25,7 +25,7 @@ class SignIn extends React.Component {
 
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => navigation.navigate('Home'))
+      .then(() => navigation.navigate('HomeScreen'))
       .catch((error) => this.setState({ errorMessage: error.message }));
   }
 
@@ -59,7 +59,7 @@ class SignIn extends React.Component {
         <Button title="Login" onPress={this.handleLogin} />
         <Button
           title="Don't have an account? Sign Up"
-          onPress={() => navigation.navigate('SignUp')}
+          onPress={() => navigation.navigate('SignUpScreen')}
         />
       </View>
     );
@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
   },
 });
 
-SignIn.propTypes = {
+SignInScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default SignIn;
+export default SignInScreen;

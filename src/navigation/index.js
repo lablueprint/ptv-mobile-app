@@ -1,17 +1,17 @@
 
 import { createSwitchNavigator, createAppContainer } from 'react-navigation';
-import Landing from '../screens/Landing';
+import LoadingScreen from '../screens/Loading';
 import AuthNavigation from './AuthNavigation';
 import AppNavigation from './AppNavigation';
 
 const SwitchNavigator = createSwitchNavigator(
   {
-    Landing,
+    LoadingScreen,
     Auth: AuthNavigation,
     App: AppNavigation,
   },
   {
-    initialRouteName: 'Landing',
+    initialRouteName: 'LoadingScreen',
   },
 );
 
