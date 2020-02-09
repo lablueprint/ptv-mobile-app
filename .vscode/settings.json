@@ -1,9 +1,0 @@
-{
-  "javascript.format.enable": false,
-  "eslint.autoFixOnSave": true,
-  "eslint.run": "onSave",
-  "files.eol": "\n",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  }
-}

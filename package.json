@@ -1,43 +1,45 @@
 {
   "name": "ptv-mobile-app",
-  "version": "6.0.4",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "start": "react-native start",
-    "run:android": "react-native run-android",
-    "run:ios": "react-native run-ios --simulator=\"iPhone X\"",
-    "build:apk": "cd android && ./gradlew assembleRelease",
     "test": "jest",
-    "prepare": "patch-package"
+    "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/masked-view": "^0.1.6",
     "@react-native-firebase/app": "^6.2.0",
     "@react-native-firebase/auth": "^6.2.0",
     "@react-native-firebase/firestore": "^6.2.0",
     "prop-types": "^15.7.2",
-    "react": "16.8.6",
-    "react-native": "0.60.5",
-    "react-native-gesture-handler": "^1.5.2",
+    "react": "16.9.0",
+    "react-native": "0.61.5",
+    "react-native-gesture-handler": "^1.5.3",
+    "react-native-safe-area-context": "^0.6.2",
+    "react-native-screens": "^2.0.0-beta.2",
     "react-navigation": "^4.0.10",
-    "react-navigation-stack": "^1.10.3"
+    "react-navigation-stack": "^2.0.16"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/runtime": "^7.5.5",
+    "@babel/core": "^7.8.3",
+    "@babel/runtime": "^7.8.3",
     "@react-native-community/cli": "^2.9.0",
-    "@react-native-community/eslint-config": "^0.0.5",
+    "@react-native-community/eslint-config": "^0.0.7",
     "babel-eslint": "^10.0.3",
-    "babel-jest": "^24.8.0",
-    "eslint": "^6.7.2",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^1.7.0",
-    "jest": "^24.8.0",
-    "metro-react-native-babel-preset": "^0.56.0",
+    "jest": "^25.1.0",
+    "metro-react-native-babel-preset": "^0.58.0",
     "patch-package": "^6.1.4",
-    "react-test-renderer": "16.8.6"
+    "react-test-renderer": "16.9.0"
   },
   "jest": {
     "preset": "react-native"
