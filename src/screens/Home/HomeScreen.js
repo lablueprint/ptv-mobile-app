@@ -1,4 +1,3 @@
-// HomeScreen.js
 import React from 'react';
 import {
   StyleSheet, Text, View, Button,
@@ -42,7 +41,7 @@ class HomeScreen extends React.Component {
           Hi
           {' '}
           {name}
-!
+          !
         </Text>
         <Button title="Edit profile" onPress={() => navigation.navigate('EditProfileScreen')} />
       </View>
