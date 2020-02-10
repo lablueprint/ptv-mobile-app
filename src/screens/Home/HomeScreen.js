@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 
 const INITIAL_STATE = {
   name: '',
+  errorMessage: null,
 };
 
 class HomeScreen extends React.Component {
@@ -16,26 +17,41 @@ class HomeScreen extends React.Component {
     this.handleSignOut = this.handleSignOut.bind(this);
   }
 
-  async componentDidMount() {
-    const { currentUser } = auth();
-    const name = currentUser.displayName;
-    this.setState({ name });
+  componentDidMount() {
+    this.unsubscribe = auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ name: user.displayName });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   handleSignOut() {
     const { navigation } = this.props;
     auth()
       .signOut()
-      .then(() => navigation.navigate('SignUpScreen'))
-      .catch((error) => console.log(error));
+      .then(() => {
+        navigation.navigate('SignUpScreen');
+      }).catch((error) => {
+        this.setState({ errorMessage: error.message });
+      });
   }
 
   render() {
-    const { name } = this.state;
+    const { name, errorMessage } = this.state;
     const { navigation } = this.props;
 
     return (
       <View style={styles.container}>
+        {errorMessage
+          && (
+          <Text style={{ color: 'red' }}>
+            {errorMessage}
+          </Text>
+          )}
         <Button title="Sign out" onPress={this.handleSignOut} />
         <Text>
           Hi

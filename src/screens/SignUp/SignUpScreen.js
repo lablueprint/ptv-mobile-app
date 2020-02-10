@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, Text, TextInput, View, Button,
+  StyleSheet, Text, TextInput, View, Button, ActivityIndicator,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -11,7 +11,7 @@ const INITAL_STATE = {
   password: '',
   name: '',
   errorMessage: null,
-  unmount: null,
+  loading: false,
 };
 
 class SignUpScreen extends React.Component {
@@ -21,47 +21,45 @@ class SignUpScreen extends React.Component {
     this.handleSignUp = this.handleSignUp.bind(this);
   }
 
-  async componentDidMount() {
-    const self = this;
-    this.state.unmount = auth().onAuthStateChanged(async (user) => {
-      if (user) {
-        user.updateProfile({ displayName: self.state.name })
-          .then(() => self.props.navigation.navigate('HomeScreen'))
-          .catch((error) => console.log(error));
-        const ref = firestore().collection('users').doc(user.uid);
-        try {
-          await ref.set({
-            email: self.state.email,
-            id: user.uid,
+  handleSignUp() {
+    const { name, email, password } = this.state;
+    const { navigation } = this.props;
+    this.setState({ loading: true });
+
+    if (name.length <= 0 || email.length <= 0 || password.length <= 0) {
+      this.setState({ errorMessage: 'All fields are required!', loading: false });
+    } else {
+      auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const ref = firestore().collection('users').doc(userCredential.uid);
+          ref.set({
+            email,
+            id: userCredential.uid,
             isAdmin: false,
-            name: self.state.name,
+            name,
             role: 'UNAUTHORIZED',
-            updatedAt: new Date(),
+            updatedAt: firestore.Timestamp.now(),
+          }).then(() => {
+            userCredential.user.updateProfile({
+              displayName: name,
+            }).then(() => {
+              navigation.navigate('HomeScreen');
+            }).catch((error) => {
+              this.setState({ loading: false, errorMessage: error.message });
+            });
+          }).catch((error) => {
+            this.setState({ loading: false, errorMessage: error.message });
           });
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        console.log('No users logged in');
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    const { unmount } = this.state;
-    unmount();
-  }
-
-  async handleSignUp() {
-    const { email, password } = this.state;
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .catch((error) => this.setState({ errorMessage: error.message }));
+        }).catch((error) => {
+          this.setState({ loading: false, errorMessage: error.message });
+        });
+    }
   }
 
   render() {
     const {
-      errorMessage, name, email, password,
+      errorMessage, name, email, password, loading,
     } = this.state;
     const { navigation } = this.props;
 
@@ -75,33 +73,51 @@ class SignUpScreen extends React.Component {
           </Text>
           )}
         <TextInput
+          editable={!loading}
+          autoFocus
           placeholder="Name"
           autoCapitalize="words"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ name: text })}
           value={name}
+          onSubmitEditing={() => this.emailInput.focus()}
+          returnKeyType="next"
         />
         <TextInput
+          editable={!loading}
           keyboardType="email-address"
           placeholder="Email"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
+          ref={(input) => { this.emailInput = input; }}
+          onSubmitEditing={() => this.passwordInput.focus()}
+          returnKeyType="next"
         />
         <TextInput
+          editable={!loading}
           secureTextEntry
           placeholder="Password"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
+          ref={(input) => { this.passwordInput = input; }}
+          onSubmitEditing={this.handleSignUp}
+          returnKeyType="go"
         />
-        <Button title="Sign Up" onPress={this.handleSignUp} />
-        <Button
-          title="Already have an account? Login"
-          onPress={() => navigation.navigate('SignInScreen')}
-        />
+        {loading
+          ? <ActivityIndicator />
+          : (
+            <>
+              <Button title="Sign Up" onPress={this.handleSignUp} />
+              <Button
+                title="Already have an account? Login"
+                onPress={() => navigation.navigate('SignInScreen')}
+              />
+            </>
+          )}
       </View>
     );
   }

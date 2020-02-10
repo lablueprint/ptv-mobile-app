@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, Text, TextInput, View, Button,
+  StyleSheet, Text, TextInput, View, Button, ActivityIndicator,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
@@ -9,6 +9,7 @@ const INITIAL_STATE = {
   email: '',
   password: '',
   errorMessage: null,
+  loading: false,
 };
 
 class SignInScreen extends React.Component {
@@ -21,15 +22,26 @@ class SignInScreen extends React.Component {
   handleLogin() {
     const { email, password } = this.state;
     const { navigation } = this.props;
+    this.setState({ loading: true });
 
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => navigation.navigate('HomeScreen'))
-      .catch((error) => this.setState({ errorMessage: error.message }));
+    if (email.length <= 0 || password.length <= 0) {
+      this.setState({ errorMessage: 'All fields are required!', loading: false });
+    } else {
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          this.setState({ loading: false });
+          navigation.navigate('HomeScreen');
+        }).catch((error) => {
+          this.setState({ loading: false, errorMessage: error.message });
+        });
+    }
   }
 
   render() {
-    const { errorMessage, email, password } = this.state;
+    const {
+      errorMessage, email, password, loading,
+    } = this.state;
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
@@ -41,25 +53,40 @@ class SignInScreen extends React.Component {
           </Text>
           )}
         <TextInput
+          autoFocus
+          editable={!loading}
           style={styles.textInput}
           autoCapitalize="none"
+          keyboardType="email-address"
           placeholder="Email"
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
+          returnKeyType="next"
+          onSubmitEditing={() => this.passwordInput.focus()}
         />
         <TextInput
+          editable={!loading}
           secureTextEntry
           style={styles.textInput}
           autoCapitalize="none"
           placeholder="Password"
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
+          ref={(input) => { this.passwordInput = input; }}
+          returnKeyType="go"
+          onSubmitEditing={this.handleLogin}
         />
-        <Button title="Login" onPress={this.handleLogin} />
-        <Button
-          title="Don't have an account? Sign Up"
-          onPress={() => navigation.navigate('SignUpScreen')}
-        />
+        {loading
+          ? <ActivityIndicator />
+          : (
+            <>
+              <Button title="Login" onPress={this.handleLogin} />
+              <Button
+                title="Don't have an account? Sign Up"
+                onPress={() => navigation.navigate('SignUpScreen')}
+              />
+            </>
+          )}
       </View>
     );
   }
