@@ -7,11 +7,14 @@ import auth from '@react-native-firebase/auth';
 
 class LoadingScreen extends React.Component {
   componentDidMount() {
-    const unsubscribe = auth().onAuthStateChanged((user) => {
-      unsubscribe();
-      const { navigation } = this.props;
-      navigation.navigate(user ? 'HomeScreen' : 'SignUpScreen');
+    const { navigation } = this.props;
+    this.unsubscribe = auth().onAuthStateChanged((user) => {
+      navigation.navigate(user ? 'App' : 'Auth');
     });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   render() {
