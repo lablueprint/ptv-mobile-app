@@ -1,8 +1,8 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import HomeScreen from '../screens/Home';
 import EditProfileScreen from '../screens/Profile';
 
-const AppNavigation = createStackNavigator(
+const AppNavigation = createMaterialBottomTabNavigator(
   {
     HomeScreen,
     EditProfileScreen,
