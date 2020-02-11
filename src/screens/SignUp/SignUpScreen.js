@@ -44,7 +44,7 @@ class SignUpScreen extends React.Component {
             userCredential.user.updateProfile({
               displayName: name,
             }).then(() => {
-              navigation.navigate('HomeScreen');
+              navigation.navigate('Home');
             }).catch((error) => {
               this.setState({ loading: false, errorMessage: error.message });
             });
