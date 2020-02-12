@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>936246573698-qlph3frtm9u4oqv1jv1c7ck0vujgieqf.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.936246573698-qlph3frtm9u4oqv1jv1c7ck0vujgieqf</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDE91iE2VGszgMK1G9xDFENxVQmOhD7JFQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>936246573698</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ptvmobileapp</string>
+	<key>PROJECT_ID</key>
+	<string>la-blueprint-ptv</string>
+	<key>STORAGE_BUCKET</key>
+	<string>la-blueprint-ptv.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:936246573698:ios:2a8a60839b00959cac929b</string>
+	<key>DATABASE_URL</key>
+	<string>https://la-blueprint-ptv.firebaseio.com</string>
+</dict>
+</plist>
