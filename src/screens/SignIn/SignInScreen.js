@@ -31,7 +31,7 @@ class SignInScreen extends React.Component {
         .signInWithEmailAndPassword(email, password)
         .then(() => {
           this.setState({ loading: false });
-          navigation.navigate('HomeScreen');
+          navigation.navigate('Home');
         }).catch((error) => {
           this.setState({ loading: false, errorMessage: error.message });
         });
