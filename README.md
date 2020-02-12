@@ -27,7 +27,17 @@ Open an Android emulator and run the code:
 
 ```npm run android```
 
-This app has not been set up for iOS yet. If you are on iOS, please look up how to add firebase to a react native project. I think this article is relevant: https://invertase.io/oss/react-native-firebase/quick-start/ios-firebase-credentials
+The app won't build on iOS without the Firebase iOS credentials, which we've chosen to not include to protect our API keys. If you'd like to build/run the app for iOS, head to our Firebase project. Open the project settings by clicking on the gear icon and then navigate to 'Project Settings'. Under 'Your apps' and 'iOS apps', click on the 'PTVMobileApp iOS' tab. Click on the 'Download google-services.json' button to download the `GoogleService-Info.plist`. 
+
+Run this code first to install iOS Podfile dependencies and create the `/ios/{projectName}.xcworkspace` file:
+
+```cd ios/ && pod install --repo-update```
+
+Open the `/ios/{projectName}.xcworkspace` file with Xcode, right click on the project name, and "Add files" to the project. Select your downloaded `GoogleService-Info.plist` and ensure the 'Copy items if needed' checkbox is enabled. 
+
+To run the app on an iOS emulator, run the code:
+
+```cd .. && npx react-native run-ios```
 
 
 At this point, if the code does not run on your emulator, come find your Project Lead!
