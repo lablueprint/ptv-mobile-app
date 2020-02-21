@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, RefreshControl } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
 import {
@@ -7,13 +7,20 @@ import {
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 
+function wait(timeout) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+}
+
 export default function ForumPostScreen({ navigation }) {
   const postId = navigation.getParam('postId');
   const [errorMessage, setErrorMessage] = useState(null);
   const [post, setPost] = useState(null);
   const [replies, setReplies] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const getData = useCallback(() => {
     /* Query forum post data from post id passed in through navigation */
     firestore().collection('forum_posts').doc(postId)
       .get()
@@ -87,9 +94,22 @@ export default function ForumPostScreen({ navigation }) {
       });
   }, [postId]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getData();
+    wait(2000).then(() => setRefreshing(false));
+  }, [getData]);
+
+  useEffect(() => {
+    getData();
+  }, [getData, postId]);
+
   return (
     <View>
-      <ScrollView>
+      <ScrollView refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {errorMessage && <Text>{errorMessage}</Text>}
         {post}
         {replies}
