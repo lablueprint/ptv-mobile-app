@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, TextInput, Text, Button,
+  View, TextInput, Text, Button, Picker, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -12,6 +12,8 @@ const INITIAL_STATE = {
   errorMessageTitle: null,
   errorMessageBody: null,
   userID: '',
+  pickerState: 'Category',
+  forumCategories: [],
 };
 
 export default class CreateForumPostScreen extends React.Component {
@@ -21,7 +23,14 @@ export default class CreateForumPostScreen extends React.Component {
     this.handleOnClick = this.handleOnClick.bind(this);
   }
 
+
   componentDidMount() {
+    firestore().collection('forum_categories')
+      .get()
+      .then((snapshot) => {
+        const forumCategories = snapshot.docs.map((doc) => doc.data());
+        this.setState({ forumCategories });
+      });
     this.unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ userID: user.uid });
@@ -32,7 +41,7 @@ export default class CreateForumPostScreen extends React.Component {
 
   handleOnClick() {
     const {
-      title, body, userID,
+      title, body, userID, pickerState,
     } = this.state;
     if (title.length === 0) {
       this.setState({ errorMessageTitle: 'Please Enter Title Before Submitting' });
@@ -50,22 +59,39 @@ export default class CreateForumPostScreen extends React.Component {
         UserID: userID,
         Title: title,
         Body: body,
-        Author: '',
-        createdAt: firestore.Timestamp.now(),
+        CreatedAt: firestore.Timestamp.now(),
+        UpdatedAt: firestore.Timestamp.now(),
+        category: pickerState,
       })
+      /*
+        .then((docRef) => {
+          console.log('Document written with ID: ', docRef.id);
+        })
+        */
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
       this.setState({ title: '' });
       this.setState({ body: '' });
+      Alert.alert('', 'Thank you for contributing to our community! Your post is being sent to our team for approval');
     }
   }
 
 
   render() {
     const {
-      title, body, errorMessageTitle, errorMessageBody,
+      title, body, errorMessageTitle, errorMessageBody, pickerState, forumCategories,
     } = this.state;
+
+    const pickerItems = forumCategories.map((categoryValue) => (
+      <Picker.Item
+        label={
+      categoryValue.category
+}
+        value={categoryValue.id}
+        key={categoryValue.id}
+      />
+    ));
     return (
       <View>
         <Text>Title</Text>
@@ -80,6 +106,15 @@ export default class CreateForumPostScreen extends React.Component {
             {errorMessageTitle}
           </Text>
           )}
+
+        <Picker
+          selectedValue={pickerState}
+          style={{ height: 50, width: 200 }}
+          onValueChange={(itemValue) => this.setState({ pickerState: itemValue })}
+        >
+          {pickerItems}
+        </Picker>
+
         <Text>Body</Text>
         <TextInput
           onChangeText={(text) => this.setState({ body: text })}
@@ -93,7 +128,7 @@ export default class CreateForumPostScreen extends React.Component {
           </Text>
           )}
         <Button
-          title="Submit"
+          title="Post"
           onPress={this.handleOnClick}
         />
       </View>
