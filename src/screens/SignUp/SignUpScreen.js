@@ -1,10 +1,13 @@
 import React from 'react';
 import {
-  StyleSheet, Text, TextInput, View, Button, ActivityIndicator,
+  StyleSheet, View, ActivityIndicator,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
+import {
+  Button, TextInput, Text, Title,
+} from 'react-native-paper';
 
 const INITAL_STATE = {
   email: '',
@@ -65,7 +68,7 @@ class SignUpScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        <Text>Sign Up</Text>
+        <Title>Sign Up</Title>
         {errorMessage
           && (
           <Text style={{ color: 'red' }}>
@@ -111,11 +114,20 @@ class SignUpScreen extends React.Component {
           ? <ActivityIndicator />
           : (
             <>
-              <Button title="Sign Up" onPress={this.handleSignUp} />
               <Button
-                title="Already have an account? Login"
+                style={styles.button}
+                mode="contained"
+                onPress={this.handleSignUp}
+              >
+                Sign Up
+              </Button>
+              <Button
+                style={styles.button}
+                mode="contained"
                 onPress={() => navigation.navigate('SignInScreen')}
-              />
+              >
+                Already have an account? Login
+              </Button>
             </>
           )}
       </View>
@@ -134,6 +146,10 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     marginTop: 8,
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
   },
 });
 
