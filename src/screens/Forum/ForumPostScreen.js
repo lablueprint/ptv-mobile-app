@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, RefreshControl, ActivityIndicator,
+  View, Text, StyleSheet, RefreshControl, ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
@@ -8,6 +8,12 @@ import {
   Avatar, Button, Card, Paragraph,
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export function ForumPost({
   title, name, date, body,
@@ -123,7 +129,7 @@ export default function ForumPostScreen({ navigation }) {
   }, [getData, postId]);
 
   return (
-    <View>
+    <View style={styles.container}>
       <ScrollView refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -148,7 +154,6 @@ ForumReply.propTypes = {
   name: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
-  // key: PropTypes.string.isRequired,
 };
 
 ForumPostScreen.propTypes = {
