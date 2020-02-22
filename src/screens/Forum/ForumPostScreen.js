@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, RefreshControl } from 'react-native';
+import {
+  View, Text, RefreshControl, ActivityIndicator,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
 import {
@@ -7,10 +9,33 @@ import {
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 
-function wait(timeout) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
-  });
+export function ForumPost({
+  title, name, date, body,
+}) {
+  return (
+    <Card>
+      <Card.Title title={title} subtitle={`${name} ${date}`} left={(props) => <Avatar.Text {...props} label={name.charAt(0).toUpperCase()} />} />
+      <Card.Content>
+        <Paragraph>{body}</Paragraph>
+      </Card.Content>
+      <Card.Actions>
+        <Button>Reply</Button>
+      </Card.Actions>
+    </Card>
+  );
+}
+
+export function ForumReply({
+  name, date, body,
+}) {
+  return (
+    <Card>
+      <Card.Title subtitle={`${name} ${date}`} />
+      <Card.Content>
+        <Paragraph>{body}</Paragraph>
+      </Card.Content>
+    </Card>
+  );
 }
 
 export default function ForumPostScreen({ navigation }) {
@@ -19,8 +44,11 @@ export default function ForumPostScreen({ navigation }) {
   const [post, setPost] = useState(null);
   const [replies, setReplies] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const getData = useCallback(() => {
+  const getData = useCallback(async () => {
+    setLoading(true);
+
     /* Query forum post data from post id passed in through navigation */
     firestore().collection('forum_posts').doc(postId)
       .get()
@@ -35,23 +63,13 @@ export default function ForumPostScreen({ navigation }) {
             const authorData = authorSnap[0].data();
 
             /* Set post hook with post and author data */
-            setPost(
-              <Card>
-                <Card.Title title={postData.title} subtitle={`${authorData.displayName} ${postData.createdAt.toDate().toLocaleTimeString('en-US')}`} left={(props) => <Avatar.Text {...props} label={authorData.displayName.charAt(0).toUpperCase()} />} />
-                <Card.Content>
-                  <Paragraph>{postData.body}</Paragraph>
-                </Card.Content>
-                <Card.Actions>
-                  <Button>Reply</Button>
-                </Card.Actions>
-              </Card>,
-            );
+            setPost(<ForumPost title={postData.title} name={authorData.displayName} date={postData.createdAt.toDate().toLocaleTimeString('en-US')} body={postData.body} />);
 
             /* Query for post comment data */
             firestore().collection('forum_comments').where('postID', '==', postId)
               .get()
               .then((snapshot) => {
-                const repliesData = snapshot.docs.map((doc) => doc.data());
+                const repliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
                 /* Sort comments by created at timestamp, from oldest to youngest */
                 const sortedRepliesData = repliesData.sort((a, b) => {
@@ -73,14 +91,15 @@ export default function ForumPostScreen({ navigation }) {
                   const usersData = userSnap.map((doc) => doc.data());
 
                   /* Set replies hook with comment and comment author data */
-                  setReplies(sortedRepliesData.map((reply, i) => (
-                    <Card>
-                      <Card.Title subtitle={`${usersData[i].displayName} ${reply.createdAt.toDate().toLocaleTimeString('en-US')}`} />
-                      <Card.Content>
-                        <Paragraph>{reply.body}</Paragraph>
-                      </Card.Content>
-                    </Card>
+                  setReplies(sortedRepliesData.map((reply, i) => ({
+                    ...(
+                      <ForumReply name={usersData[i].displayName} date={reply.createdAt.toDate().toLocaleTimeString('en-US')} body={reply.body} />
+                    ),
+                    key: reply.id,
+                  }
                   )));
+
+                  setLoading(false);
                 });
               })
               .catch((error) => {
@@ -96,8 +115,7 @@ export default function ForumPostScreen({ navigation }) {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    getData();
-    wait(2000).then(() => setRefreshing(false));
+    getData().then(() => setRefreshing(false));
   }, [getData]);
 
   useEffect(() => {
@@ -113,10 +131,25 @@ export default function ForumPostScreen({ navigation }) {
         {errorMessage && <Text>{errorMessage}</Text>}
         {post}
         {replies}
+        {loading && <ActivityIndicator />}
       </ScrollView>
     </View>
   );
 }
+
+ForumPost.propTypes = {
+  title: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
+};
+
+ForumReply.propTypes = {
+  name: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
+  // key: PropTypes.string.isRequired,
+};
 
 ForumPostScreen.propTypes = {
   navigation: PropTypes.shape({
