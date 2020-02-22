@@ -12,14 +12,29 @@ import { ScrollView } from 'react-native-gesture-handler';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'azure',
+  },
+  post: {
+    borderRadius: 15,
+    margin: 20,
+  },
+  card: {
+    borderRadius: 15,
+    marginVertical: 10,
+    marginHorizontal: 20,
+  },
+  cardBackground: {
+    borderRadius: 15,
+    paddingVertical: 15,
+    backgroundColor: 'lavender',
   },
 });
 
-export function ForumPost({
+function ForumPost({
   title, name, date, body,
 }) {
   return (
-    <Card>
+    <Card style={styles.post}>
       <Card.Title title={title} subtitle={`${name} ${date}`} left={(props) => <Avatar.Text {...props} label={name.charAt(0).toUpperCase()} />} />
       <Card.Content>
         <Paragraph>{body}</Paragraph>
@@ -31,11 +46,11 @@ export function ForumPost({
   );
 }
 
-export function ForumReply({
+function ForumReply({
   name, date, body,
 }) {
   return (
-    <Card>
+    <Card style={styles.card}>
       <Card.Title subtitle={`${name} ${date}`} />
       <Card.Content>
         <Paragraph>{body}</Paragraph>
@@ -136,8 +151,10 @@ export default function ForumPostScreen({ navigation }) {
       >
         {errorMessage && <Text>{errorMessage}</Text>}
         {post}
-        {replies}
-        {loading && <ActivityIndicator />}
+        <View style={styles.cardBackground}>
+          {replies}
+          {loading && <ActivityIndicator />}
+        </View>
       </ScrollView>
     </View>
   );
