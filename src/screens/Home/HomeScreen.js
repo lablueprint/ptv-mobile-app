@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View, Button,
+  StyleSheet, Text, View,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
+import { Title, Button } from 'react-native-paper';
 
 const INITIAL_STATE = {
   name: '',
@@ -52,14 +53,26 @@ class HomeScreen extends React.Component {
             {errorMessage}
           </Text>
           )}
-        <Button title="Sign out" onPress={this.handleSignOut} />
-        <Text>
+        <Title>
           Hi
           {' '}
           {name}
           !
-        </Text>
-        <Button title="Edit profile" onPress={() => navigation.navigate('EditProfileScreen')} />
+        </Title>
+        <Button
+          style={styles.button}
+          mode="contained"
+          onPress={() => navigation.navigate('EditProfileScreen')}
+        >
+          Edit profile
+        </Button>
+        <Button
+          style={styles.button}
+          mode="contained"
+          onPress={this.handleSignOut}
+        >
+          Sign Out
+        </Button>
       </View>
     );
   }
@@ -69,6 +82,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
   },
 });
 
