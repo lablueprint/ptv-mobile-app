@@ -5,7 +5,6 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-
 const INITIAL_STATE = {
   title: '',
   body: '',
@@ -63,20 +62,15 @@ export default class CreateForumPostScreen extends React.Component {
         UpdatedAt: firestore.Timestamp.now(),
         category: pickerState,
       })
-      /*
-        .then((docRef) => {
-          console.log('Document written with ID: ', docRef.id);
-        })
-        */
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
+      this.setState({ pickerState: 'Category' });
       this.setState({ title: '' });
       this.setState({ body: '' });
       Alert.alert('', 'Thank you for contributing to our community! Your post is being sent to our team for approval');
     }
   }
-
 
   render() {
     const {
@@ -85,9 +79,7 @@ export default class CreateForumPostScreen extends React.Component {
 
     const pickerItems = forumCategories.map((categoryValue) => (
       <Picker.Item
-        label={
-      categoryValue.category
-}
+        label={categoryValue.category}
         value={categoryValue.id}
         key={categoryValue.id}
       />
