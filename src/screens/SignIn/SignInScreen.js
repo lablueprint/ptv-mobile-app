@@ -97,6 +97,12 @@ class SignInScreen extends React.Component {
               >
                 Don&apos;t have an account? Sign Up
               </Button>
+              <Button
+                mode="text"
+                onPress={() => navigation.navigate('ForgotPasswordScreen')}
+              >
+                Forgot Password?
+              </Button>
             </>
           )}
       </View>

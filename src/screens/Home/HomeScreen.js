@@ -43,7 +43,6 @@ class HomeScreen extends React.Component {
 
   render() {
     const { name, errorMessage } = this.state;
-    const { navigation } = this.props;
 
     return (
       <View style={styles.container}>
@@ -59,13 +58,6 @@ class HomeScreen extends React.Component {
           {name}
           !
         </Title>
-        <Button
-          style={styles.button}
-          mode="contained"
-          onPress={() => navigation.navigate('EditProfileScreen')}
-        >
-          Edit profile
-        </Button>
         <Button
           style={styles.button}
           mode="contained"
