@@ -1,8 +1,11 @@
 import React from 'react';
 import {
-  StyleSheet, Text, TextInput, View, Button, Alert,
+  StyleSheet, View, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import {
+  Title, TextInput, Button,
+} from 'react-native-paper';
 
 const INITIAL_STATE = {
   newPassword: '',
@@ -54,7 +57,7 @@ class EditProfileScreen extends React.Component {
     const { currentPassword, newPassword, newEmail } = this.state;
     return (
       <View style={styles.container}>
-        <Text>Edit Profile</Text>
+        <Title>Edit Profile</Title>
         <TextInput
           secureTextEntry
           placeholder="Current Password"
@@ -71,7 +74,13 @@ class EditProfileScreen extends React.Component {
           onChangeText={(text) => this.setState({ newPassword: text })}
           value={newPassword}
         />
-        <Button title="Change Password" onPress={this.onChangePasswordPress} />
+        <Button
+          style={styles.button}
+          mode="contained"
+          onPress={this.onChangePasswordPress}
+        >
+          Change Password
+        </Button>
 
         <TextInput
           keyboardType="email-address"
@@ -81,7 +90,13 @@ class EditProfileScreen extends React.Component {
           onChangeText={(text) => this.setState({ newEmail: text })}
           value={newEmail}
         />
-        <Button title="Change Email" onPress={this.onChangeEmailPress} />
+        <Button
+          style={styles.button}
+          mode="contained"
+          onPress={this.onChangeEmailPress}
+        >
+          Change Email
+        </Button>
       </View>
     );
   }
@@ -99,6 +114,10 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     marginTop: 8,
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
   },
 });
 
