@@ -113,9 +113,11 @@ export default function ForumPostScreen({ navigation }) {
         setLoading(false);
       } catch (error) {
         setErrorMessage(error.message);
+        setLoading(false);
       }
     } catch (error) {
       setErrorMessage(error.message);
+      setLoading(false);
     }
   }, [postId]);
 
