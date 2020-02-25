@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, Alert,
+  StyleSheet, View, Alert, ActivityIndicator,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {
@@ -11,6 +11,8 @@ const INITIAL_STATE = {
   newPassword: '',
   newEmail: '',
   currentPassword: '',
+  passwordLoading: false,
+  emailLoading: false,
 };
 
 class EditProfileScreen extends React.Component {
@@ -24,26 +26,58 @@ class EditProfileScreen extends React.Component {
 
   onChangePasswordPress() {
     const { newPassword } = this.state;
+    this.setState({ passwordLoading: true });
     this.reauthenticate()
       .then(() => {
         auth().currentUser
           .updatePassword(newPassword)
-          .then(() => Alert.alert('Password was changed successfully!'))
-          .catch((error) => Alert.alert(error.message));
+          .then(() => {
+            Alert.alert('Password was changed successfully!');
+            this.clearFields();
+            this.setState({ passwordLoading: false });
+          })
+          .catch((error) => {
+            Alert.alert(error.message);
+            this.clearFields();
+            this.setState({ passwordLoading: false });
+          });
       })
-      .catch((error) => Alert.alert(error.message));
+      .catch((error) => {
+        Alert.alert(error.message);
+        this.clearFields();
+        this.setState({ passwordLoading: false });
+      });
   }
 
   onChangeEmailPress() {
     const { newEmail } = this.state;
+    this.setState({ emailLoading: true });
     this.reauthenticate()
       .then(() => {
         auth().currentUser
           .updateEmail(newEmail)
-          .then(() => Alert.alert('Email was changed successfully!'))
-          .catch((error) => Alert.alert(error.message));
+          .then(() => {
+            Alert.alert('Email was changed successfully!');
+            this.clearFields();
+            this.setState({ emailLoading: false });
+          })
+          .catch((error) => {
+            Alert.alert(error.message);
+            this.clearFields();
+            this.setState({ emailLoading: false });
+          });
       })
-      .catch((error) => Alert.alert(error.message));
+      .catch((error) => {
+        Alert.alert(error.message);
+        this.clearFields();
+        this.setState({ emailLoading: false });
+      });
+  }
+
+  clearFields() {
+    this.setState({ currentPassword: '' });
+    this.setState({ newPassword: '' });
+    this.setState({ newEmail: '' });
   }
 
   reauthenticate() {
@@ -54,49 +88,70 @@ class EditProfileScreen extends React.Component {
   }
 
   render() {
-    const { currentPassword, newPassword, newEmail } = this.state;
+    const {
+      currentPassword, newPassword, newEmail, passwordLoading, emailLoading,
+    } = this.state;
     return (
       <View style={styles.container}>
         <Title>Edit Profile</Title>
         <TextInput
+          autoFocus
+          editable={!passwordLoading && !emailLoading}
           secureTextEntry
           placeholder="Current Password"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ currentPassword: text })}
           value={currentPassword}
+          returnKeyType="next"
+          onSubmitEditing={() => this.newPasswordInput.focus()}
         />
         <TextInput
           secureTextEntry
+          editable={!passwordLoading && !emailLoading}
           placeholder="New Password"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ newPassword: text })}
           value={newPassword}
+          ref={(input) => { this.newPasswordInput = input; }}
+          returnKeyType="go"
+          onSubmitEditing={this.onChangePasswordPress}
         />
-        <Button
-          style={styles.button}
-          mode="contained"
-          onPress={this.onChangePasswordPress}
-        >
-          Change Password
-        </Button>
+        {passwordLoading
+          ? <ActivityIndicator />
+          : (
+            <Button
+              style={styles.button}
+              mode="contained"
+              onPress={this.onChangePasswordPress}
+            >
+              Change Password
+            </Button>
+          )}
 
         <TextInput
+          editable={!passwordLoading && !emailLoading}
           keyboardType="email-address"
           placeholder="New Email"
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ newEmail: text })}
           value={newEmail}
+          returnKeyType="go"
+          onSubmitEditing={this.onChangeEmailPress}
         />
-        <Button
-          style={styles.button}
-          mode="contained"
-          onPress={this.onChangeEmailPress}
-        >
-          Change Email
-        </Button>
+        {emailLoading
+          ? <ActivityIndicator />
+          : (
+            <Button
+              style={styles.button}
+              mode="contained"
+              onPress={this.onChangeEmailPress}
+            >
+              Change Email
+            </Button>
+          )}
       </View>
     );
   }
