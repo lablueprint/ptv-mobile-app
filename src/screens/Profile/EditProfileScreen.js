@@ -33,19 +33,16 @@ class EditProfileScreen extends React.Component {
           .updatePassword(newPassword)
           .then(() => {
             Alert.alert('Password was changed successfully!');
-            this.clearFields();
-            this.setState({ passwordLoading: false });
+            this.setState(INITIAL_STATE);
           })
           .catch((error) => {
             Alert.alert(error.message);
-            this.clearFields();
-            this.setState({ passwordLoading: false });
+            this.setState(INITIAL_STATE);
           });
       })
       .catch((error) => {
         Alert.alert(error.message);
-        this.clearFields();
-        this.setState({ passwordLoading: false });
+        this.setState(INITIAL_STATE);
       });
   }
 
@@ -58,26 +55,17 @@ class EditProfileScreen extends React.Component {
           .updateEmail(newEmail)
           .then(() => {
             Alert.alert('Email was changed successfully!');
-            this.clearFields();
-            this.setState({ emailLoading: false });
+            this.setState(INITIAL_STATE);
           })
           .catch((error) => {
             Alert.alert(error.message);
-            this.clearFields();
-            this.setState({ emailLoading: false });
+            this.setState(INITIAL_STATE);
           });
       })
       .catch((error) => {
         Alert.alert(error.message);
-        this.clearFields();
-        this.setState({ emailLoading: false });
+        this.setState(INITIAL_STATE);
       });
-  }
-
-  clearFields() {
-    this.setState({ currentPassword: '' });
-    this.setState({ newPassword: '' });
-    this.setState({ newEmail: '' });
   }
 
   reauthenticate() {
