@@ -1,28 +1,38 @@
 import React from 'react';
 import {
-  View, Text, TouchableOpacity,
+  Text, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import { Card, Button, Title } from 'react-native-paper';
 import PropTypes from 'prop-types';
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 10,
+    width: '95%',
+    alignSelf: 'center',
+    borderRadius: 15,
+  },
+  title: {
+  },
+  actionContainer: {
+    width: '100%',
+    marginHorizontal: '1%',
+    justifyContent: 'space-between',
+  },
+  text: {
+  },
+});
 
 export default function ForumPost({
   name, time, numReplies, children,
 }) {
   const handlePress = () => {
-  // do something to reply
-    // console.log('i have been pressed');
+    // TODO: navigate to reply screen
   };
 
   return (
-    <Card style={{
-      marginTop: '3%',
-      backgroundColor: 'whitesmoke',
-      width: '92%',
-      alignSelf: 'center',
-      borderRadius: 15,
-    }}
-    >
-      <Card.Title style={{ color: 'blue' }} subtitle={`${name} ${time}`} />
+    <Card style={styles.container}>
+      <Card.Title style={styles.title} subtitle={`${name} ${time}`} />
       <Card.Content>
         <TouchableOpacity>
           <Title>
@@ -30,20 +40,16 @@ export default function ForumPost({
           </Title>
         </TouchableOpacity>
       </Card.Content>
-      <View style={{ width: '100%' }}>
-        <Card.Actions style={{ marginHorizontal: '1%', justifyContent: 'space-between' }}>
-          <TouchableOpacity>
-            <Text style={{ color: 'blue' }}>
-              {numReplies}
-              {' '}
-              Replies
-            </Text>
-          </TouchableOpacity>
-          <Button icon="arrow-left" color="blue" onPress={handlePress}>
-            Reply
-          </Button>
-        </Card.Actions>
-      </View>
+      <Card.Actions style={styles.actionContainer}>
+        <TouchableOpacity>
+          <Text style={styles.text}>
+            {`${numReplies} Replies`}
+          </Text>
+        </TouchableOpacity>
+        <Button onPress={handlePress}>
+          Reply
+        </Button>
+      </Card.Actions>
     </Card>
   );
 }
