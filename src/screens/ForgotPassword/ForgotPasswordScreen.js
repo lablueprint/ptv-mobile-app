@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, ActivityIndicator, Alert,
+  StyleSheet, View, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
@@ -54,25 +54,20 @@ export default function ForgotPasswordScreen({ navigation }) {
         returnKeyType="go"
         onSubmitEditing={handleForgotPassword}
       />
-      {loading
-        ? <ActivityIndicator />
-        : (
-          <>
-            <Button
-              style={styles.button}
-              mode="contained"
-              onPress={handleForgotPassword}
-            >
-              Reset Password
-            </Button>
-            <Button
-              mode="text"
-              onPress={() => navigation.navigate('SignInScreen')}
-            >
-              Back to Login
-            </Button>
-          </>
-        )}
+      <Button
+        loading={loading}
+        style={styles.button}
+        mode="contained"
+        onPress={handleForgotPassword}
+      >
+        Reset Password
+      </Button>
+      <Button
+        mode="text"
+        onPress={() => navigation.navigate('SignInScreen')}
+      >
+        Back to Login
+      </Button>
     </View>
   );
 }

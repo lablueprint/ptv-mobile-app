@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, Alert, ActivityIndicator,
+  StyleSheet, View, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {
@@ -106,17 +106,14 @@ class EditProfileScreen extends React.Component {
           returnKeyType="go"
           onSubmitEditing={this.onChangePasswordPress}
         />
-        {passwordLoading
-          ? <ActivityIndicator />
-          : (
-            <Button
-              style={styles.button}
-              mode="contained"
-              onPress={this.onChangePasswordPress}
-            >
-              Change Password
-            </Button>
-          )}
+        <Button
+          loading={passwordLoading}
+          style={styles.button}
+          mode="contained"
+          onPress={this.onChangePasswordPress}
+        >
+          Change Password
+        </Button>
 
         <TextInput
           editable={!passwordLoading && !emailLoading}
@@ -129,17 +126,14 @@ class EditProfileScreen extends React.Component {
           returnKeyType="go"
           onSubmitEditing={this.onChangeEmailPress}
         />
-        {emailLoading
-          ? <ActivityIndicator />
-          : (
-            <Button
-              style={styles.button}
-              mode="contained"
-              onPress={this.onChangeEmailPress}
-            >
-              Change Email
-            </Button>
-          )}
+        <Button
+          loading={emailLoading}
+          style={styles.button}
+          mode="contained"
+          onPress={this.onChangeEmailPress}
+        >
+          Change Email
+        </Button>
       </View>
     );
   }

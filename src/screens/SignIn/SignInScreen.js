@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, ActivityIndicator,
+  StyleSheet, View,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
@@ -79,32 +79,27 @@ class SignInScreen extends React.Component {
           returnKeyType="go"
           onSubmitEditing={this.handleLogin}
         />
-        {loading
-          ? <ActivityIndicator />
-          : (
-            <>
-              <Button
-                style={styles.button}
-                mode="contained"
-                onPress={this.handleLogin}
-              >
-                Login
-              </Button>
-              <Button
-                style={styles.button}
-                mode="contained"
-                onPress={() => navigation.navigate('SignUpScreen')}
-              >
-                Don&apos;t have an account? Sign Up
-              </Button>
-              <Button
-                mode="text"
-                onPress={() => navigation.navigate('ForgotPasswordScreen')}
-              >
-                Forgot Password?
-              </Button>
-            </>
-          )}
+        <Button
+          loading={loading}
+          style={styles.button}
+          mode="contained"
+          onPress={this.handleLogin}
+        >
+          Login
+        </Button>
+        <Button
+          style={styles.button}
+          mode="contained"
+          onPress={() => navigation.navigate('SignUpScreen')}
+        >
+          Don&apos;t have an account? Sign Up
+        </Button>
+        <Button
+          mode="text"
+          onPress={() => navigation.navigate('ForgotPasswordScreen')}
+        >
+          Forgot Password?
+        </Button>
       </View>
     );
   }

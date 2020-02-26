@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, ActivityIndicator,
+  StyleSheet, View,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -110,26 +110,21 @@ class SignUpScreen extends React.Component {
           onSubmitEditing={this.handleSignUp}
           returnKeyType="go"
         />
-        {loading
-          ? <ActivityIndicator />
-          : (
-            <>
-              <Button
-                style={styles.button}
-                mode="contained"
-                onPress={this.handleSignUp}
-              >
-                Sign Up
-              </Button>
-              <Button
-                style={styles.button}
-                mode="contained"
-                onPress={() => navigation.navigate('SignInScreen')}
-              >
-                Already have an account? Login
-              </Button>
-            </>
-          )}
+        <Button
+          loading={loading}
+          style={styles.button}
+          mode="contained"
+          onPress={this.handleSignUp}
+        >
+          Sign Up
+        </Button>
+        <Button
+          style={styles.button}
+          mode="contained"
+          onPress={() => navigation.navigate('SignInScreen')}
+        >
+          Already have an account? Login
+        </Button>
       </View>
     );
   }
