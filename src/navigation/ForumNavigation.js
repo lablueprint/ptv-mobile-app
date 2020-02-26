@@ -1,6 +1,8 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { ForumHomeScreen, ForumCategoriesScreen, ForumPostScreen } from '../screens/Forum';
+import {
+  ForumHomeScreen, ForumCategoriesScreen, ForumPostScreen,
+} from '../screens/Forum';
 
 const ForumHomeTopTabNavigation = createMaterialTopTabNavigator(
   {
