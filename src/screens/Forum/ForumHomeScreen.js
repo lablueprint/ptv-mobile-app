@@ -1,13 +1,16 @@
-/* eslint-disable no-console */
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import { ActivityIndicator } from 'react-native-paper';
 import ForumPost from './ForumPost';
 
 export default class ForumHomeScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { posts: [] };
+    this.state = {
+      posts: [],
+      loading: true,
+    };
   }
 
   componentDidMount() {
@@ -16,10 +19,10 @@ export default class ForumHomeScreen extends React.Component {
       .then((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const posts = forumPosts.map((post) => {
-          console.log(post);
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           return (
+            // TBD in next sprint
             <ForumPost
               key={post.id}
               name={post.userID}
@@ -31,24 +34,22 @@ export default class ForumHomeScreen extends React.Component {
           );
         });
         this.setState({ posts });
-        console.log(this.state);
+        this.setState({ loading: false });
       })
       .catch((error) => {
         this.setState({ errorMessage: error.message });
+        this.setState({ loading: false });
       });
   }
 
   render() {
-    const { posts } = this.state;
+    const { posts, loading, errorMessage } = this.state;
 
     return (
-      <ScrollView style={{ backgroundColor: 'lightcyan' }}>
+      <ScrollView>
         <View>
-          <ForumPost name="mr smallb" time="1:11 pm" numReplies={100}>
-            LEGALHELP??
-          </ForumPost>
-        </View>
-        <View>
+          {loading && <ActivityIndicator /> }
+          {errorMessage && <Text>{errorMessage}</Text>}
           {posts}
         </View>
       </ScrollView>
