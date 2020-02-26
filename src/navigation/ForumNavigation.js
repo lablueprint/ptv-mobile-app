@@ -1,7 +1,7 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import {
-  ForumHomeScreen, ForumCategoriesScreen, ForumPostScreen,
+  ForumHomeScreen, ForumCategoriesScreen, ForumPostScreen, CreateForumReplyScreen,
 } from '../screens/Forum';
 
 const ForumHomeTopTabNavigation = createMaterialTopTabNavigator(
@@ -22,6 +22,9 @@ const ForumNavigation = createStackNavigator(
     },
     ForumPost: {
       screen: ForumPostScreen,
+    },
+    CreateForumReply: {
+      screen: CreateForumReplyScreen,
     },
   },
   {

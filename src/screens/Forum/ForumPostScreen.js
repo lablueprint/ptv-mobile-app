@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 });
 
 function ForumPost({
-  title, name, date, body,
+  title, name, date, body, navigation,
 }) {
   return (
     <Card style={styles.post}>
@@ -40,7 +40,15 @@ function ForumPost({
         <Paragraph>{body}</Paragraph>
       </Card.Content>
       <Card.Actions>
-        <Button>Reply</Button>
+        <Button
+          onPress={() => navigation.push('CreateForumReply', {
+            postId: 'gLnZ0pHHDY9sj8Jh8mPw',
+            userId: '4qfP5OCV6q2LLAMZYLF4',
+            displayName: name,
+          })}
+        >
+          Reply
+        </Button>
       </Card.Actions>
     </Card>
   );
@@ -81,7 +89,14 @@ export default function ForumPostScreen({ navigation }) {
       const authorSnap = await Promise.all([authorSnapshot]);
 
       /* Set post hook with post and author data */
-      setPost(<ForumPost title={postData.title} name={authorSnap.length ? authorSnap[0].get('displayName') : null} date={postData.createdAt.toDate().toLocaleTimeString('en-US')} body={postData.body} />);
+      setPost(<ForumPost
+        title={postData.title}
+        name={authorSnap.length ? authorSnap[0].get('displayName') : null}
+        date={postData.createdAt.toDate().toLocaleTimeString('en-US')}
+        body={postData.body}
+        navigation={navigation}
+      />);
+
       try {
         const snapshot = await firestore().collection('forum_comments').where('postID', '==', postId)
           .get();
@@ -107,7 +122,11 @@ export default function ForumPostScreen({ navigation }) {
 
         /* Set replies hook with comment and comment author data */
         setReplies(sortedRepliesData.map((reply, i) => ({
-          ...(<ForumReply name={usersData[i].displayName} date={reply.createdAt.toDate().toLocaleTimeString('en-US')} body={reply.body} />),
+          ...(<ForumReply
+            name={usersData[i].displayName}
+            date={reply.createdAt.toDate().toLocaleTimeString('en-US')}
+            body={reply.body}
+          />),
           key: reply.id,
         })));
         setLoading(false);
@@ -119,7 +138,7 @@ export default function ForumPostScreen({ navigation }) {
       setErrorMessage(error.message);
       setLoading(false);
     }
-  }, [postId]);
+  }, [navigation, postId]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -152,6 +171,11 @@ ForumPost.propTypes = {
   name: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
+  navigation: PropTypes.shape({
+    getParam: PropTypes.func.isRequired,
+    navigate: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 ForumReply.propTypes = {
