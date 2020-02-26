@@ -81,6 +81,7 @@ class SignInScreen extends React.Component {
         />
         <Button
           loading={loading}
+          disabled={loading}
           style={styles.button}
           mode="contained"
           onPress={this.handleLogin}
@@ -89,12 +90,14 @@ class SignInScreen extends React.Component {
         </Button>
         <Button
           style={styles.button}
+          disabled={loading}
           mode="contained"
           onPress={() => navigation.navigate('SignUpScreen')}
         >
           Don&apos;t have an account? Sign Up
         </Button>
         <Button
+          disabled={loading}
           mode="text"
           onPress={() => navigation.navigate('ForgotPasswordScreen')}
         >

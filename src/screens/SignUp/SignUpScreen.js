@@ -112,6 +112,7 @@ class SignUpScreen extends React.Component {
         />
         <Button
           loading={loading}
+          disabled={loading}
           style={styles.button}
           mode="contained"
           onPress={this.handleSignUp}
@@ -119,6 +120,7 @@ class SignUpScreen extends React.Component {
           Sign Up
         </Button>
         <Button
+          disabled={loading}
           style={styles.button}
           mode="contained"
           onPress={() => navigation.navigate('SignInScreen')}

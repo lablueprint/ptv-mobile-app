@@ -56,6 +56,7 @@ export default function ForgotPasswordScreen({ navigation }) {
       />
       <Button
         loading={loading}
+        disabled={loading}
         style={styles.button}
         mode="contained"
         onPress={handleForgotPassword}
@@ -63,6 +64,7 @@ export default function ForgotPasswordScreen({ navigation }) {
         Reset Password
       </Button>
       <Button
+        disabled={loading}
         mode="text"
         onPress={() => navigation.navigate('SignInScreen')}
       >

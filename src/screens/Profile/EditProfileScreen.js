@@ -108,6 +108,7 @@ class EditProfileScreen extends React.Component {
         />
         <Button
           loading={passwordLoading}
+          disabled={passwordLoading || emailLoading}
           style={styles.button}
           mode="contained"
           onPress={this.onChangePasswordPress}
@@ -128,6 +129,7 @@ class EditProfileScreen extends React.Component {
         />
         <Button
           loading={emailLoading}
+          disabled={passwordLoading || emailLoading}
           style={styles.button}
           mode="contained"
           onPress={this.onChangeEmailPress}
