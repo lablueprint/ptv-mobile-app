@@ -35,7 +35,7 @@ class HomeScreen extends React.Component {
     auth()
       .signOut()
       .then(() => {
-        navigation.navigate('SignInScreen');
+        navigation.navigate('Auth');
       }).catch((error) => {
         this.setState({ errorMessage: error.message });
       });
