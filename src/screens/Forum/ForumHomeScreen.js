@@ -1,8 +1,12 @@
 import React from 'react';
-import { Text, View, ScrollView } from 'react-native';
+import {
+  Text, View, ScrollView, StyleSheet,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, FAB } from 'react-native-paper';
+import PropTypes from 'prop-types';
 import ForumPost from './ForumPost';
+
 
 export default class ForumHomeScreen extends React.Component {
   constructor(props) {
@@ -44,15 +48,37 @@ export default class ForumHomeScreen extends React.Component {
 
   render() {
     const { posts, loading, errorMessage } = this.state;
+    const { navigation } = this.props;
 
     return (
-      <ScrollView>
-        <View>
+      <View style={styles.mainContainer}>
+        <ScrollView>
           {loading && <ActivityIndicator /> }
           {errorMessage && <Text>{errorMessage}</Text>}
           {posts}
-        </View>
-      </ScrollView>
+        </ScrollView>
+        <FAB
+          style={styles.fab}
+          icon="plus"
+          onPress={() => navigation.navigate('CreateForumPost')}
+        />
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    height: '100%',
+    justifyContent: 'space-between',
+  },
+  fab: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  },
+});
+
+ForumHomeScreen.propTypes = {
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+};
