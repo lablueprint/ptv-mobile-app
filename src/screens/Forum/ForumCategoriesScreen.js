@@ -1,51 +1,49 @@
-import React from "react";
-import { ScrollView, Text } from "react-native";
-import { blue100 } from "react-native-paper/lib/typescript/src/styles/colors";
+import React, { useState } from 'react';
+import {
+  ScrollView, Text,
+} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import Forum from './ForumCategoriesComponent';
 
-const styles = StyleSheet.create({
-  categories: {
-    backgroundColor: blue100
-  }
-});
+
+// const styles = StyleSheet.create({
+//   categories: {
+//     backgroundColor: blue100
+//   }
+// });
+
 
 export default function ForumCategoriesScreen() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [forumCategories, setCategoryList] = useState([]);
 
   firestore()
-    .collection("forum_categories")
+    .collection('forum_categories')
     .get()
-    .then(snapshot => {
-      const forum_categories = snapshot.docs.map(doc => ({
+    .then((snapshot) => {
+      const forumCategoriesData = snapshot.docs.map((doc) => ({
         ...doc.data(),
-        id: doc.id
+        id: doc.id,
       }));
       setCategoryList(
-        forum_categories
+        forumCategoriesData
           .sort((a, b) => {
-            const aMillis = a.time.toMillis();
-            const bMillis = b.time.toMillis();
-            if (aMillis > bMillis) {
-              return -1;
-            }
-            if (aMillis < bMillis) {
-              return 1;
-            }
+            if (a.title < b.title) { return -1; }
+            if (a.title > b.title) { return 1; }
             return 0;
           })
-          .map(forum_categories => {
-            return (
-              <TouchableOpacity style={styles.categories}>
-                {forum_categories.forum_categories}
-              </TouchableOpacity>
-              // to do: create component for forum categories
-            );
-          })
+          .map((forum) => (
+            <Forum key={forum.id}>
+              {forum.title}
+            </Forum>
+            // to do: create component for forum categories
+          )),
       );
     })
-    .catch(error => {
+    .catch((error) => {
       setErrorMessage(error.message);
     });
+
 
   return (
     <ScrollView>
