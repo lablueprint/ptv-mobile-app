@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import {
-  ScrollView, Text,
+  ScrollView, Text, View, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import Forum from './ForumCategoriesComponent';
+import ForumCategoryCard from './ForumCategoryCard';
 
-
-// const styles = StyleSheet.create({
-//   categories: {
-//     backgroundColor: blue100
-//   }
-// });
-
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    backgroundColor: '#daecf5',
+  },
+});
 
 export default function ForumCategoriesScreen() {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -28,15 +27,18 @@ export default function ForumCategoriesScreen() {
       setCategoryList(
         forumCategoriesData
           .sort((a, b) => {
-            if (a.title < b.title) { return -1; }
-            if (a.title > b.title) { return 1; }
+            if (a.title < b.title) {
+              return -1;
+            }
+            if (a.title > b.title) {
+              return 1;
+            }
             return 0;
           })
           .map((forum) => (
-            <Forum key={forum.id}>
+            <ForumCategoryCard key={forum.id}>
               {forum.title}
-            </Forum>
-            // to do: create component for forum categories
+            </ForumCategoryCard>
           )),
       );
     })
@@ -44,11 +46,12 @@ export default function ForumCategoriesScreen() {
       setErrorMessage(error.message);
     });
 
-
   return (
-    <ScrollView>
-      {errorMessage && <Text>{errorMessage}</Text>}
-      {forumCategories}
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView>
+        {errorMessage && <Text>{errorMessage}</Text>}
+        {forumCategories}
+      </ScrollView>
+    </View>
   );
 }
