@@ -10,8 +10,8 @@ import {
 import { firebase } from '@react-native-firebase/auth';
 
 export default function CreateForumReplyScreen({ navigation }) {
-  const postId = navigation.getParam('postId');
-  const userId = navigation.getParam('userId');
+  const postID = navigation.getParam('postId');
+  const userID = navigation.getParam('userId');
   const displayName = navigation.getParam('displayName');
   const [replyText, setReplyText] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -21,15 +21,15 @@ export default function CreateForumReplyScreen({ navigation }) {
       const currentDate = new Date();
       await firestore().collection('forum_comments').add({
         body: replyText,
-        postId,
-        userId,
+        postID,
+        userID,
         createdAt: firebase.firestore.Timestamp.fromDate(currentDate),
         updatedAt: firebase.firestore.Timestamp.fromDate(currentDate),
       });
     } catch (error) {
       setErrorMessage(error.message);
     }
-  }, [replyText, postId, userId]);
+  }, [replyText, postID, userID]);
 
   return (
     <View>

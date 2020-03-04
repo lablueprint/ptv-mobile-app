@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, RefreshControl, ActivityIndicator,
+  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
 import {
-  Avatar, Button, Card, Paragraph,
+  Avatar, Button, Card, Paragraph, TextInput,
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
+import { firebase } from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,6 +28,30 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 15,
     backgroundColor: 'lavender',
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  replyBox: {
+    height: 72,
+    flexDirection: 'row',
+  },
+  expandedReplyBox: {
+    height: 600,
+    flexDirection: 'row',
+  },
+  replyInput: {
+    flex: 5,
+  },
+  submit: {
+    flex: 1,
+    height: 32,
+    backgroundColor: 'red',
+  },
+  expand: {
+    flex: 1,
+    height: 32,
+    backgroundColor: 'green',
   },
 });
 
@@ -74,6 +99,8 @@ export default function ForumPostScreen({ navigation }) {
   const [replies, setReplies] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [expandReply, setExpandReply] = useState(false);
+  const [replyText, setReplyText] = useState(null);
 
   const getData = useCallback(async () => {
     setLoading(true);
@@ -145,14 +172,33 @@ export default function ForumPostScreen({ navigation }) {
     getData().then(() => setRefreshing(false));
   }, [getData]);
 
+  const sendData = useCallback(async () => {
+    try {
+      const currentDate = new Date();
+      await firestore().collection('forum_comments').add({
+        body: replyText,
+        postID: 'gLnZ0pHHDY9sj8Jh8mPw',
+        userID: '4qfP5OCV6q2LLAMZYLF4',
+        createdAt: firebase.firestore.Timestamp.fromDate(currentDate),
+        updatedAt: firebase.firestore.Timestamp.fromDate(currentDate),
+      });
+
+      setExpandReply(false);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }, [replyText]);
+
   useEffect(() => {
     getData();
   }, [getData, postId]);
 
   return (
-    <View style={styles.container}>
-      <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
+      <ScrollView
+        style={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {errorMessage && <Text>{errorMessage}</Text>}
@@ -162,7 +208,29 @@ export default function ForumPostScreen({ navigation }) {
           {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
-    </View>
+      <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
+        <TextInput
+          style={styles.replyInput}
+          label="hello world"
+          multiline={expandReply}
+          onChangeText={(t) => {
+            setReplyText(t);
+          }}
+        />
+        <Button
+          style={styles.submit}
+          onPress={() => {
+            sendData();
+          }}
+        />
+        <Button
+          style={styles.expand}
+          onPress={() => {
+            setExpandReply(!expandReply);
+          }}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
