@@ -39,12 +39,10 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
             </ForumPost>
           );
         });
-        this.setState({ posts });
-        this.setState({ loading: false });
+        this.setState({ posts, loading: false });
       })
       .catch((error) => {
-        this.setState({ errorMessage: error.message });
-        this.setState({ loading: false });
+        this.setState({ errorMessage: error.message, loading: false });
       });
   }
 
@@ -52,8 +50,8 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     const { posts, loading, errorMessage } = this.state;
 
     return (
-      <ScrollView>
-        <View>
+      <View>
+        <ScrollView>
           {errorMessage && <Text>{errorMessage}</Text>}
           {posts}
           {loading
@@ -62,8 +60,8 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
             <ActivityIndicator />
           </View>
           ) }
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     );
   }
 }
