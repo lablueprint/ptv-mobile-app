@@ -1,18 +1,11 @@
 import React from 'react';
 import {
-  Text, View, ScrollView, StyleSheet,
+  Text, View, ScrollView,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { ActivityIndicator } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import ForumPost from './ForumPost';
-
-const styles = StyleSheet.create({
-  loading: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default class ForumSubcategoryPostsScreen extends React.Component {
   constructor(props) {
@@ -27,6 +20,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
   componentDidMount() {
     const { categoryID } = this.state;
+    /* Only query posts w/ categoryID matching categoryID passed in from navigation */
     firestore().collection('forum_posts').where('categoryID', '==', categoryID)
       .get()
       .then((snapshot) => {
@@ -35,7 +29,6 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           return (
-            // TBD in next sprint
             <ForumPost
               key={post.id}
               name={post.userID}
@@ -60,12 +53,12 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
     return (
       <ScrollView>
-        <View style={{ flex: 1 }}>
+        <View>
           {errorMessage && <Text>{errorMessage}</Text>}
           {posts}
           {loading
           && (
-          <View style={styles.loading}>
+          <View>
             <ActivityIndicator />
           </View>
           ) }
