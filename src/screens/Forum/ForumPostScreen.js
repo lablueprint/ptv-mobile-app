@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView,
+  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Keyboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
 import {
-  Avatar, Button, Card, Paragraph, TextInput,
+  Avatar, Button, Card, Paragraph, TextInput, Portal, Dialog, IconButton,
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import { firebase } from '@react-native-firebase/auth';
@@ -108,6 +108,9 @@ export default function ForumPostScreen({ navigation }) {
   const [expandReply, setExpandReply] = useState(false);
   const [replyText, setReplyText] = useState(null);
 
+  /* Dialog box state */
+  const [dialogVisible, setDialogVisible] = useState(false);
+
   /* Retreives data from Firebase/Firestore */
   const getData = useCallback(async () => {
     setLoading(true);
@@ -194,6 +197,8 @@ export default function ForumPostScreen({ navigation }) {
 
       setReplyText('');
       setExpandReply(false);
+      Keyboard.dismiss();
+      setDialogVisible(true);
       onRefresh();
     } catch (error) {
       setErrorMessage(error.message);
@@ -206,6 +211,31 @@ export default function ForumPostScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
+      <Portal>
+        <Dialog
+          visible={dialogVisible}
+          onDismiss={() => {
+            setDialogVisible(false);
+          }}
+        >
+          <Dialog.Title>Thanks!</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>
+              Thank you for contributing to our community!
+              Your reply is being sent to our team for approval.
+            </Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => {
+              setDialogVisible(false);
+            }}
+            >
+              OK
+
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <ScrollView
         style={styles.contentContainer}
         refreshControl={
@@ -220,7 +250,7 @@ export default function ForumPostScreen({ navigation }) {
         </View>
       </ScrollView>
       <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
-        <Button
+        <IconButton
           style={styles.expand}
           onPress={() => {
             setExpandReply(!expandReply);
@@ -235,7 +265,7 @@ export default function ForumPostScreen({ navigation }) {
             setReplyText(t);
           }}
         />
-        <Button
+        <IconButton
           style={styles.submit}
           disabled={replyText == null || replyText === ''}
           onPress={() => {
