@@ -33,11 +33,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   replyBox: {
-    height: 72,
+    height: '15%',
     flexDirection: 'row',
   },
   expandedReplyBox: {
-    height: 600,
+    height: '80%',
     flexDirection: 'column',
   },
   replyInput: {
@@ -47,13 +47,34 @@ const styles = StyleSheet.create({
   submit: {
     right: 0,
     top: 0,
+    width: '5%',
+    height: '15%',
+    position: 'absolute',
+    backgroundColor: 'red',
+  },
+  expandedSubmit: {
+    right: 0,
+    top: 0,
+    width: '5%',
+    height: '2%',
     position: 'absolute',
     backgroundColor: 'red',
   },
   expand: {
     zIndex: 1,
-    right: 64,
+    right: '7%',
     top: 0,
+    width: '5%',
+    height: '15%',
+    position: 'absolute',
+    backgroundColor: 'green',
+  },
+  expandedExpand: {
+    zIndex: 1,
+    right: '7%',
+    top: 0,
+    width: '5%',
+    height: '2%',
     position: 'absolute',
     backgroundColor: 'green',
   },
@@ -128,7 +149,7 @@ function ReplyBox({
   return (
     <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
       <IconButton
-        style={styles.expand}
+        style={expandReply ? styles.expandedExpand : styles.expand}
         onPress={() => {
           setExpandReply(!expandReply);
         }}
@@ -143,7 +164,7 @@ function ReplyBox({
         }}
       />
       <IconButton
-        style={styles.submit}
+        style={expandReply ? styles.expandedSubmit : styles.submit}
         disabled={replyText == null || replyText === ''}
         onPress={() => {
           sendData();
