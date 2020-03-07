@@ -85,6 +85,74 @@ function ForumReply({
   );
 }
 
+function ReplyDialog({
+  visible, setVisible,
+}) {
+  return (
+    <Portal>
+      <Dialog
+        visible={visible}
+        onDismiss={() => {
+          setVisible(false);
+        }}
+      >
+        <Dialog.Title>Thanks!</Dialog.Title>
+        <Dialog.Content>
+          <Paragraph>
+            Thank you for contributing to our community!
+            Your reply is being sent to our team for approval.
+          </Paragraph>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => {
+            setVisible(false);
+          }}
+          >
+            OK
+
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+}
+
+function ReplyBox({
+  expandReply,
+  setExpandReply,
+  authorName,
+  replyText,
+  setReplyText,
+  sendData,
+}) {
+  return (
+    <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
+      <IconButton
+        style={styles.expand}
+        onPress={() => {
+          setExpandReply(!expandReply);
+        }}
+      />
+      <TextInput
+        style={styles.replyInput}
+        label={`Replying to ${authorName}'s post`}
+        multiline={expandReply}
+        value={replyText}
+        onChangeText={(t) => {
+          setReplyText(t);
+        }}
+      />
+      <IconButton
+        style={styles.submit}
+        disabled={replyText == null || replyText === ''}
+        onPress={() => {
+          sendData();
+        }}
+      />
+    </View>
+  );
+}
+
 export default function ForumPostScreen({ navigation }) {
   /* User & post id */
   const postID = navigation.getParam('postID');
@@ -211,31 +279,10 @@ export default function ForumPostScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
-      <Portal>
-        <Dialog
-          visible={dialogVisible}
-          onDismiss={() => {
-            setDialogVisible(false);
-          }}
-        >
-          <Dialog.Title>Thanks!</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>
-              Thank you for contributing to our community!
-              Your reply is being sent to our team for approval.
-            </Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => {
-              setDialogVisible(false);
-            }}
-            >
-              OK
-
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ReplyDialog
+        visible={dialogVisible}
+        setVisible={setDialogVisible}
+      />
       <ScrollView
         style={styles.contentContainer}
         refreshControl={
@@ -249,30 +296,14 @@ export default function ForumPostScreen({ navigation }) {
           {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
-      <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
-        <IconButton
-          style={styles.expand}
-          onPress={() => {
-            setExpandReply(!expandReply);
-          }}
-        />
-        <TextInput
-          style={styles.replyInput}
-          label={`Replying to ${authorName}'s post`}
-          multiline={expandReply}
-          value={replyText}
-          onChangeText={(t) => {
-            setReplyText(t);
-          }}
-        />
-        <IconButton
-          style={styles.submit}
-          disabled={replyText == null || replyText === ''}
-          onPress={() => {
-            sendData();
-          }}
-        />
-      </View>
+      <ReplyBox
+        expandReply={expandReply}
+        setExpandReply={setExpandReply}
+        authorName={authorName || ''}
+        replyText={replyText || ''}
+        setReplyText={setReplyText}
+        sendData={sendData}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -296,4 +327,18 @@ ForumPostScreen.propTypes = {
     navigate: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+ReplyDialog.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  setVisible: PropTypes.func.isRequired,
+};
+
+ReplyBox.propTypes = {
+  expandReply: PropTypes.bool.isRequired,
+  setExpandReply: PropTypes.func.isRequired,
+  authorName: PropTypes.string.isRequired,
+  replyText: PropTypes.string.isRequired,
+  setReplyText: PropTypes.func.isRequired,
+  sendData: PropTypes.func.isRequired,
 };
