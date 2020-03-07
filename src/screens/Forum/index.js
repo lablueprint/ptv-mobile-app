@@ -4,8 +4,5 @@ import ForumPostScreen from './ForumPostScreen';
 import CreateForumPostScreen from './CreateForumPostScreen';
 
 export {
-  ForumHomeScreen,
-  ForumCategoriesScreen,
-  ForumPostScreen,
-  CreateForumPostScreen,
+  ForumHomeScreen, ForumCategoriesScreen, ForumPostScreen, CreateForumPostScreen,
 };
