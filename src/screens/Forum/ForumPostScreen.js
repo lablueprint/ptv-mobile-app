@@ -38,25 +38,29 @@ const styles = StyleSheet.create({
   },
   expandedReplyBox: {
     height: 600,
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
   replyInput: {
-    flex: 5,
+    flex: 1,
+    backgroundColor: 'azure',
   },
   submit: {
-    flex: 1,
-    height: 32,
+    right: 0,
+    top: 0,
+    position: 'absolute',
     backgroundColor: 'red',
   },
   expand: {
-    flex: 1,
-    height: 32,
+    zIndex: 1,
+    right: 64,
+    top: 0,
+    position: 'absolute',
     backgroundColor: 'green',
   },
 });
 
 function ForumPost({
-  title, name, date, body, navigation,
+  title, name, date, body,
 }) {
   return (
     <Card style={styles.post}>
@@ -64,17 +68,6 @@ function ForumPost({
       <Card.Content>
         <Paragraph>{body}</Paragraph>
       </Card.Content>
-      <Card.Actions>
-        <Button
-          onPress={() => navigation.push('CreateForumReply', {
-            postId: 'gLnZ0pHHDY9sj8Jh8mPw',
-            userId: '4qfP5OCV6q2LLAMZYLF4',
-            displayName: name,
-          })}
-        >
-          Reply
-        </Button>
-      </Card.Actions>
     </Card>
   );
 }
@@ -93,21 +86,35 @@ function ForumReply({
 }
 
 export default function ForumPostScreen({ navigation }) {
-  const postId = navigation.getParam('postId');
+  /* User & post id */
+  const postID = navigation.getParam('postID');
+  const userID = navigation.getParam('userID');
+
+  /* Displayed error message */
   const [errorMessage, setErrorMessage] = useState(null);
+
+  /* Post data */
   const [post, setPost] = useState(null);
+  const [authorName, setAuthorName] = useState(null);
+
+  /* Reply data */
   const [replies, setReplies] = useState([]);
+
+  /* Data retreival state */
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  /* Reply box state */
   const [expandReply, setExpandReply] = useState(false);
   const [replyText, setReplyText] = useState(null);
 
+  /* Retreives data from Firebase/Firestore */
   const getData = useCallback(async () => {
     setLoading(true);
 
     /* Query forum post data from post id passed in through navigation */
     try {
-      const postSnap = await firestore().collection('forum_posts').doc(postId)
+      const postSnap = await firestore().collection('forum_posts').doc(postID)
         .get();
       const postData = postSnap.data();
 
@@ -115,17 +122,18 @@ export default function ForumPostScreen({ navigation }) {
       const authorSnapshot = firestore().collection('users').doc(postData.userID).get();
       const authorSnap = await Promise.all([authorSnapshot]);
 
+      setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
+
       /* Set post hook with post and author data */
       setPost(<ForumPost
         title={postData.title}
         name={authorSnap.length ? authorSnap[0].get('displayName') : null}
         date={postData.createdAt.toDate().toLocaleTimeString('en-US')}
         body={postData.body}
-        navigation={navigation}
       />);
 
       try {
-        const snapshot = await firestore().collection('forum_comments').where('postID', '==', postId)
+        const snapshot = await firestore().collection('forum_comments').where('postID', '==', postID)
           .get();
         const repliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
@@ -148,7 +156,7 @@ export default function ForumPostScreen({ navigation }) {
         const usersData = userSnap.map((doc) => doc.data());
 
         /* Set replies hook with comment and comment author data */
-        setReplies(sortedRepliesData.map((reply, i) => ({
+        setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
           ...(<ForumReply
             name={usersData[i].displayName}
             date={reply.createdAt.toDate().toLocaleTimeString('en-US')}
@@ -165,33 +173,36 @@ export default function ForumPostScreen({ navigation }) {
       setErrorMessage(error.message);
       setLoading(false);
     }
-  }, [navigation, postId]);
+  }, [postID]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getData().then(() => setRefreshing(false));
   }, [getData]);
 
+  /* Writes reply data to Firebase/Firestore */
   const sendData = useCallback(async () => {
     try {
       const currentDate = new Date();
       await firestore().collection('forum_comments').add({
         body: replyText,
-        postID: 'gLnZ0pHHDY9sj8Jh8mPw',
-        userID: '4qfP5OCV6q2LLAMZYLF4',
+        postID,
+        userID,
         createdAt: firebase.firestore.Timestamp.fromDate(currentDate),
         updatedAt: firebase.firestore.Timestamp.fromDate(currentDate),
       });
 
+      setReplyText('');
       setExpandReply(false);
+      onRefresh();
     } catch (error) {
       setErrorMessage(error.message);
     }
-  }, [replyText]);
+  }, [onRefresh, postID, replyText, userID]);
 
   useEffect(() => {
     getData();
-  }, [getData, postId]);
+  }, [getData]);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
@@ -209,24 +220,26 @@ export default function ForumPostScreen({ navigation }) {
         </View>
       </ScrollView>
       <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
+        <Button
+          style={styles.expand}
+          onPress={() => {
+            setExpandReply(!expandReply);
+          }}
+        />
         <TextInput
           style={styles.replyInput}
-          label="hello world"
+          label={`Replying to ${authorName}'s post`}
           multiline={expandReply}
+          value={replyText}
           onChangeText={(t) => {
             setReplyText(t);
           }}
         />
         <Button
           style={styles.submit}
+          disabled={replyText == null || replyText === ''}
           onPress={() => {
             sendData();
-          }}
-        />
-        <Button
-          style={styles.expand}
-          onPress={() => {
-            setExpandReply(!expandReply);
           }}
         />
       </View>
@@ -239,11 +252,6 @@ ForumPost.propTypes = {
   name: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
-  navigation: PropTypes.shape({
-    getParam: PropTypes.func.isRequired,
-    navigate: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 };
 
 ForumReply.propTypes = {
