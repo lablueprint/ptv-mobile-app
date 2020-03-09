@@ -25,7 +25,15 @@ const fontConfig = {
 
 const theme = {
   ...DefaultTheme,
+  roundness: 20,
   fonts: configureFonts(fontConfig),
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#1F7FC0',
+    accent: '#8EAEC3',
+    background: '#E6EFF5',
+    text: '#194261',
+  },
 };
 
 export default function App() {

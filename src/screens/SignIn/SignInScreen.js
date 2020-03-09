@@ -1,12 +1,11 @@
 import React from 'react';
-import {
-  StyleSheet, View,
-} from 'react-native';
+import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
-  TextInput, Title, Text, Button,
+  TextInput, Title, Text, Button, withTheme,
 } from 'react-native-paper';
+import styles from '../../style';
 
 const INITIAL_STATE = {
   email: '',
@@ -47,7 +46,7 @@ class SignInScreen extends React.Component {
     } = this.state;
     const { navigation } = this.props;
     return (
-      <View style={styles.container}>
+      <View style={styles(this.props).container}>
         <Title>Login</Title>
         {errorMessage
           && (
@@ -57,22 +56,25 @@ class SignInScreen extends React.Component {
           )}
         <TextInput
           autoFocus
-          editable={!loading}
-          style={styles.textInput}
+          blurOnSubmit={false}
+          disabled={loading}
+          style={styles(this.props).textInput}
           autoCapitalize="none"
           keyboardType="email-address"
-          placeholder="Email"
+          label="Email"
+          mode="outlined"
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
           returnKeyType="next"
           onSubmitEditing={() => this.passwordInput.focus()}
         />
         <TextInput
-          editable={!loading}
+          disabled={loading}
           secureTextEntry
-          style={styles.textInput}
+          style={styles(this.props).textInput}
           autoCapitalize="none"
-          placeholder="Password"
+          label="Password"
+          mode="outlined"
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
           ref={(input) => { this.passwordInput = input; }}
@@ -82,14 +84,14 @@ class SignInScreen extends React.Component {
         <Button
           loading={loading}
           disabled={loading}
-          style={styles.button}
+          style={styles(this.props).button}
           mode="contained"
           onPress={this.handleLogin}
         >
           Login
         </Button>
         <Button
-          style={styles.button}
+          style={styles(this.props).button}
           disabled={loading}
           mode="contained"
           onPress={() => navigation.navigate('SignUpScreen')}
@@ -107,27 +109,9 @@ class SignInScreen extends React.Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
 
 SignInScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default SignInScreen;
+export default withTheme(SignInScreen);

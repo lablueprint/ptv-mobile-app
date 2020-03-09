@@ -1,13 +1,12 @@
 import React from 'react';
-import {
-  StyleSheet, View,
-} from 'react-native';
+import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import {
-  Button, TextInput, Text, Title,
+  Button, TextInput, Text, Title, withTheme,
 } from 'react-native-paper';
+import styles from '../../style';
 
 const INITAL_STATE = {
   email: '',
@@ -67,7 +66,7 @@ class SignUpScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles.container}>
+      <View style={styles(this.props).container}>
         <Title>Sign Up</Title>
         {errorMessage
           && (
@@ -76,22 +75,26 @@ class SignUpScreen extends React.Component {
           </Text>
           )}
         <TextInput
-          editable={!loading}
+          blurOnSubmit={false}
+          disabled={loading}
           autoFocus
-          placeholder="Name"
+          label="Name"
           autoCapitalize="words"
-          style={styles.textInput}
+          mode="outlined"
+          style={styles(this.props).textInput}
           onChangeText={(text) => this.setState({ name: text })}
           value={name}
           onSubmitEditing={() => this.emailInput.focus()}
           returnKeyType="next"
         />
         <TextInput
-          editable={!loading}
+          blurOnSubmit={false}
+          disabled={loading}
           keyboardType="email-address"
-          placeholder="Email"
+          label="Email"
           autoCapitalize="none"
-          style={styles.textInput}
+          mode="outlined"
+          style={styles(this.props).textInput}
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
           ref={(input) => { this.emailInput = input; }}
@@ -99,11 +102,12 @@ class SignUpScreen extends React.Component {
           returnKeyType="next"
         />
         <TextInput
-          editable={!loading}
+          disabled={loading}
           secureTextEntry
-          placeholder="Password"
+          label="Password"
           autoCapitalize="none"
-          style={styles.textInput}
+          mode="outlined"
+          style={styles(this.props).textInput}
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
           ref={(input) => { this.passwordInput = input; }}
@@ -113,7 +117,7 @@ class SignUpScreen extends React.Component {
         <Button
           loading={loading}
           disabled={loading}
-          style={styles.button}
+          style={styles(this.props).button}
           mode="contained"
           onPress={this.handleSignUp}
         >
@@ -121,7 +125,7 @@ class SignUpScreen extends React.Component {
         </Button>
         <Button
           disabled={loading}
-          style={styles.button}
+          style={styles(this.props).button}
           mode="contained"
           onPress={() => navigation.navigate('SignInScreen')}
         >
@@ -131,27 +135,9 @@ class SignUpScreen extends React.Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
 
 SignUpScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default SignUpScreen;
+export default withTheme(SignUpScreen);

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Alert,
+  View, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
-  Text, Title, Button, TextInput,
+  Text, Title, Button, TextInput, withTheme,
 } from 'react-native-paper';
+import styles from '../../style';
 
-export default function ForgotPasswordScreen({ navigation }) {
+function ForgotPasswordScreen(props) {
+  const { navigation } = props;
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function ForgotPasswordScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles(props).container}>
       <Title>Forgot Password?</Title>
       {errorMessage
         && (
@@ -44,11 +46,12 @@ export default function ForgotPasswordScreen({ navigation }) {
         )}
       <TextInput
         autoFocus
-        editable={!loading}
-        style={styles.textInput}
+        disabled={loading}
+        style={styles(props).textInput}
         autoCapitalize="none"
         keyboardType="email-address"
-        placeholder="Email"
+        label="Email"
+        mode="outlined"
         onChangeText={(text) => setEmail(text)}
         value={email}
         returnKeyType="go"
@@ -57,7 +60,7 @@ export default function ForgotPasswordScreen({ navigation }) {
       <Button
         loading={loading}
         disabled={loading}
-        style={styles.button}
+        style={styles(props).button}
         mode="contained"
         onPress={handleForgotPassword}
       >
@@ -74,25 +77,8 @@ export default function ForgotPasswordScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
-
 ForgotPasswordScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
+
+export default withTheme(ForgotPasswordScreen);
