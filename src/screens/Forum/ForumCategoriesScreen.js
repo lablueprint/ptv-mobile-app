@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 
 export default function ForumCategoriesScreen() {
   const [errorMessage, setErrorMessage] = useState(null);
-  const [forumCategories, setCategoryList] = useState([]);
+  const [forumCategories, setForumCategories] = useState([]);
 
   firestore()
     .collection('forum_categories')
@@ -24,7 +24,7 @@ export default function ForumCategoriesScreen() {
         ...doc.data(),
         id: doc.id,
       }));
-      setCategoryList(
+      setForumCategories(
         forumCategoriesData
           .sort((a, b) => {
             if (a.title < b.title) {
