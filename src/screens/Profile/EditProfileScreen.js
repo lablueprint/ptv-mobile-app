@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {
-  Title, TextInput, Button, withTheme,
+  Title, TextInput, Button,
 } from 'react-native-paper';
 import styles from '../../style';
 
@@ -81,7 +81,7 @@ class EditProfileScreen extends React.Component {
       currentPassword, newPassword, newEmail, passwordLoading, emailLoading,
     } = this.state;
     return (
-      <View style={styles(this.props).container}>
+      <View style={styles.container}>
         <Title>Edit Profile</Title>
         <TextInput
           autoFocus
@@ -91,7 +91,7 @@ class EditProfileScreen extends React.Component {
           label="Current Password"
           autoCapitalize="none"
           mode="outlined"
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ currentPassword: text })}
           value={currentPassword}
           returnKeyType="next"
@@ -103,7 +103,7 @@ class EditProfileScreen extends React.Component {
           label="New Password"
           autoCapitalize="none"
           mode="outlined"
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ newPassword: text })}
           value={newPassword}
           ref={(input) => { this.newPasswordInput = input; }}
@@ -113,7 +113,7 @@ class EditProfileScreen extends React.Component {
         <Button
           loading={passwordLoading}
           disabled={passwordLoading || emailLoading}
-          style={styles(this.props).button}
+          style={styles.button}
           mode="contained"
           onPress={this.onChangePasswordPress}
         >
@@ -126,7 +126,7 @@ class EditProfileScreen extends React.Component {
           label="New Email"
           autoCapitalize="none"
           mode="outlined"
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ newEmail: text })}
           value={newEmail}
           returnKeyType="go"
@@ -135,7 +135,7 @@ class EditProfileScreen extends React.Component {
         <Button
           loading={emailLoading}
           disabled={passwordLoading || emailLoading}
-          style={styles(this.props).button}
+          style={styles.button}
           mode="contained"
           onPress={this.onChangeEmailPress}
         >
@@ -146,4 +146,4 @@ class EditProfileScreen extends React.Component {
   }
 }
 
-export default withTheme(EditProfileScreen);
+export default EditProfileScreen;

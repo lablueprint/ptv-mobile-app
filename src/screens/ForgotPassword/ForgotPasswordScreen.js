@@ -5,11 +5,11 @@ import {
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
-  Text, Title, Button, TextInput, withTheme,
+  Text, Title, Button, TextInput,
 } from 'react-native-paper';
 import styles from '../../style';
 
-function ForgotPasswordScreen(props) {
+export default function ForgotPasswordScreen(props) {
   const { navigation } = props;
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
@@ -36,7 +36,7 @@ function ForgotPasswordScreen(props) {
   }
 
   return (
-    <View style={styles(props).container}>
+    <View style={styles.container}>
       <Title>Forgot Password?</Title>
       {errorMessage
         && (
@@ -47,7 +47,7 @@ function ForgotPasswordScreen(props) {
       <TextInput
         autoFocus
         disabled={loading}
-        style={styles(props).textInput}
+        style={styles.textInput}
         autoCapitalize="none"
         keyboardType="email-address"
         label="Email"
@@ -60,7 +60,7 @@ function ForgotPasswordScreen(props) {
       <Button
         loading={loading}
         disabled={loading}
-        style={styles(props).button}
+        style={styles.button}
         mode="contained"
         onPress={handleForgotPassword}
       >
@@ -80,5 +80,3 @@ function ForgotPasswordScreen(props) {
 ForgotPasswordScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
-
-export default withTheme(ForgotPasswordScreen);

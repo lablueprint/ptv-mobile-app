@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
-  TextInput, Title, Text, Button, withTheme,
+  TextInput, Title, Text, Button,
 } from 'react-native-paper';
 import styles from '../../style';
 
@@ -46,7 +46,7 @@ class SignInScreen extends React.Component {
     } = this.state;
     const { navigation } = this.props;
     return (
-      <View style={styles(this.props).container}>
+      <View style={styles.container}>
         <Title>Login</Title>
         {errorMessage
           && (
@@ -58,7 +58,7 @@ class SignInScreen extends React.Component {
           autoFocus
           blurOnSubmit={false}
           disabled={loading}
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           autoCapitalize="none"
           keyboardType="email-address"
           label="Email"
@@ -71,7 +71,7 @@ class SignInScreen extends React.Component {
         <TextInput
           disabled={loading}
           secureTextEntry
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           autoCapitalize="none"
           label="Password"
           mode="outlined"
@@ -84,14 +84,14 @@ class SignInScreen extends React.Component {
         <Button
           loading={loading}
           disabled={loading}
-          style={styles(this.props).button}
+          style={styles.button}
           mode="contained"
           onPress={this.handleLogin}
         >
           Login
         </Button>
         <Button
-          style={styles(this.props).button}
+          style={styles.button}
           disabled={loading}
           mode="contained"
           onPress={() => navigation.navigate('SignUpScreen')}
@@ -114,4 +114,4 @@ SignInScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default withTheme(SignInScreen);
+export default SignInScreen;

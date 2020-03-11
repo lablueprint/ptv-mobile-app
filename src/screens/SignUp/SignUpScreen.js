@@ -4,7 +4,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import {
-  Button, TextInput, Text, Title, withTheme,
+  Button, TextInput, Text, Title,
 } from 'react-native-paper';
 import styles from '../../style';
 
@@ -66,7 +66,7 @@ class SignUpScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles(this.props).container}>
+      <View style={styles.container}>
         <Title>Sign Up</Title>
         {errorMessage
           && (
@@ -81,7 +81,7 @@ class SignUpScreen extends React.Component {
           label="Name"
           autoCapitalize="words"
           mode="outlined"
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ name: text })}
           value={name}
           onSubmitEditing={() => this.emailInput.focus()}
@@ -94,7 +94,7 @@ class SignUpScreen extends React.Component {
           label="Email"
           autoCapitalize="none"
           mode="outlined"
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
           ref={(input) => { this.emailInput = input; }}
@@ -107,7 +107,7 @@ class SignUpScreen extends React.Component {
           label="Password"
           autoCapitalize="none"
           mode="outlined"
-          style={styles(this.props).textInput}
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
           ref={(input) => { this.passwordInput = input; }}
@@ -117,7 +117,7 @@ class SignUpScreen extends React.Component {
         <Button
           loading={loading}
           disabled={loading}
-          style={styles(this.props).button}
+          style={styles.button}
           mode="contained"
           onPress={this.handleSignUp}
         >
@@ -125,7 +125,7 @@ class SignUpScreen extends React.Component {
         </Button>
         <Button
           disabled={loading}
-          style={styles(this.props).button}
+          style={styles.button}
           mode="contained"
           onPress={() => navigation.navigate('SignInScreen')}
         >
@@ -140,4 +140,4 @@ SignUpScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
 
-export default withTheme(SignUpScreen);
+export default SignUpScreen;
