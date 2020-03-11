@@ -61,3 +61,8 @@ buck-out/
 .gitattributes
 
 .vscode/
+
+ios/PTVMobileApp.xcodeproj/project.pbxproj
+ios/GoogleService-Info.plist
+ios/PTVMobileApp.xcworkspace/
+ios/Podfile.lock
