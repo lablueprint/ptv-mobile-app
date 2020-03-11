@@ -4,10 +4,10 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
-import { Title, Button, withTheme } from 'react-native-paper';
+import { Title, Button } from 'react-native-paper';
 import styles from '../../style';
 
-function HomeScreen(props) {
+export default function HomeScreen(props) {
   const { navigation } = props;
   const [name] = useState(auth().currentUser ? auth().currentUser.displayName : '');
   const [errorMessage, setErrorMessage] = useState(null);
@@ -23,7 +23,7 @@ function HomeScreen(props) {
   }
 
   return (
-    <View style={styles(props).container}>
+    <View style={styles.container}>
       {errorMessage
         && (
         <Text style={{ color: 'red' }}>
@@ -37,7 +37,7 @@ function HomeScreen(props) {
         !
       </Title>
       <Button
-        style={styles(props).button}
+        style={styles.button}
         mode="contained"
         onPress={handleSignOut}
       >
@@ -50,5 +50,3 @@ function HomeScreen(props) {
 HomeScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
 };
-
-export default withTheme(HomeScreen);
