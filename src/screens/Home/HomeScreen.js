@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text, View,
 } from 'react-native';
@@ -9,8 +9,14 @@ import styles from '../../style';
 
 export default function HomeScreen(props) {
   const { navigation } = props;
-  const [name] = useState(auth().currentUser ? auth().currentUser.displayName : '');
+  const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
+
+  useEffect(() => auth().onAuthStateChanged((user) => {
+    if (user) {
+      setName(user.displayName);
+    }
+  }), []);
 
   function handleSignOut() {
     auth()
@@ -31,10 +37,7 @@ export default function HomeScreen(props) {
         </Text>
         )}
       <Title>
-        Hi
-        {' '}
-        {name}
-        !
+        {`Hi ${name}!`}
       </Title>
       <Button
         style={styles.button}
