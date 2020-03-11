@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, RefreshControl, ActivityIndicator,
+  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Keyboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
 import {
-  Avatar, Button, Card, Paragraph,
+  Avatar, Button, Card, Paragraph, TextInput, Portal, Dialog, IconButton,
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
+import { firebase } from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,6 +29,55 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: 'lavender',
   },
+  contentContainer: {
+    flex: 1,
+  },
+  replyBox: {
+    height: '15%',
+    flexDirection: 'row',
+  },
+  expandedReplyBox: {
+    height: '80%',
+    flexDirection: 'column',
+  },
+  replyInput: {
+    flex: 1,
+    backgroundColor: 'azure',
+  },
+  submit: {
+    right: 0,
+    top: 0,
+    width: '5%',
+    height: '15%',
+    position: 'absolute',
+    backgroundColor: 'red',
+  },
+  expandedSubmit: {
+    right: 0,
+    top: 0,
+    width: '5%',
+    height: '2%',
+    position: 'absolute',
+    backgroundColor: 'red',
+  },
+  expand: {
+    zIndex: 1,
+    right: '7%',
+    top: 0,
+    width: '5%',
+    height: '15%',
+    position: 'absolute',
+    backgroundColor: 'green',
+  },
+  expandedExpand: {
+    zIndex: 1,
+    right: '7%',
+    top: 0,
+    width: '5%',
+    height: '2%',
+    position: 'absolute',
+    backgroundColor: 'green',
+  },
 });
 
 function ForumPost({
@@ -39,9 +89,6 @@ function ForumPost({
       <Card.Content>
         <Paragraph>{body}</Paragraph>
       </Card.Content>
-      <Card.Actions>
-        <Button>Reply</Button>
-      </Card.Actions>
     </Card>
   );
 }
@@ -59,20 +106,107 @@ function ForumReply({
   );
 }
 
+function ReplyDialog({
+  visible, setVisible,
+}) {
+  return (
+    <Portal>
+      <Dialog
+        visible={visible}
+        onDismiss={() => {
+          setVisible(false);
+        }}
+      >
+        <Dialog.Title>Thanks!</Dialog.Title>
+        <Dialog.Content>
+          <Paragraph>
+            Thank you for contributing to our community!
+            Your reply is being sent to our team for approval.
+          </Paragraph>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => {
+            setVisible(false);
+          }}
+          >
+            OK
+
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+}
+
+function ReplyBox({
+  expandReply,
+  setExpandReply,
+  authorName,
+  replyText,
+  setReplyText,
+  sendData,
+}) {
+  return (
+    <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
+      <IconButton
+        style={expandReply ? styles.expandedExpand : styles.expand}
+        onPress={() => {
+          setExpandReply(!expandReply);
+        }}
+      />
+      <TextInput
+        style={styles.replyInput}
+        label={`Replying to ${authorName}'s post`}
+        multiline={expandReply}
+        value={replyText}
+        onChangeText={(t) => {
+          setReplyText(t);
+        }}
+      />
+      <IconButton
+        style={expandReply ? styles.expandedSubmit : styles.submit}
+        disabled={replyText == null || replyText === ''}
+        onPress={() => {
+          sendData();
+        }}
+      />
+    </View>
+  );
+}
+
 export default function ForumPostScreen({ navigation }) {
-  const postId = navigation.getParam('postId');
+  /* User & post id */
+  const postID = navigation.getParam('postID');
+  const userID = navigation.getParam('userID');
+
+  /* Displayed error message */
   const [errorMessage, setErrorMessage] = useState(null);
+
+  /* Post data */
   const [post, setPost] = useState(null);
+  const [authorName, setAuthorName] = useState(null);
+
+  /* Reply data */
   const [replies, setReplies] = useState([]);
+
+  /* Data retreival state */
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  /* Reply box state */
+  const [expandReply, setExpandReply] = useState(false);
+  const [replyText, setReplyText] = useState(null);
+
+  /* Dialog box state */
+  const [dialogVisible, setDialogVisible] = useState(false);
+
+  /* Retreives data from Firebase/Firestore */
   const getData = useCallback(async () => {
     setLoading(true);
 
     /* Query forum post data from post id passed in through navigation */
     try {
-      const postSnap = await firestore().collection('forum_posts').doc(postId)
+      const postSnap = await firestore().collection('forum_posts').doc(postID)
         .get();
       const postData = postSnap.data();
 
@@ -80,10 +214,18 @@ export default function ForumPostScreen({ navigation }) {
       const authorSnapshot = firestore().collection('users').doc(postData.userID).get();
       const authorSnap = await Promise.all([authorSnapshot]);
 
+      setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
+
       /* Set post hook with post and author data */
-      setPost(<ForumPost title={postData.title} name={authorSnap.length ? authorSnap[0].get('displayName') : null} date={postData.createdAt.toDate().toLocaleTimeString('en-US')} body={postData.body} />);
+      setPost(<ForumPost
+        title={postData.title}
+        name={authorSnap.length ? authorSnap[0].get('displayName') : null}
+        date={postData.createdAt.toDate().toLocaleTimeString('en-US')}
+        body={postData.body}
+      />);
+
       try {
-        const snapshot = await firestore().collection('forum_comments').where('postID', '==', postId)
+        const snapshot = await firestore().collection('forum_comments').where('postID', '==', postID)
           .get();
         const repliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
@@ -106,8 +248,12 @@ export default function ForumPostScreen({ navigation }) {
         const usersData = userSnap.map((doc) => doc.data());
 
         /* Set replies hook with comment and comment author data */
-        setReplies(sortedRepliesData.map((reply, i) => ({
-          ...(<ForumReply name={usersData[i].displayName} date={reply.createdAt.toDate().toLocaleTimeString('en-US')} body={reply.body} />),
+        setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
+          ...(<ForumReply
+            name={usersData[i].displayName}
+            date={reply.createdAt.toDate().toLocaleTimeString('en-US')}
+            body={reply.body}
+          />),
           key: reply.id,
         })));
         setLoading(false);
@@ -119,21 +265,49 @@ export default function ForumPostScreen({ navigation }) {
       setErrorMessage(error.message);
       setLoading(false);
     }
-  }, [postId]);
+  }, [postID]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getData().then(() => setRefreshing(false));
   }, [getData]);
 
+  /* Writes reply data to Firebase/Firestore */
+  const sendData = useCallback(async () => {
+    try {
+      const currentDate = new Date();
+      await firestore().collection('forum_comments').add({
+        body: replyText,
+        postID,
+        userID,
+        createdAt: firebase.firestore.Timestamp.fromDate(currentDate),
+        updatedAt: firebase.firestore.Timestamp.fromDate(currentDate),
+      });
+
+      setReplyText('');
+      setExpandReply(false);
+      Keyboard.dismiss();
+      setDialogVisible(true);
+      onRefresh();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }, [onRefresh, postID, replyText, userID]);
+
   useEffect(() => {
     getData();
-  }, [getData, postId]);
+  }, [getData]);
 
   return (
-    <View style={styles.container}>
-      <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
+      <ReplyDialog
+        visible={dialogVisible}
+        setVisible={setDialogVisible}
+      />
+      <ScrollView
+        style={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {errorMessage && <Text>{errorMessage}</Text>}
@@ -143,7 +317,15 @@ export default function ForumPostScreen({ navigation }) {
           {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
-    </View>
+      <ReplyBox
+        expandReply={expandReply}
+        setExpandReply={setExpandReply}
+        authorName={authorName || ''}
+        replyText={replyText || ''}
+        setReplyText={setReplyText}
+        sendData={sendData}
+      />
+    </KeyboardAvoidingView>
   );
 }
 
@@ -166,4 +348,18 @@ ForumPostScreen.propTypes = {
     navigate: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+ReplyDialog.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  setVisible: PropTypes.func.isRequired,
+};
+
+ReplyBox.propTypes = {
+  expandReply: PropTypes.bool.isRequired,
+  setExpandReply: PropTypes.func.isRequired,
+  authorName: PropTypes.string.isRequired,
+  replyText: PropTypes.string.isRequired,
+  setReplyText: PropTypes.func.isRequired,
+  sendData: PropTypes.func.isRequired,
 };
