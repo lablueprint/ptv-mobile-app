@@ -3,6 +3,7 @@ import {
   ScrollView, Text, View, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import PropTypes from 'prop-types';
 import ForumCategoryCard from './ForumCategoryCard';
 
 const styles = StyleSheet.create({
@@ -12,9 +13,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function ForumCategoriesScreen() {
+
+export default function ForumCategoriesScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [forumCategories, setForumCategories] = useState([]);
+
 
   firestore()
     .collection('forum_categories')
@@ -35,11 +38,14 @@ export default function ForumCategoriesScreen() {
             }
             return 0;
           })
-          .map((forum) => (
-            <ForumCategoryCard key={forum.id}>
-              {forum.title}
-            </ForumCategoryCard>
-          )),
+          .map((forum) => {
+            const navigateToSubcategory = () => navigation.navigate('ForumSubcategoryPosts', { categoryID: forum.id });
+            return (
+              <ForumCategoryCard key={forum.id} navigate={navigateToSubcategory}>
+                {forum.title}
+              </ForumCategoryCard>
+            );
+          }),
       );
     })
     .catch((error) => {
@@ -55,3 +61,7 @@ export default function ForumCategoriesScreen() {
     </View>
   );
 }
+
+ForumCategoriesScreen.propTypes = {
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+};

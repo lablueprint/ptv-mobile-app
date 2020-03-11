@@ -19,10 +19,10 @@ const styles = StyleSheet.create({
 });
 
 export default function ForumCategoryCard({
-  children,
+  children, navigate,
 }) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={navigate}>
       <View style={styles.container}>
         <Title style={styles.text}>
           {children}
@@ -33,4 +33,5 @@ export default function ForumCategoryCard({
 }
 ForumCategoryCard.propTypes = {
   children: PropTypes.string.isRequired,
+  navigate: PropTypes.func.isRequired,
 };
