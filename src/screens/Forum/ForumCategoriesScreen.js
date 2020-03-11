@@ -24,7 +24,7 @@ export default function ForumCategoriesScreen() {
         ...doc.data(),
         id: doc.id,
       }));
-      setCategoryList(
+      setForumCategories(
         forumCategoriesData
           .sort((a, b) => {
             if (a.title < b.title) {
