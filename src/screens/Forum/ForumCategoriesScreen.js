@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 
 export default function ForumCategoriesScreen() {
   const [errorMessage, setErrorMessage] = useState(null);
-  const [forumCategories, setCategoryList] = useState([]);
+  const [forumCategories, setForumCategories] = useState([]);
 
   firestore()
     .collection('forum_categories')

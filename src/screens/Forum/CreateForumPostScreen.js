@@ -7,6 +7,7 @@ import {
 } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import PropTypes from 'prop-types';
 
 const INITIAL_STATE = {
   title: '',
@@ -24,6 +25,7 @@ export default class CreateForumPostScreen extends React.Component {
     super(props);
     this.state = INITIAL_STATE;
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleAlertPress = this.handleAlertPress.bind(this);
   }
 
   componentDidMount() {
@@ -42,6 +44,12 @@ export default class CreateForumPostScreen extends React.Component {
 
   componentWillUmount() {
     this.unsubscribe();
+  }
+
+  handleAlertPress() {
+    const { navigation } = this.props;
+    /* TODO: Navigation will navigate to a Pending Post Screen */
+    navigation.navigate('ForumHome');
   }
 
   handleSubmit() {
@@ -67,7 +75,11 @@ export default class CreateForumPostScreen extends React.Component {
         .then(() => {
         /* TODO: Navigate backwards and use a dialogue instead of an alert */
           this.setState(INITIAL_STATE);
-          Alert.alert('', 'Thank you for contributing to our community! Your post is being sent to our team for approval');
+          Alert.alert('',
+            'Thank you for contributing to our community! Your post is being sent to our team for approval',
+            [
+              { text: 'OK', onPress: this.handleAlertPress },
+            ]);
         })
         .catch((error) => {
           this.setState({ errorMessageFirestore: error.message });
@@ -144,3 +156,7 @@ export default class CreateForumPostScreen extends React.Component {
     );
   }
 }
+
+CreateForumPostScreen.propTypes = {
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+};
