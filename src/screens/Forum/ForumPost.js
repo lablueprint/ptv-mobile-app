@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Text, TouchableOpacity, StyleSheet,
 } from 'react-native';
-import { Card, Button, Title } from 'react-native-paper';
+import { Card, Title, ActivityIndicator } from 'react-native-paper';
+import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
@@ -24,11 +25,17 @@ const styles = StyleSheet.create({
 });
 
 export default function ForumPost({
-  name, time, numReplies, children,
+  name, time, children, postID,
 }) {
-  const handlePress = () => {
-    // TODO: navigate to reply screen
-  };
+  const [loading, setLoading] = useState(true);
+  const [numReplies, setNumReplies] = useState(0);
+
+  firestore().collection('forum_comments').where('postID', '==', postID)
+    .get()
+    .then((querySnapshot) => {
+      setNumReplies(querySnapshot.size);
+      setLoading(false);
+    });
 
   return (
     <Card style={styles.container}>
@@ -42,13 +49,13 @@ export default function ForumPost({
       </Card.Content>
       <Card.Actions style={styles.actionContainer}>
         <TouchableOpacity>
+          {loading && <ActivityIndicator /> }
+          {!loading && (
           <Text style={styles.text}>
             {`${numReplies} Replies`}
           </Text>
+          ) }
         </TouchableOpacity>
-        <Button onPress={handlePress}>
-          Reply
-        </Button>
       </Card.Actions>
     </Card>
   );
@@ -57,6 +64,6 @@ export default function ForumPost({
 ForumPost.propTypes = {
   name: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
-  numReplies: PropTypes.number.isRequired,
+  postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
 };

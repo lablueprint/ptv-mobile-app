@@ -31,7 +31,7 @@ export default class ForumHomeScreen extends React.Component {
               key={post.id}
               name={post.userID}
               time={time}
-              numReplies={5}
+              postID={post.id}
             >
               {post.title}
             </ForumPost>

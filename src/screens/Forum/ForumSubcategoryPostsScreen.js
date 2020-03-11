@@ -28,12 +28,14 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
         const posts = forumPosts.map((post) => {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
+
           return (
+          // TBD: replies
             <ForumPost
               key={post.id}
               name={post.userID}
               time={time}
-              numReplies={5}
+              postID={post.id}
             >
               {post.title}
             </ForumPost>
