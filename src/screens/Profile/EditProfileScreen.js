@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  StyleSheet, View, Alert,
+  View, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {
   Title, TextInput, Button,
 } from 'react-native-paper';
+import styles from '../../style';
 
 const INITIAL_STATE = {
   newPassword: '',
@@ -84,10 +85,12 @@ class EditProfileScreen extends React.Component {
         <Title>Edit Profile</Title>
         <TextInput
           autoFocus
-          editable={!passwordLoading && !emailLoading}
+          blurOnSubmit={false}
+          disabled={passwordLoading || emailLoading}
           secureTextEntry
-          placeholder="Current Password"
+          label="Current Password"
           autoCapitalize="none"
+          mode="outlined"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ currentPassword: text })}
           value={currentPassword}
@@ -96,9 +99,10 @@ class EditProfileScreen extends React.Component {
         />
         <TextInput
           secureTextEntry
-          editable={!passwordLoading && !emailLoading}
-          placeholder="New Password"
+          disabled={passwordLoading || emailLoading}
+          label="New Password"
           autoCapitalize="none"
+          mode="outlined"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ newPassword: text })}
           value={newPassword}
@@ -117,10 +121,11 @@ class EditProfileScreen extends React.Component {
         </Button>
 
         <TextInput
-          editable={!passwordLoading && !emailLoading}
+          disabled={passwordLoading || emailLoading}
           keyboardType="email-address"
-          placeholder="New Email"
+          label="New Email"
           autoCapitalize="none"
+          mode="outlined"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ newEmail: text })}
           value={newEmail}
@@ -140,24 +145,5 @@ class EditProfileScreen extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
 
 export default EditProfileScreen;

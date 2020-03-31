@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, Alert,
+  View, Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
   Text, Title, Button, TextInput,
 } from 'react-native-paper';
+import styles from '../../style';
 
-export default function ForgotPasswordScreen({ navigation }) {
+export default function ForgotPasswordScreen(props) {
+  const { navigation } = props;
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,11 +46,12 @@ export default function ForgotPasswordScreen({ navigation }) {
         )}
       <TextInput
         autoFocus
-        editable={!loading}
+        disabled={loading}
         style={styles.textInput}
         autoCapitalize="none"
         keyboardType="email-address"
-        placeholder="Email"
+        label="Email"
+        mode="outlined"
         onChangeText={(text) => setEmail(text)}
         value={email}
         returnKeyType="go"
@@ -73,25 +76,6 @@ export default function ForgotPasswordScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
 
 ForgotPasswordScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,

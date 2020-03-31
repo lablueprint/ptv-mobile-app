@@ -27,13 +27,9 @@ Open an Android emulator and run the code:
 
 ```npm run android```
 
-The app won't build on iOS without the Firebase iOS credentials, which we've chosen to not include to protect our API keys. If you'd like to build/run the app for iOS, head to our Firebase project. Open the project settings by clicking on the gear icon and then navigate to 'Project Settings'. Under 'Your apps' and 'iOS apps', click on the 'PTVMobileApp iOS' tab. Click on the 'Download google-services.json' button to download the `GoogleService-Info.plist`. 
-
-Run this code first to install iOS Podfile dependencies and create the `/ios/{projectName}.xcworkspace` file:
+If you'd like to build/run the app for iOS, run this code first to install iOS Podfile dependencies:
 
 ```cd ios/ && pod install --repo-update```
-
-Open the `/ios/{projectName}.xcworkspace` file with Xcode, right click on the project name, and "Add files" to the project. Select your downloaded `GoogleService-Info.plist` and ensure the 'Copy items if needed' checkbox is enabled. 
 
 To run the app on an iOS emulator, run the code:
 

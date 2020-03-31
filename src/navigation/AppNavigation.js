@@ -1,13 +1,22 @@
-import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import HomeScreen from '../screens/Home';
 import EditProfileScreen from '../screens/Profile';
 import ForumNavigation from './ForumNavigation';
 
-const AppNavigation = createMaterialBottomTabNavigator(
+const AppNavigation = createBottomTabNavigator(
   {
-    Home: { screen: HomeScreen },
-    Forum: { screen: ForumNavigation },
-    Profile: { screen: EditProfileScreen },
+    Home: {
+      screen: HomeScreen,
+    },
+    Forum: {
+      screen: ForumNavigation,
+      navigationOptions: ({ navigation }) => ({
+        tabBarVisible: navigation.state.routes[navigation.state.index].routeName !== 'ForumPost',
+      }),
+    },
+    Profile: {
+      screen: EditProfileScreen,
+    },
   },
   {
     initialRouteName: 'Home',

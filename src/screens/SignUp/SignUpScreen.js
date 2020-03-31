@@ -1,13 +1,12 @@
 import React from 'react';
-import {
-  StyleSheet, View,
-} from 'react-native';
+import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import {
   Button, TextInput, Text, Title,
 } from 'react-native-paper';
+import styles from '../../style';
 
 const INITAL_STATE = {
   email: '',
@@ -76,10 +75,12 @@ class SignUpScreen extends React.Component {
           </Text>
           )}
         <TextInput
-          editable={!loading}
+          blurOnSubmit={false}
+          disabled={loading}
           autoFocus
-          placeholder="Name"
+          label="Name"
           autoCapitalize="words"
+          mode="outlined"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ name: text })}
           value={name}
@@ -87,10 +88,12 @@ class SignUpScreen extends React.Component {
           returnKeyType="next"
         />
         <TextInput
-          editable={!loading}
+          blurOnSubmit={false}
+          disabled={loading}
           keyboardType="email-address"
-          placeholder="Email"
+          label="Email"
           autoCapitalize="none"
+          mode="outlined"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
@@ -99,10 +102,11 @@ class SignUpScreen extends React.Component {
           returnKeyType="next"
         />
         <TextInput
-          editable={!loading}
+          disabled={loading}
           secureTextEntry
-          placeholder="Password"
+          label="Password"
           autoCapitalize="none"
+          mode="outlined"
           style={styles.textInput}
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
@@ -131,24 +135,6 @@ class SignUpScreen extends React.Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
 
 SignUpScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
