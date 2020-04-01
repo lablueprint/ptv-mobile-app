@@ -42,7 +42,7 @@ export default class CreateForumPostScreen extends React.Component {
     });
   }
 
-  componentWillUmount() {
+  componentWillUnmount() {
     this.unsubscribe();
   }
 

@@ -16,6 +16,8 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
       loading: true,
       categoryID: navigation.getParam('categoryID'),
     };
+
+    this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
   }
 
   componentDidMount() {
@@ -36,6 +38,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
               name={post.userID}
               time={time}
               postID={post.id}
+              navigateToPostScreen={this.navigateToPostScreen}
             >
               {post.title}
             </ForumPost>
@@ -46,6 +49,11 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
       .catch((error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
+  }
+
+  navigateToPostScreen() {
+    const { navigation } = this.props;
+    navigation.navigate('ForumPost');
   }
 
   render() {

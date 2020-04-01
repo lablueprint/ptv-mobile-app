@@ -66,7 +66,7 @@ export default class ForumHomeScreen extends React.Component {
       });
   }
 
-  componentWillUmount() {
+  componentWillUnmount() {
     this.unsubscribe();
   }
 
