@@ -25,9 +25,8 @@ export default class ForumHomeScreen extends React.Component {
         this.setState({ userID: user.uid });
       }
     });
-    firestore().collection('forum_posts')
-      .get()
-      .then((snapshot) => {
+    this.snapshotUnsubscribe = firestore().collection('forum_posts')
+      .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const posts = forumPosts.sort((a, b) => {
           const aMillis = a.createdAt.toMillis();
@@ -59,8 +58,7 @@ export default class ForumHomeScreen extends React.Component {
         });
         this.setState({ posts });
         this.setState({ loading: false });
-      })
-      .catch((error) => {
+      }, (error) => { /* Error handler */
         this.setState({ errorMessage: error.message });
         this.setState({ loading: false });
       });
@@ -68,6 +66,7 @@ export default class ForumHomeScreen extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe();
+    this.snapshotUnsubscribe();
   }
 
   navigateToPostScreen() {

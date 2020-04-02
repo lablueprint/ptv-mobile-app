@@ -17,15 +17,15 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
       categoryID: navigation.getParam('categoryID'),
     };
 
+    /* Function to navigate to post when post pressed, fx passed to ForumPost */
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
   }
 
   componentDidMount() {
     const { categoryID } = this.state;
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
-    firestore().collection('forum_posts').where('categoryID', '==', categoryID)
-      .get()
-      .then((snapshot) => {
+    this.snapshotUnsubscribe = firestore().collection('forum_posts').where('categoryID', '==', categoryID)
+      .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const posts = forumPosts.map((post) => {
           const date = post.createdAt ? post.createdAt.toDate() : null;
@@ -45,10 +45,13 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           );
         });
         this.setState({ posts, loading: false });
-      })
-      .catch((error) => {
+      }, (error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
+  }
+
+  componentWillUnmount() {
+    this.snapshotUnsubscribe();
   }
 
   navigateToPostScreen() {
