@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
 import {
-  Title, Subheading, Text, Paragraph, List,
+  Title, Subheading, Text, Paragraph, List, Caption,
 } from 'react-native-paper';
 import { theme } from '../../style';
 
@@ -24,15 +24,19 @@ const resourcesStyles = StyleSheet.create({
     padding: 20,
     paddingBottom: 420,
   },
+  authorName: {
+    textAlign: 'right',
+  },
 });
 
 function ResourceStep({
-  stepNumber, title,
+  stepNumber, title, description,
 }) {
   return (
     <List.Item
       title={title}
-      icon={`numeric-${stepNumber}-circle`}
+      description={description}
+      left={() => <List.Icon color={theme.colors.accent} icon={`numeric-${stepNumber}-circle`} />}
     />
   );
 }
@@ -46,6 +50,8 @@ export default function ResourcesItemScreen(props) {
   const [type, setType] = useState(null);
   const [body, setBody] = useState(null);
   const [steps, setSteps] = useState(null);
+  const [subheader, setSubheader] = useState(null);
+  const [authorName, setAuthorName] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -57,9 +63,15 @@ export default function ResourcesItemScreen(props) {
       const resourceSnap = await firestore().collection('resource_items').doc(resourceID).get();
       const resourceData = resourceSnap.data();
 
+      const authorSnapshot = firestore().collection('users').doc(resourceData.userID).get();
+      const authorSnap = await Promise.all([authorSnapshot]);
+
+      setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
+
       setTitle(resourceData.title);
       setDescription(resourceData.description);
       setType(resourceData.type);
+      setSubheader(resourceData.subheader);
       if (type === 'STEPS') {
         const stepsList = await firestore().collection('resource_items').doc(resourceID).collection('steps')
           .get();
@@ -79,6 +91,7 @@ export default function ResourcesItemScreen(props) {
           ...(<ResourceStep
             stepNumber={step.stepNumber}
             title={step.title}
+            description={step.body}
           />),
           key: step.id,
         })));
@@ -106,14 +119,20 @@ export default function ResourcesItemScreen(props) {
           <Title>{title}</Title>
           <Paragraph>{description}</Paragraph>
           <Text>{'\n'}</Text>
-          <Subheading>Body/Steps</Subheading>
           {steps != null
             ? (
               <List.Section>
+                <List.Subheader>{subheader}</List.Subheader>
                 {steps}
               </List.Section>
             )
-            : <Paragraph>{body}</Paragraph>}
+            : (
+              <View>
+                <Subheading>{subheader}</Subheading>
+                <Paragraph>{body}</Paragraph>
+              </View>
+            )}
+          <Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>
         </View>
       </ScrollView>
     </View>
@@ -131,4 +150,5 @@ ResourcesItemScreen.propTypes = {
 ResourceStep.propTypes = {
   stepNumber: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
 };
