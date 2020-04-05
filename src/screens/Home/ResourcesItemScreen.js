@@ -9,7 +9,7 @@ import {
 } from 'react-native-paper';
 import { theme } from '../../style';
 
-
+/* Resource item screen styles */
 const resourcesStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -29,6 +29,7 @@ const resourcesStyles = StyleSheet.create({
   },
 });
 
+/* Returns a single list item with appropriate icon */
 function ResourceStep({
   stepNumber, title, description,
 }) {
@@ -45,6 +46,7 @@ export default function ResourcesItemScreen(props) {
   const { navigation } = props;
   const resourceID = navigation.getParam('resourceID');
 
+  /* Resource item data */
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [type, setType] = useState(null);
@@ -53,25 +55,30 @@ export default function ResourcesItemScreen(props) {
   const [subheader, setSubheader] = useState(null);
   const [authorName, setAuthorName] = useState(null);
 
+  /* Screen state */
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
+  /* Query data from firestore */
   const getData = useCallback(async () => {
     setLoading(true);
 
     try {
+      /* Query data from resource item collection */
       const resourceSnap = await firestore().collection('resource_items').doc(resourceID).get();
       const resourceData = resourceSnap.data();
 
+      /* Query user data */
       const authorSnapshot = firestore().collection('users').doc(resourceData.userID).get();
       const authorSnap = await Promise.all([authorSnapshot]);
 
       setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
-
       setTitle(resourceData.title);
       setDescription(resourceData.description);
       setType(resourceData.type);
       setSubheader(resourceData.subheader);
+
+      /* Different behavior if resource is of type STEPS or FREEFORM */
       if (type === 'STEPS') {
         const stepsList = await firestore().collection('resource_items').doc(resourceID).collection('steps')
           .get();
