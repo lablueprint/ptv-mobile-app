@@ -32,19 +32,26 @@ export default function ForumPost({
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
 
-  const db = firestore();
-  db.collection('forum_comments').where('postID', '==', postID)
+  firestore().collection('forum_comments').where('postID', '==', postID)
     .get()
     .then((querySnapshot) => {
       setNumReplies(querySnapshot.size);
       setLoading(false);
     });
 
-  /* Error if userID is null, add check to account for that */
   /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
-  const user = db.collection('users').where('id', '==', userID).get();
-  const { name } = user;
-  const { isAdmin } = user;
+  const [name, setName] = useState('No name');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  /* ERROR isn't getting user? error w/ queryUser, right userID is passed in */
+  firestore().collection('users').where('id', '==', userID)
+    .get()
+    .then((userDoc) => {
+      if (userDoc.exists) {
+        setName(userDoc.name);
+        setIsAdmin(userDoc.isAdmin);
+      }
+    });
 
   const handlePress = () => {
     // TODO: navigate to reply screen

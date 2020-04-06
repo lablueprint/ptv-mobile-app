@@ -44,10 +44,10 @@ export default class ForumHomeScreen extends React.Component {
           const { userID } = this.state;
 
           return (
-            // TBD in next sprint
             <ForumPost
               belongsToCurrentUser={userID === post.userID}
               key={post.id}
+              /* Pass in userID if it exists, other pass in null */
               userID={post.userID ? post.userID : null}
               time={time}
               postID={post.id}
