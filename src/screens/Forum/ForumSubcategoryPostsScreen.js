@@ -35,7 +35,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           // TBD: replies
             <ForumPost
               key={post.id}
-              name={post.userID}
+              userID={post.userID ? post.userID : null}
               time={time}
               postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}

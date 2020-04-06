@@ -42,12 +42,13 @@ export default class ForumHomeScreen extends React.Component {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           const { userID } = this.state;
+
           return (
             // TBD in next sprint
             <ForumPost
               belongsToCurrentUser={userID === post.userID}
               key={post.id}
-              name={post.userID}
+              userID={post.userID ? post.userID : null}
               time={time}
               postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}

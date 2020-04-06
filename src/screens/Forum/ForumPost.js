@@ -27,17 +27,24 @@ const styles = StyleSheet.create({
 });
 
 export default function ForumPost({
-  name, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
+  userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
 }) {
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
 
-  firestore().collection('forum_comments').where('postID', '==', postID)
+  const db = firestore();
+  db.collection('forum_comments').where('postID', '==', postID)
     .get()
     .then((querySnapshot) => {
       setNumReplies(querySnapshot.size);
       setLoading(false);
     });
+
+  /* Error if userID is null, add check to account for that */
+  /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
+  const user = db.collection('users').where('id', '==', userID).get();
+  const { name } = user;
+  const { isAdmin } = user;
 
   const handlePress = () => {
     // TODO: navigate to reply screen
@@ -55,7 +62,7 @@ export default function ForumPost({
       <Card style={styles.container}>
         <Card.Title
           style={styles.title}
-          subtitle={`${name} ${time}`}
+          subtitle={isAdmin ? `${name}(PTV Staff) ${time}` : `${name} ${time}`}
           right={(props) => (belongsToCurrentUser
             ? (
               <Menu
@@ -95,7 +102,7 @@ export default function ForumPost({
 
 ForumPost.propTypes = {
   belongsToCurrentUser: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
+  userID: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
   postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
