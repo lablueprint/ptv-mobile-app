@@ -7,7 +7,7 @@ import { ActivityIndicator, FAB } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import ForumPost from './ForumPost';
-
+import { theme } from '../../style';
 
 export default class ForumHomeScreen extends React.Component {
   constructor(props) {
@@ -80,10 +80,10 @@ export default class ForumHomeScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles.mainContainer}>
+      <View style={styles.homeContainer}>
         <ScrollView>
           {loading && <ActivityIndicator /> }
-          {errorMessage && <Text>{errorMessage}</Text>}
+          {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {posts}
         </ScrollView>
         <FAB
@@ -97,9 +97,10 @@ export default class ForumHomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  homeContainer: {
     height: '100%',
     justifyContent: 'space-between',
+    backgroundColor: theme.colors.background,
   },
   fab: {
     margin: 15,

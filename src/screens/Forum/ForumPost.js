@@ -7,22 +7,30 @@ import {
 } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
+import { theme } from '../../style';
 
 const styles = StyleSheet.create({
-  container: {
+  postContainer: {
     marginTop: 10,
     width: '95%',
     alignSelf: 'center',
     borderRadius: 15,
   },
-  title: {
-  },
+
   actionContainer: {
     width: '100%',
     marginHorizontal: '1%',
     justifyContent: 'space-between',
   },
-  text: {
+  bodyText: {
+    color: theme.colors.text,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+  },
+  sideText: {
+    color: theme.colors.accent,
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
   },
 });
 
@@ -66,9 +74,9 @@ export default function ForumPost({
   const [visible, setVisible] = useState(false);
   return (
     <TouchableOpacity onPress={navigateToPostScreen}>
-      <Card style={styles.container}>
+      <Card style={styles.postContainer}>
         <Card.Title
-          style={styles.title}
+          subtitleStyle={styles.sideText}
           subtitle={isAdmin ? `${name}(PTV Staff) ${time}` : `${name} ${time}`}
           right={(props) => (belongsToCurrentUser
             ? (
@@ -88,7 +96,7 @@ export default function ForumPost({
             : null)}
         />
         <Card.Content>
-          <Title>
+          <Title style={styles.bodyText}>
             {children}
           </Title>
         </Card.Content>
@@ -96,7 +104,7 @@ export default function ForumPost({
           <TouchableOpacity>
             {loading && <ActivityIndicator /> }
             {!loading && (
-            <Text style={styles.text} onPress={handlePress}>
+            <Text style={styles.sideText} onPress={handlePress}>
               {`${numReplies} Replies`}
             </Text>
             ) }

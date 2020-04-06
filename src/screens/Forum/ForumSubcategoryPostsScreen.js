@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  Text, View, ScrollView,
+  Text, View, ScrollView, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { ActivityIndicator } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import ForumPost from './ForumPost';
+import { theme } from '../../style';
 
 export default class ForumSubcategoryPostsScreen extends React.Component {
   constructor(props) {
@@ -63,9 +64,9 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     const { posts, loading, errorMessage } = this.state;
 
     return (
-      <View>
-        <ScrollView>
-          {errorMessage && <Text>{errorMessage}</Text>}
+      <View style={styles.mainContainer}>
+        <ScrollView style={styles.scrollContainer}>
+          {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {posts}
           {loading
           && (
@@ -78,6 +79,17 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     );
   }
 }
+const styles = StyleSheet.create({
+  postContainer: {
+    height: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: theme.colors.background,
+  },
+  scrollContainer: {
+    height: '100%',
+    backgroundColor: theme.colors.background,
+  },
+});
 
 ForumSubcategoryPostsScreen.propTypes = {
   navigation: PropTypes.shape({
