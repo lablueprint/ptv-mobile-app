@@ -80,33 +80,35 @@ export default function ResourcesItemScreen(props) {
 
       /* Different behavior if resource is of type STEPS or FREEFORM */
       if (type === 'STEPS') {
-        const stepsList = await firestore().collection('resource_items').doc(resourceID).collection('steps')
-          .get();
-        const stepsData = stepsList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        firestore().collection('resource_items').doc(resourceID).collection('steps')
+          .get()
+          .then((stepsList) => {
+            const stepsData = stepsList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-        const sortedStepsData = stepsData.sort((a, b) => {
-          if (a.stepNumber > b.stepNumber) {
-            return 1;
-          }
-          if (a.stepNumber < b.stepNumber) {
-            return -1;
-          }
-          return 0;
-        });
+            const sortedStepsData = stepsData.sort((a, b) => {
+              if (a.stepNumber > b.stepNumber) {
+                return 1;
+              }
+              if (a.stepNumber < b.stepNumber) {
+                return -1;
+              }
+              return 0;
+            });
 
-        setSteps(sortedStepsData.map((step) => ({
-          ...(<ResourceStep
-            stepNumber={step.stepNumber}
-            title={step.title}
-            description={step.body}
-          />),
-          key: step.id,
-        })));
+            setSteps(sortedStepsData.map((step) => ({
+              ...(<ResourceStep
+                stepNumber={step.stepNumber}
+                title={step.title}
+                description={step.body}
+                key={step.id}
+              />),
+            })));
+            setLoading(false);
+          });
       } else if (type === 'FREEFORM') {
         setBody(resourceData.body);
+        setLoading(false);
       }
-
-      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
@@ -122,24 +124,23 @@ export default function ResourcesItemScreen(props) {
       <ScrollView style={resourcesStyles.container}>
         <View style={resourcesStyles.itemContainer}>
           {errorMessage && <Text>{errorMessage}</Text>}
-          {loading && <ActivityIndicator />}
           <Title>{title}</Title>
           <Paragraph>{description}</Paragraph>
           <Text>{'\n'}</Text>
-          {steps != null
-            ? (
-              <List.Section>
-                <List.Subheader>{subheader}</List.Subheader>
-                {steps}
-              </List.Section>
-            )
-            : (
-              <View>
-                <Subheading>{subheader}</Subheading>
-                <Paragraph>{body}</Paragraph>
-              </View>
-            )}
+          {steps && (
+          <List.Section>
+            <List.Subheader>{subheader}</List.Subheader>
+            {steps}
+          </List.Section>
+          )}
+          {body && (
+          <View>
+            <Subheading>{subheader}</Subheading>
+            <Paragraph>{body}</Paragraph>
+          </View>
+          )}
           <Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>
+          {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
     </View>
