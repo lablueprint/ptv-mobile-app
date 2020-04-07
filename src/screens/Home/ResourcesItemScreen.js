@@ -164,8 +164,11 @@ export default function ResourcesItemScreen(props) {
               latitudeDelta: 0.02,
               longitudeDelta: 0.02,
             }}
-          />
-
+          >
+            <MapView.Marker
+              coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
+            />
+          </MapView>
           {authorName && (<Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>)}
           {loading && <ActivityIndicator />}
         </View>
