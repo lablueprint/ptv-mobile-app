@@ -49,6 +49,19 @@ function ResourceStep({
   );
 }
 
+/* Returns a single map marker */
+function MapMarker({
+  title, description, latitude, longitude,
+}) {
+  return (
+    <MapView.Marker
+      coordinate={{ latitude, longitude }}
+      title={title}
+      description={description}
+    />
+  );
+}
+
 export default function ResourcesItemScreen(props) {
   const { navigation } = props;
   const resourceID = navigation.getParam('resourceID');
@@ -61,6 +74,8 @@ export default function ResourcesItemScreen(props) {
   const [steps, setSteps] = useState(null);
   const [subheader, setSubheader] = useState(null);
   const [authorName, setAuthorName] = useState(null);
+  const [markers, setMarkers] = useState(null);
+  const [startCoordinates, setStartCoordinates] = useState(null);
 
   /* Screen state */
   const [loading, setLoading] = useState(false);
@@ -85,37 +100,61 @@ export default function ResourcesItemScreen(props) {
       setType(resourceData.type);
       setSubheader(resourceData.subheader);
 
-      /* Different behavior if resource is of type STEPS or FREEFORM */
-      if (type === 'STEPS') {
-        firestore().collection('resource_items').doc(resourceID).collection('steps')
-          .get()
-          .then((stepsList) => {
-            const stepsData = stepsList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      /* Query all map markers */
+      firestore().collection('resource_items').doc(resourceID).collection('mapMarkers')
+        .get()
+        .then((markersList) => {
+          const markersData = markersList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-            const sortedStepsData = stepsData.sort((a, b) => {
-              if (a.stepNumber > b.stepNumber) {
-                return 1;
-              }
-              if (a.stepNumber < b.stepNumber) {
-                return -1;
-              }
-              return 0;
+          if (markersData.length) {
+            setStartCoordinates({
+              latitude: markersData[0].latitude,
+              longitude: markersData[0].longitude,
             });
 
-            setSteps(sortedStepsData.map((step) => (
-              <ResourceStep
-                stepNumber={step.stepNumber}
-                title={step.title}
-                description={step.body}
-                key={step.id}
+            setMarkers(markersData.map((mark) => (
+              <MapMarker
+                title={mark.title}
+                description={mark.description}
+                latitude={mark.latitude}
+                longitude={mark.longitude}
+                key={mark.id}
               />
             )));
+          }
+
+          /* Different behavior if resource is of type STEPS or FREEFORM */
+          if (type === 'STEPS') {
+            firestore().collection('resource_items').doc(resourceID).collection('steps')
+              .get()
+              .then((stepsList) => {
+                const stepsData = stepsList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+
+                const sortedStepsData = stepsData.sort((a, b) => {
+                  if (a.stepNumber > b.stepNumber) {
+                    return 1;
+                  }
+                  if (a.stepNumber < b.stepNumber) {
+                    return -1;
+                  }
+                  return 0;
+                });
+
+                setSteps(sortedStepsData.map((step) => (
+                  <ResourceStep
+                    stepNumber={step.stepNumber}
+                    title={step.title}
+                    description={step.body}
+                    key={step.id}
+                  />
+                )));
+                setLoading(false);
+              });
+          } else if (type === 'FREEFORM') {
+            setBody(resourceData.body);
             setLoading(false);
-          });
-      } else if (type === 'FREEFORM') {
-        setBody(resourceData.body);
-        setLoading(false);
-      }
+          }
+        });
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
@@ -140,7 +179,7 @@ export default function ResourcesItemScreen(props) {
                 <List.Subheader>{subheader}</List.Subheader>
                 {steps}
               </List.Section>
-              <List.Subheader>Location</List.Subheader>
+              {markers && <List.Subheader>Location</List.Subheader>}
             </View>
           )}
           {body && (
@@ -150,25 +189,27 @@ export default function ResourcesItemScreen(props) {
               {body}
               {'\n'}
             </Paragraph>
+            {markers && (
             <Subheading>
               Location
               {'\n'}
             </Subheading>
+            )}
           </View>
           )}
+          {markers && (
           <MapView
             style={resourcesStyles.map}
             initialRegion={{
-              latitude: 37.78825,
-              longitude: -122.4324,
+              latitude: startCoordinates.latitude,
+              longitude: startCoordinates.longitude,
               latitudeDelta: 0.02,
               longitudeDelta: 0.02,
             }}
           >
-            <MapView.Marker
-              coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-            />
+            {markers}
           </MapView>
+          )}
           {authorName && (<Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>)}
           {loading && <ActivityIndicator />}
         </View>
@@ -189,4 +230,11 @@ ResourceStep.propTypes = {
   stepNumber: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
+};
+
+MapMarker.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  latitude: PropTypes.number.isRequired,
+  longitude: PropTypes.number.isRequired,
 };
