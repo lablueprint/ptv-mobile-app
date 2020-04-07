@@ -7,6 +7,7 @@ import firestore from '@react-native-firebase/firestore';
 import {
   Title, Subheading, Text, Paragraph, List, Caption,
 } from 'react-native-paper';
+import MapView from 'react-native-maps';
 import { theme } from '../../style';
 
 /* Resource item screen styles */
@@ -23,6 +24,12 @@ const resourcesStyles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     paddingBottom: 420,
+  },
+  map: {
+    alignSelf: 'center',
+    width: '90%',
+    height: 200,
+    borderRadius: 20,
   },
   authorName: {
     textAlign: 'right',
@@ -128,17 +135,37 @@ export default function ResourcesItemScreen(props) {
           {description && (<Paragraph>{description}</Paragraph>)}
           <Text>{'\n'}</Text>
           {steps && (
-          <List.Section>
-            <List.Subheader>{subheader}</List.Subheader>
-            {steps}
-          </List.Section>
+            <View>
+              <List.Section>
+                <List.Subheader>{subheader}</List.Subheader>
+                {steps}
+              </List.Section>
+              <List.Subheader>Location</List.Subheader>
+            </View>
           )}
           {body && (
           <View>
             <Subheading>{subheader}</Subheading>
-            <Paragraph>{body}</Paragraph>
+            <Paragraph>
+              {body}
+              {'\n'}
+            </Paragraph>
+            <Subheading>
+              Location
+              {'\n'}
+            </Subheading>
           </View>
           )}
+          <MapView
+            style={resourcesStyles.map}
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.02,
+            }}
+          />
+
           {authorName && (<Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>)}
           {loading && <ActivityIndicator />}
         </View>
