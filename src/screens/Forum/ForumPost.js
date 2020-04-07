@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 15,
   },
-
   actionContainer: {
     width: '100%',
     marginHorizontal: '1%',
@@ -47,19 +46,20 @@ export default function ForumPost({
       setLoading(false);
     });
 
-  /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
-  const [name, setName] = useState('No name');
+  const [name, setName] = useState('Name unset');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userErrorMessage, setUserErrorMessage] = useState();
 
-  /* ERROR isn't getting user? error w/ queryUser, right userID is passed in */
-  firestore().collection('users').where('id', '==', userID)
+  /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
+  /* ERROR isn't getting user information */
+  firestore().collection('users').doc(userID)
     .get()
-    .then((userDoc) => {
-      if (userDoc.exists) {
-        setName(userDoc.name);
-        setIsAdmin(userDoc.isAdmin);
-      }
-    });
+    .then((snapshot) => {
+      const data = snapshot.data();
+      setName(data.name ? data.name : 'No name');
+      setIsAdmin(data.isAdmin);
+    })
+    .catch((error) => setUserErrorMessage(error.message));
 
   const handlePress = () => {
     // TODO: navigate to reply screen
@@ -74,10 +74,11 @@ export default function ForumPost({
   const [visible, setVisible] = useState(false);
   return (
     <TouchableOpacity onPress={navigateToPostScreen}>
+      {userErrorMessage && <Text style={{ color: 'red' }}>{userErrorMessage}</Text>}
       <Card style={styles.postContainer}>
         <Card.Title
           subtitleStyle={styles.sideText}
-          subtitle={isAdmin ? `${name}(PTV Staff) ${time}` : `${name} ${time}`}
+          subtitle={isAdmin ? `${name} (PTV Staff) ${time}` : `${name} ${time}`}
           right={(props) => (belongsToCurrentUser
             ? (
               <Menu
