@@ -95,14 +95,14 @@ export default function ResourcesItemScreen(props) {
               return 0;
             });
 
-            setSteps(sortedStepsData.map((step) => ({
-              ...(<ResourceStep
+            setSteps(sortedStepsData.map((step) => (
+              <ResourceStep
                 stepNumber={step.stepNumber}
                 title={step.title}
                 description={step.body}
                 key={step.id}
-              />),
-            })));
+              />
+            )));
             setLoading(false);
           });
       } else if (type === 'FREEFORM') {
@@ -124,8 +124,8 @@ export default function ResourcesItemScreen(props) {
       <ScrollView style={resourcesStyles.container}>
         <View style={resourcesStyles.itemContainer}>
           {errorMessage && <Text>{errorMessage}</Text>}
-          <Title>{title}</Title>
-          <Paragraph>{description}</Paragraph>
+          {title && (<Title>{title}</Title>)}
+          {description && (<Paragraph>{description}</Paragraph>)}
           <Text>{'\n'}</Text>
           {steps && (
           <List.Section>
@@ -139,7 +139,7 @@ export default function ResourcesItemScreen(props) {
             <Paragraph>{body}</Paragraph>
           </View>
           )}
-          <Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>
+          {authorName && (<Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>)}
           {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
