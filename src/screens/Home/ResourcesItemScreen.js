@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback,
+} from 'react';
 import {
   View, StyleSheet, ScrollView, ActivityIndicator,
 } from 'react-native';
@@ -75,7 +77,8 @@ export default function ResourcesItemScreen(props) {
   const [subheader, setSubheader] = useState(null);
   const [authorName, setAuthorName] = useState(null);
   const [markers, setMarkers] = useState(null);
-  const [startCoordinates, setStartCoordinates] = useState(null);
+  const [averageCoordinate, setAverageCoordinate] = useState(null);
+  const [maxDelta, setMaxDelta] = useState(null);
 
   /* Screen state */
   const [loading, setLoading] = useState(false);
@@ -107,11 +110,53 @@ export default function ResourcesItemScreen(props) {
           const markersData = markersList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
           if (markersData.length) {
-            setStartCoordinates({
-              latitude: markersData[0].latitude,
-              longitude: markersData[0].longitude,
+            /* Calculates the average latitude and longitude to give the center of all markers */
+            const avgCoord = markersData.reduce((total, amount, index, array) => {
+              const result = {
+                latitude: total.latitude + amount.latitude,
+                longitude: total.longitude + amount.longitude,
+              };
+
+              if (index === array.length - 1) {
+                return {
+                  latitude: result.latitude / (array.length),
+                  longitude: result.longitude / (array.length),
+                };
+              }
+              return result;
             });
 
+            /* Calculates maximum distance between center and a marker to size map deltas */
+            let latAccum = 0.0;
+            let lonAccum = 0.0;
+            const mDelta = markersData.reduce((_, amount, index, array) => {
+              const maxLatitude = Math.max(
+                latAccum,
+                Math.abs(avgCoord.latitude - amount.latitude),
+              );
+              const maxLongitude = Math.max(
+                lonAccum,
+                Math.abs(avgCoord.longitude - amount.longitude),
+              );
+              latAccum = maxLatitude;
+              lonAccum = maxLongitude;
+
+              const result = {
+                latitude: maxLatitude,
+                longitude: maxLongitude,
+              };
+
+              if (index === array.length - 1) {
+                return {
+                  latitude: result.latitude * 3,
+                  longitude: result.longitude * 3,
+                };
+              }
+              return result;
+            });
+
+            setAverageCoordinate(avgCoord);
+            setMaxDelta(mDelta);
             setMarkers(markersData.map((mark) => (
               <MapMarker
                 title={mark.title}
@@ -201,10 +246,10 @@ export default function ResourcesItemScreen(props) {
           <MapView
             style={resourcesStyles.map}
             initialRegion={{
-              latitude: startCoordinates.latitude,
-              longitude: startCoordinates.longitude,
-              latitudeDelta: 0.02,
-              longitudeDelta: 0.02,
+              latitude: averageCoordinate.latitude,
+              longitude: averageCoordinate.longitude,
+              latitudeDelta: maxDelta.latitude,
+              longitudeDelta: maxDelta.longitude,
             }}
           >
             {markers}
