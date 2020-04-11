@@ -129,7 +129,7 @@ export default function ResourcesItemScreen(props) {
             /* Calculates maximum distance between center and a marker to size map deltas */
             let latAccum = 0.0;
             let lonAccum = 0.0;
-            const mDelta = markersData.reduce((_, amount, index, array) => {
+            setMaxDelta(markersData.reduce((_, amount, index, array) => {
               const maxLatitude = Math.max(
                 latAccum,
                 Math.abs(avgCoord.latitude - amount.latitude),
@@ -153,10 +153,9 @@ export default function ResourcesItemScreen(props) {
                 };
               }
               return result;
-            });
+            }));
 
             setAverageCoordinate(avgCoord);
-            setMaxDelta(mDelta);
             setMarkers(markersData.map((mark) => (
               <MapMarker
                 title={mark.title}
