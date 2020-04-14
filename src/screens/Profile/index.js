@@ -1,3 +1,7 @@
 import EditProfileScreen from './EditProfileScreen';
+import ProfileHomeScreen from './ProfileHomeScreen';
 
-export default EditProfileScreen;
+
+export {
+  ProfileHomeScreen, EditProfileScreen,
+};

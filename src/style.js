@@ -42,10 +42,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.background,
   },
+
+  container2: {
+    /* TODO: Fix container 2 so that we can align all items inside of a container
+    instead of mannually doing that in ForumHomeScreen */
+    flex: 1,
+    justifyContent: 'center',
+    /* alignItems: 'center', */
+    backgroundColor: theme.colors.background,
+
+  },
+
+
   textInput: {
+    marginTop: 0,
     height: 40,
     width: '90%',
-    marginTop: 8,
+    backgroundColor: '#ffffff',
+  },
+  textInputMedium: {
+    height: 40,
+    width: '45%',
+    marginTop: 0,
     backgroundColor: '#ffffff',
   },
   button: {
