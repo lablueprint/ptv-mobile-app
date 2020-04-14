@@ -9,7 +9,7 @@ import firestore from '@react-native-firebase/firestore';
 import {
   Title, Subheading, Text, Paragraph, List, Caption,
 } from 'react-native-paper';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { theme } from '../../style';
 
 /* Resource item screen styles */
@@ -114,23 +114,17 @@ export default function ResourcesItemScreen(props) {
             });
 
             /* Calculates maximum distance between center and a marker to size map deltas */
-            let latAccum = 0.0;
-            let lonAccum = 0.0;
-            setMaxDelta(markersData.reduce((_, amount, index, array) => {
-              const maxLatitude = Math.max(
-                latAccum,
-                Math.abs(avgCoord.latitude - amount.latitude),
-              );
-              const maxLongitude = Math.max(
-                lonAccum,
-                Math.abs(avgCoord.longitude - amount.longitude),
-              );
-              latAccum = maxLatitude;
-              lonAccum = maxLongitude;
-
+            markersData.unshift({ latitude: 0, longitude: 0, id: 0 });
+            setMaxDelta(markersData.reduce((total, amount, index, array) => {
               const result = {
-                latitude: maxLatitude,
-                longitude: maxLongitude,
+                latitude: Math.max(
+                  total.latitude,
+                  Math.abs(avgCoord.latitude - amount.latitude),
+                ),
+                longitude: Math.max(
+                  total.longitude,
+                  Math.abs(avgCoord.longitude - amount.longitude),
+                ),
               };
 
               if (index === array.length - 1) {
@@ -144,7 +138,7 @@ export default function ResourcesItemScreen(props) {
 
             setAverageCoordinate(avgCoord);
             setMarkers(markersData.map((mark) => (
-              <MapView.Marker
+              <Marker
                 coordinate={{ latitude: mark.latitude, longitude: mark.longitude }}
                 title={mark.title}
                 description={mark.description}
