@@ -43,7 +43,7 @@ export default function ForumCategoriesScreen({ navigation }) {
       .catch((error) => {
         setErrorMessage(error.message);
       });
-  });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
