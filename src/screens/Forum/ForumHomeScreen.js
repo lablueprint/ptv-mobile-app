@@ -57,7 +57,7 @@ export default class ForumHomeScreen extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-    this.unsubscribeFromAuth();
+    this.unsubscribeFromFirestore();
   }
 
   navigateToPostScreen() {

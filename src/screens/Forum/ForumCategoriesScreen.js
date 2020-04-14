@@ -18,8 +18,6 @@ export default function ForumCategoriesScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [forumCategories, setForumCategories] = useState([]);
 
-  console.log('categories ordered');
-
   firestore()
     .collection('forum_categories')
     .orderBy('title')
