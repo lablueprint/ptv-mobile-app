@@ -98,23 +98,18 @@ export default function ResourcesItemScreen(props) {
 
           if (markersData.length) {
             /* Calculates the average latitude and longitude to give the center of all markers */
-            const avgCoord = markersData.reduce((total, amount, index, array) => {
-              const result = {
-                latitude: total.latitude + amount.latitude,
-                longitude: total.longitude + amount.longitude,
-              };
+            const totalCoord = markersData.reduce((total, amount) => ({
+              latitude: total.latitude + amount.latitude,
+              longitude: total.longitude + amount.longitude,
+            }));
 
-              if (index === array.length - 1) {
-                return {
-                  latitude: result.latitude / (array.length),
-                  longitude: result.longitude / (array.length),
-                };
-              }
-              return result;
-            });
+            const avgCoord = {
+              latitude: totalCoord.latitude / (markersData.length),
+              longitude: totalCoord.longitude / (markersData.length),
+            };
 
             /* Calculates maximum distance between center and a marker to size map deltas */
-            markersData.unshift({ latitude: 0, longitude: 0, id: 0 });
+            markersData.unshift({ latitude: 0, longitude: 0 });
             setMaxDelta(markersData.reduce((total, amount, index, array) => {
               const result = {
                 latitude: Math.max(
@@ -135,6 +130,7 @@ export default function ResourcesItemScreen(props) {
               }
               return result;
             }));
+            markersData.shift();
 
             setAverageCoordinate(avgCoord);
             setMarkers(markersData.map((mark) => (
