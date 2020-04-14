@@ -51,19 +51,6 @@ function ResourceStep({
   );
 }
 
-/* Returns a single map marker */
-function MapMarker({
-  title, description, latitude, longitude,
-}) {
-  return (
-    <MapView.Marker
-      coordinate={{ latitude, longitude }}
-      title={title}
-      description={description}
-    />
-  );
-}
-
 export default function ResourcesItemScreen(props) {
   const { navigation } = props;
   const resourceID = navigation.getParam('resourceID');
@@ -104,7 +91,7 @@ export default function ResourcesItemScreen(props) {
       setSubheader(resourceData.subheader);
 
       /* Query all map markers */
-      firestore().collection('resource_items').doc(resourceID).collection('mapMarkers')
+      firestore().collection('resource_items').doc(resourceID).collection('map_markers')
         .get()
         .then((markersList) => {
           const markersData = markersList.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
@@ -157,11 +144,10 @@ export default function ResourcesItemScreen(props) {
 
             setAverageCoordinate(avgCoord);
             setMarkers(markersData.map((mark) => (
-              <MapMarker
+              <MapView.Marker
+                coordinate={{ latitude: mark.latitude, longitude: mark.longitude }}
                 title={mark.title}
                 description={mark.description}
-                latitude={mark.latitude}
-                longitude={mark.longitude}
                 key={mark.id}
               />
             )));
@@ -274,11 +260,4 @@ ResourceStep.propTypes = {
   stepNumber: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-};
-
-MapMarker.propTypes = {
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  latitude: PropTypes.number.isRequired,
-  longitude: PropTypes.number.isRequired,
 };
