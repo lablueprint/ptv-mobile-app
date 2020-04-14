@@ -29,12 +29,25 @@ export default class ForumHomeScreen extends React.Component {
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .orderBy('createdAt', 'desc') /* Update this to order by time approved, most to least recent */
       .onSnapshot((snapshot) => {
+    firestore().collection('forum_posts')
+      .get()
+      .then((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        const posts = forumPosts.map((post) => {
+        const posts = forumPosts.sort((a, b) => {
+          const aMillis = a.createdAt.toMillis();
+          const bMillis = b.createdAt.toMillis();
+          if (aMillis > bMillis) {
+            return -1;
+          }
+          if (aMillis < bMillis) {
+            return 1;
+          }
+          return 0;
+        }).map((post) => {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           const { currentUserID } = this.state;
-
+          
           return (
             <ForumPost
               belongsToCurrentUser={currentUserID === post.userID}

@@ -8,7 +8,7 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
-import styles, { theme } from '../../style';
+import styles, { theme } from '../../style'
 
 const INITIAL_STATE = {
   title: '',

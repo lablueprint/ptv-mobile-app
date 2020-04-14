@@ -6,7 +6,6 @@ import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import ForumCategoryCard from './ForumCategoryCard';
 
-
 const styles = StyleSheet.create({
   container: {
     padding: 10,
