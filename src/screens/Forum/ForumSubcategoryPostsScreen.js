@@ -3,6 +3,7 @@ import {
   Text, View, ScrollView, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { ActivityIndicator } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import ForumPost from './ForumPost';
@@ -24,17 +25,25 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
   componentDidMount() {
     const { categoryID } = this.state;
+    this.unsubscribeFromAuth = auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ currentUserID: user.uid });
+      }
+    });
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
-    this.snapshotUnsubscribe = firestore().collection('forum_posts').where('categoryID', '==', categoryID)
+    this.unsubscribeFromFirestore = firestore().collection('forum_posts')
+      .where('categoryID', '==', categoryID)
       .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const posts = forumPosts.map((post) => {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
+          const { currentUserID } = this.state;
 
           return (
           // TBD: replies
             <ForumPost
+              belongsToCurrentUser={currentUserID === post.userID}
               key={post.id}
               userID={post.userID ? post.userID : null}
               time={time}
@@ -52,7 +61,8 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    this.snapshotUnsubscribe();
+    this.unsubscribeFromAuth();
+    this.unsubscribeFromFirestore();
   }
 
   navigateToPostScreen() {

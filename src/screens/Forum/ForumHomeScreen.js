@@ -20,12 +20,12 @@ export default class ForumHomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribe = auth().onAuthStateChanged((user) => {
+    this.unsubscribeFromAuth = auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState({ userID: user.uid });
+        this.setState({ currentUserID: user.uid });
       }
     });
-    this.snapshotUnsubscribe = firestore().collection('forum_posts')
+    this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const posts = forumPosts.sort((a, b) => {
@@ -41,11 +41,11 @@ export default class ForumHomeScreen extends React.Component {
         }).map((post) => {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
-          const { userID } = this.state;
+          const { currentUserID } = this.state;
 
           return (
             <ForumPost
-              belongsToCurrentUser={userID === post.userID}
+              belongsToCurrentUser={currentUserID === post.userID}
               key={post.id}
               /* Pass in userID if it exists, other pass in null */
               userID={post.userID ? post.userID : null}
@@ -57,17 +57,15 @@ export default class ForumHomeScreen extends React.Component {
             </ForumPost>
           );
         });
-        this.setState({ posts });
-        this.setState({ loading: false });
+        this.setState({ posts, loading: false });
       }, (error) => { /* Error handler */
-        this.setState({ errorMessage: error.message });
-        this.setState({ loading: false });
+        this.setState({ errorMessage: error.message, loading: false });
       });
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
-    this.snapshotUnsubscribe();
+    this.unsubscribeFromAuth();
+    this.unsubscribeFromAuth();
   }
 
   navigateToPostScreen() {

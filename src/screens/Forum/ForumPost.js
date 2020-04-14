@@ -51,7 +51,6 @@ export default function ForumPost({
   const [userErrorMessage, setUserErrorMessage] = useState();
 
   /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
-  /* ERROR isn't getting user information */
   firestore().collection('users').doc(userID)
     .get()
     .then((snapshot) => {
