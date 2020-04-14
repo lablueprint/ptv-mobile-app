@@ -33,6 +33,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .where('categoryID', '==', categoryID)
+      .orderBy('createdAt', 'desc') /* Update this to order by time approved, most to least recent */
       .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const posts = forumPosts.map((post) => {

@@ -18,9 +18,11 @@ export default function ForumCategoriesScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [forumCategories, setForumCategories] = useState([]);
 
+  console.log('categories ordered');
 
   firestore()
     .collection('forum_categories')
+    .orderBy('title')
     .get()
     .then((snapshot) => {
       const forumCategoriesData = snapshot.docs.map((doc) => ({
@@ -29,15 +31,6 @@ export default function ForumCategoriesScreen({ navigation }) {
       }));
       setForumCategories(
         forumCategoriesData
-          .sort((a, b) => {
-            if (a.title < b.title) {
-              return -1;
-            }
-            if (a.title > b.title) {
-              return 1;
-            }
-            return 0;
-          })
           .map((forum) => {
             const navigateToSubcategory = () => navigation.navigate('ForumSubcategoryPosts', { categoryID: forum.id });
             return (
