@@ -7,7 +7,7 @@ import { ActivityIndicator, FAB } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import ForumPost from './ForumPost';
-
+import { theme } from '../../style';
 
 export default class ForumHomeScreen extends React.Component {
   constructor(props) {
@@ -20,11 +20,15 @@ export default class ForumHomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribe = auth().onAuthStateChanged((user) => {
+    this.unsubscribeFromAuth = auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState({ userID: user.uid });
+        this.setState({ currentUserID: user.uid });
       }
     });
+
+    this.unsubscribeFromFirestore = firestore().collection('forum_posts')
+      .orderBy('createdAt', 'desc') /* Update this to order by time approved, most to least recent */
+      .onSnapshot((snapshot) => {
     firestore().collection('forum_posts')
       .get()
       .then((snapshot) => {
@@ -42,32 +46,31 @@ export default class ForumHomeScreen extends React.Component {
         }).map((post) => {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
-          const { userID } = this.state;
+          const { currentUserID } = this.state;
+          
           return (
-            // TBD in next sprint
             <ForumPost
-              belongsToCurrentUser={userID === post.userID}
+              belongsToCurrentUser={currentUserID === post.userID}
               key={post.id}
-              name={post.userID}
+              /* Pass in userID  if it exists, other pass in null */
+              userID={post.userID ? post.userID : null}
               time={time}
-              numReplies={5}
+              postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}
             >
               {post.title}
             </ForumPost>
           );
         });
-        this.setState({ posts });
-        this.setState({ loading: false });
-      })
-      .catch((error) => {
-        this.setState({ errorMessage: error.message });
-        this.setState({ loading: false });
+        this.setState({ posts, loading: false });
+      }, (error) => { /* Error handler */
+        this.setState({ errorMessage: error.message, loading: false });
       });
   }
 
-  componentWillUmount() {
-    this.unsubscribe();
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+    this.unsubscribeFromFirestore();
   }
 
   navigateToPostScreen() {
@@ -80,10 +83,10 @@ export default class ForumHomeScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles.mainContainer}>
+      <View style={styles.homeContainer}>
         <ScrollView>
           {loading && <ActivityIndicator /> }
-          {errorMessage && <Text>{errorMessage}</Text>}
+          {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {posts}
         </ScrollView>
         <FAB
@@ -97,9 +100,10 @@ export default class ForumHomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  homeContainer: {
     height: '100%',
     justifyContent: 'space-between',
+    backgroundColor: theme.colors.background,
   },
   fab: {
     margin: 15,

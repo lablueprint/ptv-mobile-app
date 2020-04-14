@@ -225,22 +225,12 @@ export default function ForumPostScreen({ navigation }) {
       />);
 
       try {
-        const snapshot = await firestore().collection('forum_comments').where('postID', '==', postID)
+        const snapshot = await firestore().collection('forum_comments')
+          .where('postID', '==', postID)
+          .orderBy('createdAt') /* sort by createdAt timestamp, from oldest to youngest */
           .get();
-        const repliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-        /* Sort comments by created at timestamp, from oldest to youngest */
-        const sortedRepliesData = repliesData.sort((a, b) => {
-          const aMillis = a.createdAt.toMillis();
-          const bMillis = b.createdAt.toMillis();
-          if (aMillis > bMillis) {
-            return 1;
-          }
-          if (aMillis < bMillis) {
-            return -1;
-          }
-          return 0;
-        });
+        const sortedRepliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
         /* Query comment author user data */
         const userSnapshot = sortedRepliesData.map((reply) => firestore().collection('users').doc(reply.userID).get());

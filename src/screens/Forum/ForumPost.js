@@ -3,31 +3,63 @@ import {
   Text, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import {
-  Card, Button, Title, IconButton, Menu, Divider,
+  Card, Title, ActivityIndicator, IconButton, Menu, Divider,
 } from 'react-native-paper';
+import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
+import { theme } from '../../style';
 
 const styles = StyleSheet.create({
-  container: {
+  postContainer: {
     marginTop: 10,
     width: '95%',
     alignSelf: 'center',
     borderRadius: 15,
-  },
-  title: {
   },
   actionContainer: {
     width: '100%',
     marginHorizontal: '1%',
     justifyContent: 'space-between',
   },
-  text: {
+  bodyText: {
+    color: theme.colors.text,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+  },
+  sideText: {
+    color: theme.colors.accent,
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
   },
 });
 
 export default function ForumPost({
-  name, time, numReplies, children, navigateToPostScreen, belongsToCurrentUser,
+  userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
 }) {
+  const [loading, setLoading] = useState(true);
+  const [numReplies, setNumReplies] = useState(0);
+
+  firestore().collection('forum_comments').where('postID', '==', postID)
+    .get()
+    .then((querySnapshot) => {
+      setNumReplies(querySnapshot.size);
+      setLoading(false);
+    });
+
+  const [name, setName] = useState('Name unset');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userErrorMessage, setUserErrorMessage] = useState();
+
+  /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
+  firestore().collection('users').doc(userID)
+    .get()
+    .then((snapshot) => {
+      const data = snapshot.data();
+      setName(data.name ? data.name : 'No name');
+      setIsAdmin(data.isAdmin);
+    })
+    .catch((error) => setUserErrorMessage(error.message));
+
   const handlePress = () => {
     // TODO: navigate to reply screen
   };
@@ -37,13 +69,15 @@ export default function ForumPost({
   const handleDelete = () => {
     // TODO: delete current post
   };
+
   const [visible, setVisible] = useState(false);
   return (
     <TouchableOpacity onPress={navigateToPostScreen}>
-      <Card style={styles.container}>
+      {userErrorMessage && <Text style={{ color: 'red' }}>{userErrorMessage}</Text>}
+      <Card style={styles.postContainer}>
         <Card.Title
-          style={styles.title}
-          subtitle={`${name} ${time}`}
+          subtitleStyle={styles.sideText}
+          subtitle={isAdmin ? `${name} (PTV Staff) ${time}` : `${name} ${time}`}
           right={(props) => (belongsToCurrentUser
             ? (
               <Menu
@@ -62,17 +96,19 @@ export default function ForumPost({
             : null)}
         />
         <Card.Content>
-          <Title>
+          <Title style={styles.bodyText}>
             {children}
           </Title>
         </Card.Content>
         <Card.Actions style={styles.actionContainer}>
-          <Text style={styles.text}>
-            {`${numReplies} Replies`}
-          </Text>
-          <Button onPress={handlePress}>
-            Reply
-          </Button>
+          <TouchableOpacity>
+            {loading && <ActivityIndicator /> }
+            {!loading && (
+            <Text style={styles.sideText} onPress={handlePress}>
+              {`${numReplies} Replies`}
+            </Text>
+            ) }
+          </TouchableOpacity>
         </Card.Actions>
       </Card>
     </TouchableOpacity>
@@ -81,9 +117,9 @@ export default function ForumPost({
 
 ForumPost.propTypes = {
   belongsToCurrentUser: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
+  userID: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
-  numReplies: PropTypes.number.isRequired,
+  postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
   navigateToPostScreen: PropTypes.func.isRequired,
 };
