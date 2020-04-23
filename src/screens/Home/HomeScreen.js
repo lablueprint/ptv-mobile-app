@@ -1,22 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Text, View,
+  ScrollView, Image, View,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
-import { Title, Button } from 'react-native-paper';
+import {
+  Text, Button, ActivityIndicator,
+} from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../../style';
 
 export default function HomeScreen(props) {
   const { navigation } = props;
-  const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [resources, setResources] = useState([]);
 
-  useEffect(() => auth().onAuthStateChanged((user) => {
-    if (user) {
-      setName(user.displayName);
-    }
-  }), []);
+  useEffect(() => {
+    setLoading(true);
+    firestore().collection('resource_categories').get().then((querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        const {
+          id, title, description, thumbnail,
+        } = doc.data();
+        temp.push(
+          <TouchableOpacity style={styles.categoryButton} key={id}>
+            <Image source={{ uri: thumbnail.src }} style={styles.categoryImage} />
+            <Text style={{ marginTop: 10 }}>
+              {`${title}`}
+            </Text>
+          </TouchableOpacity>,
+        );
+      });
+
+      setResources(temp);
+      setLoading(false);
+    })
+      .catch((error) => {
+        console.log(error.message);
+        setLoading(false);
+      });
+  }, []);
 
   function handleSignOut() {
     auth()
@@ -28,17 +54,25 @@ export default function HomeScreen(props) {
       });
   }
 
+  function loadSubcategories() {
+
+  }
+
+  if (loading) {
+    return <ActivityIndicator />;
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {errorMessage
         && (
         <Text style={{ color: 'red' }}>
           {errorMessage}
         </Text>
         )}
-      <Title>
-        {`Hi ${name}!`}
-      </Title>
+      <View style={styles.categoryButtonView}>
+        { resources }
+      </View>
       <Button
         style={styles.button}
         mode="contained"
@@ -46,7 +80,7 @@ export default function HomeScreen(props) {
       >
         Sign Out
       </Button>
-    </View>
+    </ScrollView>
   );
 }
 

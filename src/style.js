@@ -52,6 +52,30 @@ const styles = StyleSheet.create({
     width: '90%',
     marginTop: 10,
   },
+  categoryScrollView: {
+    flexGrow: 1,
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  categoryButton: {
+    aspectRatio: 1,
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+  },
+  categoryButtonView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'flex-start',
+  },
+  categoryImage: {
+    width: '40%',
+    aspectRatio: 1,
+  },
 });
 
 export default styles;
