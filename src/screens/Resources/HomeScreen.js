@@ -63,7 +63,7 @@ export default function HomeScreen(props) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollviewContainer}>
       {errorMessage
         && (
         <Text style={{ color: 'red' }}>

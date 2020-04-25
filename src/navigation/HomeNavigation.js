@@ -1,5 +1,5 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import { HomeScreen, ResourcesItemScreen } from '../screens/Home';
+import { HomeScreen, ResourcesItemScreen } from '../screens/Resources';
 
 const HomeNavigation = createStackNavigator(
   {
