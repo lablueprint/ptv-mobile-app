@@ -18,6 +18,7 @@ const INITIAL_STATE = {
   userID: '',
   categoryID: '',
   forumCategories: [],
+  approved: false,
 };
 
 export default class CreateForumPostScreen extends React.Component {
@@ -54,7 +55,7 @@ export default class CreateForumPostScreen extends React.Component {
 
   handleSubmit() {
     const {
-      title, body, userID, categoryID,
+      title, body, userID, categoryID, approved,
     } = this.state;
     if (title.length === 0) {
       this.setState({ errorMessageTitle: 'Please Enter Title Before Submitting' });
@@ -71,6 +72,7 @@ export default class CreateForumPostScreen extends React.Component {
           createdAt: firestore.Timestamp.now(),
           updatedAt: firestore.Timestamp.now(),
           categoryID,
+          approved,
         })
         .then(() => {
         /* TODO: Navigate backwards and use a dialogue instead of an alert */
