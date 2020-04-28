@@ -59,9 +59,14 @@ const ForumNavigation = createStackNavigator(
     },
   },
   {
+    // headerMode: 'none', //none gets ride of the Home header
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: theme.colors.primary,
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        borderTopWidth: 0,
       },
       headerTintColor: '#FFFFFF', // #FFFFFF not in theme colours
       headerTitleAlign: 'center',
