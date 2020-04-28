@@ -54,6 +54,7 @@ const ForumNavigation = createStackNavigator(
       headerTintColor: '#FFFFFF',
       headerTitleAlign: 'center',
       headerTitleStyle: {
+        /* Change these to match theme */
         fontFamily: theme.fonts.regular.fontFamily,
         fontWeight: '600',
         fontSize: 20,
