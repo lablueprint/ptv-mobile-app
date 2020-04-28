@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { DefaultTheme, configureFonts } from 'react-native-paper';
 
+const WHITE = '#ffffff';
+
 const fontConfig = {
   default: {
     regular: {
@@ -30,6 +32,7 @@ export const theme = {
     ...DefaultTheme.colors,
     primary: '#3190D0',
     accent: '#8EAEC3',
+    disabled: '#A7D4F4',
     background: '#E6EFF5',
     text: '#194261',
   },
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: '90%',
     marginTop: 8,
-    backgroundColor: '#ffffff',
+    backgroundColor: WHITE,
   },
   button: {
     width: '90%',
