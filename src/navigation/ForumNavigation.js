@@ -39,7 +39,10 @@ const ForumNavigation = createStackNavigator(
     },
     ForumSubcategoryPosts: {
       screen: ForumSubcategoryPostsScreen,
-      navigationOptions: () => ({ title: 'Category' }),
+      navigationOptions: ({ navigation }) => ({
+        // title passed in from ForumSubcategoryPostsScreen
+        title: `${navigation.state.params.subcategoryName}`,
+      }),
     },
     CreateForumPost: {
       screen: CreateForumPostScreen,
@@ -49,15 +52,13 @@ const ForumNavigation = createStackNavigator(
   {
     defaultNavigationOptions: {
       headerStyle: {
-        backgroundColor: '#3190D0',
+        backgroundColor: theme.colors.primary,
       },
-      headerTintColor: '#FFFFFF',
+      headerTintColor: '#FFFFFF', // #FFFFFF not in theme colours
       headerTitleAlign: 'center',
       headerTitleStyle: {
-        /* Change these to match theme */
         fontFamily: theme.fonts.regular.fontFamily,
-        fontWeight: '600',
-        fontSize: 20,
+        fontWeight: theme.fonts.regular.fontWeight,
       },
     },
   },
