@@ -22,7 +22,16 @@ const ForumHomeTopTabNavigation = createMaterialTopTabNavigator(
     },
   },
   {
-    defaultNavigationOptions: {
+    tabBarOptions: {
+      activeTintColor: '#FFFFFF',
+      inactiveTintColor: '#A7D4F4',
+      labelStyle: {
+        textAlign: 'center',
+        fontFamily: theme.fonts.regular.fontFamily,
+        fontWeight: theme.fonts.regular.fontWeight,
+      },
+      indicatorStyle: { backgroundColor: '#FFFFFF' },
+      style: { backgroundColor: theme.colors.primary },
     },
   },
 );
