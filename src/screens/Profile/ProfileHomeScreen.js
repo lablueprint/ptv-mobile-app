@@ -5,8 +5,8 @@ import MyPosts from './MyPosts';
 
 
 const ProfileHomeScreen = createMaterialTopTabNavigator({
-  Approved: () => <MyPosts approvalBoolean />,
-  Pending: () => <MyPosts approvalBoolean={false} />,
+  Approved: () => <MyPosts approval />,
+  Pending: () => <MyPosts approval={false} />,
 },
 {
   initialRouteName: 'Pending',
@@ -14,9 +14,10 @@ const ProfileHomeScreen = createMaterialTopTabNavigator({
   swipeEnabled: true,
   animationEnabled: true,
   navigationOptions: {
-    header: ProfileHomeTop,
+    header: () => (
+      <ProfileHomeTop />
+    ),
   },
 });
-
 
 export default ProfileHomeScreen;

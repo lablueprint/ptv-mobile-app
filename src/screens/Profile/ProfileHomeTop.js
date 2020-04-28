@@ -69,10 +69,9 @@ const profileHomeTopStyles = StyleSheet.create({
   },
   avatar: {
     alignSelf: 'center',
-    marginTop: '8',
+    marginTop: 12,
   },
 });
-
 
 ProfileHomeTop.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,

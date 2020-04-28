@@ -22,7 +22,7 @@ class MyPosts extends Component {
   }
 
   componentDidMount() {
-    const { approvalBoolean } = this.props;
+    const { approval } = this.props;
     this.unsubscribeFromAuth = auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ userID: user.uid });
@@ -39,7 +39,7 @@ class MyPosts extends Component {
           const { userID } = this.state;
 
           return (
-            post.approved === approvalBoolean && userID === post.userID && (
+            post.approved === approval && userID === post.userID && (
             <ForumPost
               belongsToCurrentUser={userID === post.userID}
               key={post.id}
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
 MyPosts.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
-  approvalBoolean: PropTypes.bool.isRequired,
+  approval: PropTypes.bool.isRequired,
 };
 
 export default withNavigation(MyPosts);
