@@ -34,6 +34,7 @@ export default class ForumHomeScreen extends React.Component {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           const { currentUserID } = this.state;
+          const { navigation } = this.props;
 
           return (
             <ForumPost
@@ -44,6 +45,7 @@ export default class ForumHomeScreen extends React.Component {
               time={time}
               postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}
+              navigation={navigation}
             >
               {post.title}
             </ForumPost>

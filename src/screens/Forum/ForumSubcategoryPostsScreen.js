@@ -62,6 +62,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
               time={time}
               postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}
+              navigation={navigation}
             >
               {post.title}
             </ForumPost>
