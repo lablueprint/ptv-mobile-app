@@ -23,14 +23,14 @@ const ForumHomeTopTabNavigation = createMaterialTopTabNavigator(
   },
   {
     tabBarOptions: {
-      activeTintColor: '#FFFFFF',
-      inactiveTintColor: '#A7D4F4',
+      activeTintColor: theme.colors.headerText,
+      inactiveTintColor: theme.colors.inactiveHeader,
       labelStyle: {
         textAlign: 'center',
         fontFamily: theme.fonts.regular.fontFamily,
         fontWeight: theme.fonts.regular.fontWeight,
       },
-      indicatorStyle: { backgroundColor: '#FFFFFF' },
+      indicatorStyle: { backgroundColor: theme.colors.headerText },
       style: { backgroundColor: theme.colors.primary },
     },
   },
@@ -59,16 +59,16 @@ const ForumNavigation = createStackNavigator(
     },
   },
   {
-    // headerMode: 'none', //none gets ride of the Home header
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: theme.colors.primary,
+        /* Gets rid of line btw Home and All Posts/Category headers */
         elevation: 0,
         shadowOpacity: 0,
         borderBottomWidth: 0,
         borderTopWidth: 0,
       },
-      headerTintColor: '#FFFFFF', // #FFFFFF not in theme colours
+      headerTintColor: theme.colors.headerText,
       headerTitleAlign: 'center',
       headerTitleStyle: {
         fontFamily: theme.fonts.regular.fontFamily,
