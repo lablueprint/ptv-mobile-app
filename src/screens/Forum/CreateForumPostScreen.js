@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Picker, Alert,
+  View, Picker, Alert, StyleSheet,
 } from 'react-native';
 import {
   TextInput, Button, Text,
@@ -8,6 +8,7 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
+import styles, { theme } from '../../style'
 
 const INITIAL_STATE = {
   title: '',
@@ -43,7 +44,7 @@ export default class CreateForumPostScreen extends React.Component {
     });
   }
 
-  componentWillUmount() {
+  componentWillUnmount() {
     this.unsubscribe();
   }
 
@@ -104,15 +105,16 @@ export default class CreateForumPostScreen extends React.Component {
       />
     ));
     return (
-      <View>
+      <View style={styles.container}>
         {errorMessageFirestore
         && (
           <Text style={{ color: 'red' }}>
             {errorMessageFirestore}
           </Text>
         )}
-        <Text>Title</Text>
+        <Text style={textStyles.text}>Title</Text>
         <TextInput
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ title: text })}
           placeholder="Enter Title"
           value={title}
@@ -128,14 +130,15 @@ export default class CreateForumPostScreen extends React.Component {
 
         <Picker
           selectedValue={categoryID}
-          style={{ height: 50, width: 200 }}
+          style={textStyles}
           onValueChange={(itemValue) => this.setState({ categoryID: itemValue })}
         >
           {pickerItems}
         </Picker>
 
-        <Text>Body</Text>
+        <Text style={textStyles.text}>Body</Text>
         <TextInput
+          style={styles.textInput}
           onChangeText={(text) => this.setState({ body: text })}
           placeholder="Enter Forum Post"
           value={body}
@@ -158,6 +161,21 @@ export default class CreateForumPostScreen extends React.Component {
     );
   }
 }
+
+const textStyles = StyleSheet.create({
+  text: {
+    color: theme.colors.text,
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
+  },
+  picker: {
+    height: 50,
+    width: 200,
+    color: theme.colors.text,
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
+  },
+});
 
 CreateForumPostScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,

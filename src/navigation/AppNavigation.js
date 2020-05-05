@@ -1,13 +1,12 @@
 import { createBottomTabNavigator } from 'react-navigation-tabs';
-import HomeScreen from '../screens/Home';
-import ForumNavigation from './ForumNavigation';
 import ProfileNavigation from './ProfileNavigation';
-
+import ForumNavigation from './ForumNavigation';
+import HomeNavigation from './HomeNavigation';
 
 const AppNavigation = createBottomTabNavigator(
   {
     Home: {
-      screen: HomeScreen,
+      screen: HomeNavigation,
     },
     Forum: {
       screen: ForumNavigation,

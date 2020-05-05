@@ -1,3 +1,4 @@
 import HomeScreen from './HomeScreen';
+import ResourcesItemScreen from './ResourcesItemScreen';
 
-export default HomeScreen;
+export { HomeScreen, ResourcesItemScreen };
