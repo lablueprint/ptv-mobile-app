@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ScrollView, Text, View, StyleSheet,
 } from 'react-native';
@@ -13,44 +13,36 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default function ForumCategoriesScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [forumCategories, setForumCategories] = useState([]);
 
-
-  firestore()
-    .collection('forum_categories')
-    .get()
-    .then((snapshot) => {
-      const forumCategoriesData = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setForumCategories(
-        forumCategoriesData
-          .sort((a, b) => {
-            if (a.title < b.title) {
-              return -1;
-            }
-            if (a.title > b.title) {
-              return 1;
-            }
-            return 0;
-          })
-          .map((forum) => {
-            const navigateToSubcategory = () => navigation.navigate('ForumSubcategoryPosts', { categoryID: forum.id });
-            return (
-              <ForumCategoryCard key={forum.id} navigate={navigateToSubcategory}>
-                {forum.title}
-              </ForumCategoryCard>
-            );
-          }),
-      );
-    })
-    .catch((error) => {
-      setErrorMessage(error.message);
-    });
+  useEffect(() => { /* Put firestore query inside useEffect hook to prevent infinite loop */
+    firestore()
+      .collection('forum_categories')
+      .orderBy('title')
+      .get()
+      .then((snapshot) => {
+        const forumCategoriesData = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setForumCategories(
+          forumCategoriesData
+            .map((forum) => {
+              const navigateToSubcategory = () => navigation.navigate('ForumSubcategoryPosts', { categoryID: forum.id });
+              return (
+                <ForumCategoryCard key={forum.id} navigate={navigateToSubcategory}>
+                  {forum.title}
+                </ForumCategoryCard>
+              );
+            }),
+        );
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+      });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
