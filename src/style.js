@@ -42,6 +42,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.background,
   },
+  scrollviewContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
   textInput: {
     height: 40,
     width: '90%',
@@ -51,6 +56,18 @@ const styles = StyleSheet.create({
   button: {
     width: '90%',
     marginTop: 10,
+  },
+  signOutButton: {
+    width: '90%',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  subcategoryButton: {
+    width: '90%',
+    marginTop: 20,
+  },
+  subcategoryButtonHeight: {
+    height: 125,
   },
   categoryScrollView: {
     flexGrow: 1,
@@ -62,7 +79,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
   },
   categoryButtonView: {

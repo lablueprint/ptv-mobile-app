@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useCallback,
+} from 'react';
 import {
   ScrollView, Image, View,
 } from 'react-native';
@@ -8,39 +10,62 @@ import PropTypes from 'prop-types';
 import {
   Text, Button, ActivityIndicator,
 } from 'react-native-paper';
+import { NavigationEvents } from 'react-navigation';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../../style';
+import { collections, nav } from './variables';
 
 export default function HomeScreen(props) {
   const { navigation } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [resources, setResources] = useState([]);
+  const [snapshot, setSnapshot] = useState(null);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [clicked, setClicked] = useState(false);
+
+  const loadScreen = useCallback((id, title) => {
+    setLoading(true);
+    setClicked(true);
+    firestore()
+      .collection(collections.subcategories)
+      .where('parent', '==', id)
+      .get()
+      .then((subcategorySnapshot) => {
+        if (!subcategorySnapshot.empty) {
+          navigation.push(nav.subcategories, { snapshot: subcategorySnapshot, header: title });
+        } else {
+          firestore()
+            .collection(collections.items)
+            .where('parent', '==', id)
+            .get()
+            .then((itemSnapshot) => {
+              navigation.push(nav.items, { snapshot: itemSnapshot, header: title });
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+              setLoading(false);
+              setClicked(false);
+            });
+        }
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setLoading(false);
+        setClicked(false);
+      });
+  }, [navigation]);
 
   useEffect(() => {
-    setLoading(true);
-    firestore().collection('resource_categories').get().then((querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => {
-        const {
-          id, title, description, thumbnail,
-        } = doc.data();
-        temp.push(
-          <TouchableOpacity style={styles.categoryButton} key={id}>
-            <Image source={{ uri: thumbnail.src }} style={styles.categoryImage} />
-            <Text style={{ marginTop: 10 }}>
-              {`${title}`}
-            </Text>
-          </TouchableOpacity>,
-        );
-      });
-
-      setResources(temp);
-      setLoading(false);
-    })
+    firestore()
+      .collection(collections.categories)
+      .get()
+      .then((querySnapshot) => {
+        setSnapshot(querySnapshot);
+        setInitialLoad(false);
+      })
       .catch((error) => {
-        console.log(error.message);
-        setLoading(false);
+        setErrorMessage(error.message);
+        setInitialLoad(false);
       });
   }, []);
 
@@ -54,27 +79,48 @@ export default function HomeScreen(props) {
       });
   }
 
-  function loadSubcategories() {
-
-  }
-
-  if (loading) {
-    return <ActivityIndicator />;
-  }
-
   return (
     <ScrollView contentContainerStyle={styles.scrollviewContainer}>
+      <NavigationEvents
+        onWillFocus={() => {
+          setLoading(false);
+          setClicked(false);
+        }}
+      />
       {errorMessage
         && (
         <Text style={{ color: 'red' }}>
           {errorMessage}
         </Text>
         )}
+      { (loading || initialLoad)
+        && (
+        <ActivityIndicator size="large" />
+        )}
       <View style={styles.categoryButtonView}>
-        { resources }
+        { !initialLoad
+          && (snapshot.docs.map((doc) => {
+            const {
+              title, thumbnail,
+            } = doc.data();
+
+            return (
+              <TouchableOpacity
+                style={styles.categoryButton}
+                key={doc.id}
+                disabled={clicked}
+                onPress={() => loadScreen(doc.id, title)}
+              >
+                <Image source={{ uri: thumbnail.src }} style={styles.categoryImage} />
+                <Text style={{ marginTop: 10 }}>
+                  {`${title}`}
+                </Text>
+              </TouchableOpacity>
+            );
+          }))}
       </View>
       <Button
-        style={styles.button}
+        style={styles.signOutButton}
         mode="contained"
         onPress={handleSignOut}
       >
@@ -85,5 +131,8 @@ export default function HomeScreen(props) {
 }
 
 HomeScreen.propTypes = {
-  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
