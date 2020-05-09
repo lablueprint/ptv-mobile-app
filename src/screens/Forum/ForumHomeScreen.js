@@ -34,7 +34,12 @@ export default class ForumHomeScreen extends React.Component {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           const { currentUserID } = this.state;
-          const { navigation } = this.props;
+
+          // Set state to be passed in navigateToPostScreen
+          if (post.userID) {
+            this.setState({ userID: post.userID });
+          }
+          this.setState({ postID: post.id });
 
           return (
             <ForumPost
@@ -45,7 +50,6 @@ export default class ForumHomeScreen extends React.Component {
               time={time}
               postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}
-              navigation={navigation}
             >
               {post.title}
             </ForumPost>
@@ -64,7 +68,8 @@ export default class ForumHomeScreen extends React.Component {
 
   navigateToPostScreen() {
     const { navigation } = this.props;
-    navigation.navigate('ForumPost');
+    const { userID, postID } = this.state;
+    navigation.navigate('ForumPost', { userID, postID });
   }
 
   render() {

@@ -44,9 +44,7 @@ const ForumNavigation = createStackNavigator(
     },
     ForumPost: {
       screen: ForumPostScreen,
-      navigationOptions: ({ navigation }) => ({
-        title: `${navigation.state.params.displayName} 'Post'`,
-      }),
+      navigationOptions: () => ({ title: 'Post' }),
     },
     ForumSubcategoryPosts: {
       screen: ForumSubcategoryPostsScreen,

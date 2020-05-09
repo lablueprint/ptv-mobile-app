@@ -177,6 +177,7 @@ function ReplyBox({
 export default function ForumPostScreen({ navigation }) {
   /* User & post id */
   const postID = navigation.getParam('postID');
+
   const userID = navigation.getParam('userID');
 
   /* Displayed error message */

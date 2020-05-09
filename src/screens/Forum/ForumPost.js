@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 export default function ForumPost({
-  userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser, navigation,
+  userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
 }) {
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
@@ -60,14 +60,7 @@ export default function ForumPost({
         setIsAdmin(data.isAdmin);
       })
       .catch((error) => setUserErrorMessage(error.message));
-
-    // Pass post author's name to navigation
-    navigation.setParams({ displayName: `${name}'s` });
-  }, [name, navigation, userID]);
-
-  console.log(`name prop = ${name}`);
-  console.log(`name = ${navigation.getParam('displayname')}`);
-  console.log(`subcategory  !! = ${navigation.getParam('displayname')}`);
+  }, [name, userID]);
 
   const handlePress = () => {
     // TODO: navigate to reply screen
@@ -131,8 +124,4 @@ ForumPost.propTypes = {
   postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
   navigateToPostScreen: PropTypes.func.isRequired,
-  navigation: PropTypes.shape({
-    getParam: PropTypes.func,
-    setParams: PropTypes.func,
-  }).isRequired,
 };

@@ -53,6 +53,12 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           const time = date ? date.toTimeString() : null;
           const { currentUserID } = this.state;
 
+          // Set state to be passed in navigateToPostScreen
+          if (post.userID) {
+            this.setState({ userID: post.userID });
+          }
+          this.setState({ postID: post.id });
+
           return (
           // TBD: replies
             <ForumPost
@@ -62,7 +68,6 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
               time={time}
               postID={post.id}
               navigateToPostScreen={this.navigateToPostScreen}
-              navigation={navigation}
             >
               {post.title}
             </ForumPost>
@@ -81,7 +86,8 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
   navigateToPostScreen() {
     const { navigation } = this.props;
-    navigation.navigate('ForumPost');
+    const { userID, postID } = this.state;
+    navigation.navigate('ForumPost', { userID, postID });
   }
 
   render() {
