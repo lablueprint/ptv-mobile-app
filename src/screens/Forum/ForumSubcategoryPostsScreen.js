@@ -53,12 +53,6 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           const time = date ? date.toTimeString() : null;
           const { currentUserID } = this.state;
 
-          // Set state to be passed in navigateToPostScreen
-          if (post.userID) {
-            this.setState({ userID: post.userID });
-          }
-          this.setState({ postID: post.id });
-
           return (
           // TBD: replies
             <ForumPost
@@ -84,10 +78,9 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     this.unsubscribeFromFirestore();
   }
 
-  navigateToPostScreen() {
+  navigateToPostScreen(postID, userID) {
     const { navigation } = this.props;
-    const { userID, postID } = this.state;
-    navigation.navigate('ForumPost', { userID, postID });
+    navigation.navigate('ForumPost', { postID, userID });
   }
 
   render() {
