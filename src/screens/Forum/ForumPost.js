@@ -74,7 +74,7 @@ export default function ForumPost({
 
   const [visible, setVisible] = useState(false);
   return (
-    <TouchableOpacity onPress={navigateToPostScreen(postID, userID)}>
+    <TouchableOpacity onPress={() => navigateToPostScreen(postID, userID)}>
       {userErrorMessage && <Text style={{ color: 'red' }}>{userErrorMessage}</Text>}
       <Card style={styles.postContainer}>
         <Card.Title
