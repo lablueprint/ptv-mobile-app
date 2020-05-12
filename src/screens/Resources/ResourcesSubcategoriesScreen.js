@@ -19,11 +19,9 @@ export default function ResourcesSubcategoriesScreen(props) {
   const snapshot = navigation.getParam('snapshot');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [clicked, setClicked] = useState(false);
 
   const loadScreen = useCallback((id, title) => {
     setLoading(true);
-    setClicked(true);
     firestore()
       .collection(collections.subcategories)
       .where('parent', '==', id)
@@ -37,19 +35,17 @@ export default function ResourcesSubcategoriesScreen(props) {
             .where('parent', '==', id)
             .get()
             .then((itemSnapshot) => {
-              navigation.push(nav.items, { snapshot: itemSnapshot, header: title });
+              navigation.push(nav.itemList, { snapshot: itemSnapshot, header: title });
             })
             .catch((error) => {
               setErrorMessage(error.message);
               setLoading(false);
-              setClicked(false);
             });
         }
       })
       .catch((error) => {
         setErrorMessage(error.message);
         setLoading(false);
-        setClicked(false);
       });
   }, [navigation]);
 
@@ -58,7 +54,6 @@ export default function ResourcesSubcategoriesScreen(props) {
       <NavigationEvents
         onWillFocus={() => {
           setLoading(false);
-          setClicked(false);
         }}
       />
       {errorMessage
@@ -78,12 +73,15 @@ export default function ResourcesSubcategoriesScreen(props) {
             contentStyle={styles.subcategoryButtonHeight}
             style={styles.subcategoryButton}
             key={doc.id}
-            disabled={clicked}
+            uppercase={false}
+            disabled={loading}
             mode="contained"
             color="#ffffff"
             onPress={() => loadScreen(doc.id, title)}
           >
-            {`${title}`}
+            <Text style={styles.resourceText}>
+              {`${title}`}
+            </Text>
           </Button>
         );
       })}

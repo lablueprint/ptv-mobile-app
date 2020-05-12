@@ -21,11 +21,9 @@ export default function HomeScreen(props) {
   const [loading, setLoading] = useState(false);
   const [snapshot, setSnapshot] = useState(null);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [clicked, setClicked] = useState(false);
 
   const loadScreen = useCallback((id, title) => {
     setLoading(true);
-    setClicked(true);
     firestore()
       .collection(collections.subcategories)
       .where('parent', '==', id)
@@ -39,19 +37,17 @@ export default function HomeScreen(props) {
             .where('parent', '==', id)
             .get()
             .then((itemSnapshot) => {
-              navigation.push(nav.items, { snapshot: itemSnapshot, header: title });
+              navigation.push(nav.itemList, { snapshot: itemSnapshot, header: title });
             })
             .catch((error) => {
               setErrorMessage(error.message);
               setLoading(false);
-              setClicked(false);
             });
         }
       })
       .catch((error) => {
         setErrorMessage(error.message);
         setLoading(false);
-        setClicked(false);
       });
   }, [navigation]);
 
@@ -84,7 +80,6 @@ export default function HomeScreen(props) {
       <NavigationEvents
         onWillFocus={() => {
           setLoading(false);
-          setClicked(false);
         }}
       />
       {errorMessage
@@ -108,11 +103,11 @@ export default function HomeScreen(props) {
               <TouchableOpacity
                 style={styles.categoryButton}
                 key={doc.id}
-                disabled={clicked}
+                disabled={loading}
                 onPress={() => loadScreen(doc.id, title)}
               >
                 <Image source={{ uri: thumbnail.src }} style={styles.categoryImage} />
-                <Text style={{ marginTop: 10 }}>
+                <Text style={styles.categoryText}>
                   {`${title}`}
                 </Text>
               </TouchableOpacity>

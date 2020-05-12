@@ -6,5 +6,6 @@ export const collections = {
 
 export const nav = {
   subcategories: 'ResourcesSubcategories',
-  items: 'ResourcesItemList',
+  itemList: 'ResourcesItemList',
+  item: 'ResourcesItem',
 };

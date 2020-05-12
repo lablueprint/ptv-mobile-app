@@ -62,6 +62,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
+  categoryText: {
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  resourceText: {
+    fontWeight: 'bold',
+  },
   subcategoryButton: {
     width: '90%',
     marginTop: 20,
@@ -86,12 +93,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'flex-start',
   },
   categoryImage: {
     width: '40%',
     aspectRatio: 1,
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    padding: 15,
+    backgroundColor: '#ffffff',
+  },
+  accordionHeaderText: {
+    flex: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  accordionHeaderIcon: {
+    flex: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  accordionContent: {
+    padding: 15,
+    paddingTop: 0,
+    backgroundColor: '#ffffff',
+  },
+  moreButton: {
+    alignItems: 'flex-end',
+    marginTop: 10,
   },
 });
 
