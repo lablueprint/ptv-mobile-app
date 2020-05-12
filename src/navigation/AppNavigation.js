@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from 'react-navigation-tabs';
-import EditProfileScreen from '../screens/Profile';
+import ProfileNavigation from './ProfileNavigation';
 import ForumNavigation from './ForumNavigation';
 import HomeNavigation from './HomeNavigation';
 
@@ -15,7 +15,7 @@ const AppNavigation = createBottomTabNavigator(
       }),
     },
     Profile: {
-      screen: EditProfileScreen,
+      screen: ProfileNavigation,
     },
   },
   {
