@@ -25,11 +25,23 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
   componentDidMount() {
     const { categoryID } = this.state;
+    const { navigation } = this.props;
+
+    // Get the name of the category w/ this ID, pass the name to navigation
+    firestore().collection('forum_categories').doc(categoryID)
+      .get()
+      .then((snapshot) => {
+        const data = snapshot.data();
+        navigation.setParams({ subcategoryName: data.title ? data.title : 'Uncategorized' });
+      })
+      .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+
     this.unsubscribeFromAuth = auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ currentUserID: user.uid });
       }
     });
+
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .where('categoryID', '==', categoryID)
@@ -66,9 +78,9 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     this.unsubscribeFromFirestore();
   }
 
-  navigateToPostScreen() {
+  navigateToPostScreen(postID, userID) {
     const { navigation } = this.props;
-    navigation.navigate('ForumPost');
+    navigation.navigate('ForumPost', { postID, userID });
   }
 
   render() {
@@ -106,6 +118,7 @@ ForumSubcategoryPostsScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func,
     getParam: PropTypes.func,
+    setParams: PropTypes.func,
     categoryID: PropTypes.string,
   }).isRequired,
 };

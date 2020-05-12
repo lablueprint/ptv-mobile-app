@@ -32,6 +32,9 @@ export const theme = {
     accent: '#8EAEC3',
     background: '#E6EFF5',
     text: '#194261',
+    headerText: '#FFFFFF',
+    inactiveHeader: '#A7D4F4',
+    postBackground: '#FFFFFF',
   },
 };
 

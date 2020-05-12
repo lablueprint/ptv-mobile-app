@@ -60,9 +60,9 @@ export default class ForumHomeScreen extends React.Component {
     this.unsubscribeFromFirestore();
   }
 
-  navigateToPostScreen() {
+  navigateToPostScreen(postID, userID) {
     const { navigation } = this.props;
-    navigation.navigate('ForumPost');
+    navigation.navigate('ForumPost', { postID, userID });
   }
 
   render() {
