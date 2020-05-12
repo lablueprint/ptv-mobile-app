@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useCallback,
 } from 'react';
 import {
-  ScrollView, Image, View,
+  ScrollView, Image, View, StyleSheet,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -12,7 +12,7 @@ import {
 } from 'react-native-paper';
 import { NavigationEvents } from 'react-navigation';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import styles from '../../style';
+import { theme } from '../../style';
 import { collections, nav } from './variables';
 
 export default function HomeScreen(props) {
@@ -76,7 +76,7 @@ export default function HomeScreen(props) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollviewContainer}>
+    <ScrollView contentContainerStyle={HomeStyles.scrollviewContainer}>
       <NavigationEvents
         onWillFocus={() => {
           setLoading(false);
@@ -92,7 +92,7 @@ export default function HomeScreen(props) {
         && (
         <ActivityIndicator size="large" />
         )}
-      <View style={styles.categoryButtonView}>
+      <View style={HomeStyles.categoryButtonView}>
         { !initialLoad
           && (snapshot.docs.map((doc) => {
             const {
@@ -101,13 +101,13 @@ export default function HomeScreen(props) {
 
             return (
               <TouchableOpacity
-                style={styles.categoryButton}
+                style={HomeStyles.categoryButton}
                 key={doc.id}
                 disabled={loading}
                 onPress={() => loadScreen(doc.id, title)}
               >
-                <Image source={{ uri: thumbnail.src }} style={styles.categoryImage} />
-                <Text style={styles.categoryText}>
+                <Image source={{ uri: thumbnail.src }} style={HomeStyles.categoryImage} />
+                <Text style={HomeStyles.categoryText}>
                   {`${title}`}
                 </Text>
               </TouchableOpacity>
@@ -115,7 +115,7 @@ export default function HomeScreen(props) {
           }))}
       </View>
       <Button
-        style={styles.signOutButton}
+        style={HomeStyles.button}
         mode="contained"
         onPress={handleSignOut}
       >
@@ -124,6 +124,40 @@ export default function HomeScreen(props) {
     </ScrollView>
   );
 }
+
+const HomeStyles = StyleSheet.create({
+  scrollviewContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  categoryButtonView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  categoryButton: {
+    aspectRatio: 1,
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+  },
+  categoryImage: {
+    width: '40%',
+    aspectRatio: 1,
+  },
+  categoryText: {
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+});
 
 HomeScreen.propTypes = {
   navigation: PropTypes.shape({

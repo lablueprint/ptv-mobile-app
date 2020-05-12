@@ -2,7 +2,7 @@ import React, {
   useState, useCallback,
 } from 'react';
 import {
-  ScrollView,
+  ScrollView, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
@@ -10,7 +10,7 @@ import { NavigationEvents } from 'react-navigation';
 import {
   Text, Button, ActivityIndicator,
 } from 'react-native-paper';
-import styles from '../../style';
+import { theme } from '../../style';
 import { collections, nav } from './variables';
 
 
@@ -50,7 +50,7 @@ export default function ResourcesSubcategoriesScreen(props) {
   }, [navigation]);
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollviewContainer}>
+    <ScrollView contentContainerStyle={SubcategoriesStyles.scrollviewContainer}>
       <NavigationEvents
         onWillFocus={() => {
           setLoading(false);
@@ -70,8 +70,8 @@ export default function ResourcesSubcategoriesScreen(props) {
         const { title } = doc.data();
         return (
           <Button
-            contentStyle={styles.subcategoryButtonHeight}
-            style={styles.subcategoryButton}
+            contentStyle={SubcategoriesStyles.subcategoryButtonHeight}
+            style={SubcategoriesStyles.subcategoryButton}
             key={doc.id}
             uppercase={false}
             disabled={loading}
@@ -79,7 +79,7 @@ export default function ResourcesSubcategoriesScreen(props) {
             color="#ffffff"
             onPress={() => loadScreen(doc.id, title)}
           >
-            <Text style={styles.resourceText}>
+            <Text style={SubcategoriesStyles.resourceText}>
               {`${title}`}
             </Text>
           </Button>
@@ -88,6 +88,24 @@ export default function ResourcesSubcategoriesScreen(props) {
     </ScrollView>
   );
 }
+
+const SubcategoriesStyles = StyleSheet.create({
+  scrollviewContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  subcategoryButtonHeight: {
+    height: 125,
+  },
+  subcategoryButton: {
+    width: '90%',
+    marginTop: 20,
+  },
+  resourceText: {
+    fontWeight: 'bold',
+  },
+});
 
 ResourcesSubcategoriesScreen.navigationOptions = ({ navigation }) => ({
   headerTitle: navigation.getParam('header'),

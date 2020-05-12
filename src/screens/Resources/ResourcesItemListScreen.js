@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  ScrollView, View, TouchableOpacity,
+  ScrollView, View, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {
@@ -10,7 +10,7 @@ import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationEvents } from 'react-navigation';
-import styles from '../../style';
+import { theme } from '../../style';
 import { nav } from './variables';
 
 export default function ResourcesItemListScreen(props) {
@@ -22,13 +22,13 @@ export default function ResourcesItemListScreen(props) {
 
   function renderHeader(doc, _, isActive) {
     return (
-      <View style={styles.accordionHeader}>
-        <View style={styles.accordionHeaderText}>
-          <Text style={styles.resourceText}>
+      <View style={ItemListStyles.accordionHeader}>
+        <View style={ItemListStyles.accordionHeaderText}>
+          <Text style={ItemListStyles.resourceText}>
             {doc.data().title}
           </Text>
         </View>
-        <View style={styles.accordionHeaderIcon}>
+        <View style={ItemListStyles.accordionHeaderIcon}>
           <Icon name={isActive ? 'chevron-up' : 'chevron-down'} />
         </View>
       </View>
@@ -37,14 +37,14 @@ export default function ResourcesItemListScreen(props) {
 
   function renderContent(doc) {
     return (
-      <View style={styles.accordionContent}>
+      <View style={ItemListStyles.accordionContent}>
         <Text>
           {doc.data().description}
         </Text>
 
-        <View style={styles.moreButton}>
+        <View style={ItemListStyles.moreButton}>
           <Text
-            style={styles.resourceText}
+            style={ItemListStyles.resourceText}
             onPress={() => {
               setLoading(true);
               navigation.push(nav.item, { resourceID: doc.id });
@@ -71,25 +71,25 @@ export default function ResourcesItemListScreen(props) {
         <View>
           <TouchableOpacity
             onPress={() => setSingleActive(!singleActive)}
-            style={styles.accordionHeader}
+            style={ItemListStyles.accordionHeader}
           >
-            <View style={styles.accordionHeaderText}>
-              <Text style={styles.resourceText}>
+            <View style={ItemListStyles.accordionHeaderText}>
+              <Text style={ItemListStyles.resourceText}>
                 {doc.data().title}
               </Text>
             </View>
-            <View style={styles.accordionHeaderIcon}>
+            <View style={ItemListStyles.accordionHeaderIcon}>
               <Icon name={singleActive ? 'chevron-up' : 'chevron-down'} />
             </View>
           </TouchableOpacity>
-          <Collapsible collapsed={!singleActive} style={styles.accordionContent}>
+          <Collapsible collapsed={!singleActive} style={ItemListStyles.accordionContent}>
             <Text>
               {doc.data().description}
             </Text>
 
-            <View style={styles.moreButton}>
+            <View style={ItemListStyles.moreButton}>
               <Text
-                style={styles.resourceText}
+                style={ItemListStyles.resourceText}
                 onPress={() => {
                   setLoading(true);
                   navigation.push(nav.item, { resourceID: doc.id });
@@ -119,7 +119,7 @@ export default function ResourcesItemListScreen(props) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollviewContainer}>
+    <ScrollView contentContainerStyle={ItemListStyles.scrollviewContainer}>
       <NavigationEvents
         onWillFocus={() => {
           setLoading(false);
@@ -133,6 +133,43 @@ export default function ResourcesItemListScreen(props) {
     </ScrollView>
   );
 }
+
+const ItemListStyles = StyleSheet.create({
+  scrollviewContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    padding: 15,
+    backgroundColor: '#ffffff',
+  },
+  accordionHeaderText: {
+    flex: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  accordionHeaderIcon: {
+    flex: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  accordionContent: {
+    padding: 15,
+    paddingTop: 0,
+    backgroundColor: '#ffffff',
+  },
+  moreButton: {
+    alignItems: 'flex-end',
+    marginTop: 10,
+  },
+  resourceText: {
+    fontWeight: 'bold',
+  },
+});
 
 ResourcesItemListScreen.navigationOptions = ({ navigation }) => ({
   headerTitle: navigation.getParam('header'),

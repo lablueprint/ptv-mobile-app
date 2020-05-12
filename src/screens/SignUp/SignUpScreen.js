@@ -1,12 +1,12 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import {
   Button, TextInput, Text, Title,
 } from 'react-native-paper';
-import styles from '../../style';
+import { theme } from '../../style';
 
 const INITAL_STATE = {
   email: '',
@@ -66,7 +66,7 @@ class SignUpScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles.container}>
+      <View style={SignUpstyles.container}>
         <Title>Sign Up</Title>
         {errorMessage
           && (
@@ -81,7 +81,7 @@ class SignUpScreen extends React.Component {
           label="Name"
           autoCapitalize="words"
           mode="outlined"
-          style={styles.textInput}
+          style={SignUpstyles.textInput}
           onChangeText={(text) => this.setState({ name: text })}
           value={name}
           onSubmitEditing={() => this.emailInput.focus()}
@@ -94,7 +94,7 @@ class SignUpScreen extends React.Component {
           label="Email"
           autoCapitalize="none"
           mode="outlined"
-          style={styles.textInput}
+          style={SignUpstyles.textInput}
           onChangeText={(text) => this.setState({ email: text })}
           value={email}
           ref={(input) => { this.emailInput = input; }}
@@ -107,7 +107,7 @@ class SignUpScreen extends React.Component {
           label="Password"
           autoCapitalize="none"
           mode="outlined"
-          style={styles.textInput}
+          style={SignUpstyles.textInput}
           onChangeText={(text) => this.setState({ password: text })}
           value={password}
           ref={(input) => { this.passwordInput = input; }}
@@ -117,7 +117,7 @@ class SignUpScreen extends React.Component {
         <Button
           loading={loading}
           disabled={loading}
-          style={styles.button}
+          style={SignUpstyles.button}
           mode="contained"
           onPress={this.handleSignUp}
         >
@@ -125,7 +125,7 @@ class SignUpScreen extends React.Component {
         </Button>
         <Button
           disabled={loading}
-          style={styles.button}
+          style={SignUpstyles.button}
           mode="contained"
           onPress={() => navigation.navigate('SignInScreen')}
         >
@@ -135,6 +135,25 @@ class SignUpScreen extends React.Component {
     );
   }
 }
+
+const SignUpstyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  textInput: {
+    height: 40,
+    width: '90%',
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
+  },
+});
 
 SignUpScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
