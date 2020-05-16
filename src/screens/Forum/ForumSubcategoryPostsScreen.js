@@ -67,7 +67,9 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
   }
 
   render() {
-    const { forumPosts, loading, errorMessage } = this.state;
+    const {
+      forumPosts, loading, errorMessage, currentUserID,
+    } = this.state;
 
     return (
       <View style={styles.mainContainer}>
@@ -82,7 +84,6 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           {forumPosts.map((post) => {
             const date = post.createdAt ? post.createdAt.toDate() : null;
             const time = date ? date.toTimeString() : null;
-            const { currentUserID } = this.state;
 
             return (
               <ForumPost
