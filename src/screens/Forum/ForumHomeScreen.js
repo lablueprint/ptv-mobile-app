@@ -48,7 +48,9 @@ export default class ForumHomeScreen extends React.Component {
   }
 
   render() {
-    const { forumPosts, loading, errorMessage } = this.state;
+    const {
+      forumPosts, loading, errorMessage, currentUserID,
+    } = this.state;
     const { navigation } = this.props;
 
     return (
@@ -59,7 +61,6 @@ export default class ForumHomeScreen extends React.Component {
           {forumPosts.map((post) => {
             const date = post.createdAt ? post.createdAt.toDate() : null;
             const time = date ? date.toTimeString() : null;
-            const { currentUserID } = this.state;
 
             return (
               <ForumPost
