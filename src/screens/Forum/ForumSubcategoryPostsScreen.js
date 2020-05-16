@@ -14,7 +14,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     super(props);
     const { navigation } = this.props;
     this.state = {
-      posts: [],
+      forumPosts: [],
       loading: true,
       categoryID: navigation.getParam('categoryID'),
     };
@@ -31,8 +31,10 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     firestore().collection('forum_categories').doc(categoryID)
       .get()
       .then((snapshot) => {
-        const data = snapshot.data();
-        navigation.setParams({ subcategoryName: data.title ? data.title : 'Uncategorized' });
+        const categoryData = snapshot.data();
+        navigation.setParams(
+          { subcategoryName: categoryData.title ? categoryData.title : 'Uncategorized' },
+        );
       })
       .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
 
@@ -45,29 +47,10 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .where('categoryID', '==', categoryID)
-      .orderBy('createdAt', 'desc') /* Update this to order by time approved, most to least recent */
+      .orderBy('createdAt', 'desc')
       .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        const posts = forumPosts.map((post) => {
-          const date = post.createdAt ? post.createdAt.toDate() : null;
-          const time = date ? date.toTimeString() : null;
-          const { currentUserID } = this.state;
-
-          return (
-          // TBD: replies
-            <ForumPost
-              belongsToCurrentUser={currentUserID === post.userID}
-              key={post.id}
-              userID={post.userID ? post.userID : null}
-              time={time}
-              postID={post.id}
-              navigateToPostScreen={this.navigateToPostScreen}
-            >
-              {post.title}
-            </ForumPost>
-          );
-        });
-        this.setState({ posts, loading: false });
+        this.setState({ forumPosts, loading: false });
       }, (error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
@@ -84,19 +67,36 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
   }
 
   render() {
-    const { posts, loading, errorMessage } = this.state;
+    const { forumPosts, loading, errorMessage } = this.state;
 
     return (
       <View style={styles.mainContainer}>
         <ScrollView style={styles.scrollContainer}>
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
-          {posts}
           {loading
           && (
           <View>
             <ActivityIndicator />
           </View>
           ) }
+          {forumPosts.map((post) => {
+            const date = post.createdAt ? post.createdAt.toDate() : null;
+            const time = date ? date.toTimeString() : null;
+            const { currentUserID } = this.state;
+
+            return (
+              <ForumPost
+                belongsToCurrentUser={currentUserID === post.userID}
+                key={post.id}
+                userID={post.userID ? post.userID : null}
+                time={time}
+                postID={post.id}
+                navigateToPostScreen={this.navigateToPostScreen}
+              >
+                {post.title}
+              </ForumPost>
+            );
+          })}
         </ScrollView>
       </View>
     );
