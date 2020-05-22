@@ -1,90 +1,34 @@
-import React, {
-  useState, useCallback,
-} from 'react';
+import React from 'react';
 import {
   ScrollView, StyleSheet,
 } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
-import { NavigationEvents } from 'react-navigation';
 import {
-  Text, Button, ActivityIndicator,
+  Text, ActivityIndicator,
 } from 'react-native-paper';
 import { theme } from '../../style';
-import { collections, nav } from './variables';
+import { SubcategoryIcons } from './ResourcesComponents';
+import useLoadScreen from './LoadScreen';
 
 
 export default function ResourcesSubcategoriesScreen(props) {
   const { navigation } = props;
   const snapshot = navigation.getParam('snapshot');
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-
-  const loadScreen = useCallback((id, title) => {
-    setLoading(true);
-    firestore()
-      .collection(collections.subcategories)
-      .where('parent', '==', id)
-      .get()
-      .then((subcategorySnapshot) => {
-        if (!subcategorySnapshot.empty) {
-          navigation.push(nav.subcategories, { snapshot: subcategorySnapshot, header: title });
-        } else {
-          firestore()
-            .collection(collections.items)
-            .where('parent', '==', id)
-            .get()
-            .then((itemSnapshot) => {
-              navigation.push(nav.itemList, { snapshot: itemSnapshot, header: title });
-            })
-            .catch((error) => {
-              setErrorMessage(error.message);
-              setLoading(false);
-            });
-        }
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        setLoading(false);
-      });
-  }, [navigation]);
+  const [loadingNextScreen, errorMessage, loadScreen] = useLoadScreen(navigation);
 
   return (
     <ScrollView contentContainerStyle={SubcategoriesStyles.scrollviewContainer}>
-      <NavigationEvents
-        onWillFocus={() => {
-          setLoading(false);
-        }}
-      />
       {errorMessage
         && (
         <Text style={{ color: 'red' }}>
           {errorMessage}
         </Text>
         )}
-      {loading
+      {loadingNextScreen
         && (
         <ActivityIndicator size="large" />
         )}
-      { snapshot.docs.map((doc) => {
-        const { title } = doc.data();
-        return (
-          <Button
-            contentStyle={SubcategoriesStyles.subcategoryButtonHeight}
-            style={SubcategoriesStyles.subcategoryButton}
-            key={doc.id}
-            uppercase={false}
-            disabled={loading}
-            mode="contained"
-            color="#ffffff"
-            onPress={() => loadScreen(doc.id, title)}
-          >
-            <Text style={SubcategoriesStyles.resourceText}>
-              {`${title}`}
-            </Text>
-          </Button>
-        );
-      })}
+      <SubcategoryIcons snapshot={snapshot} loading={loadingNextScreen} loadScreen={loadScreen} />
     </ScrollView>
   );
 }

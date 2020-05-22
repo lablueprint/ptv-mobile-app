@@ -11,7 +11,7 @@ import Accordion from 'react-native-collapsible/Accordion';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationEvents } from 'react-navigation';
 import { theme } from '../../style';
-import { nav } from './variables';
+import { nav } from '../../constants';
 
 export default function ResourcesItemListScreen(props) {
   const { navigation } = props;
@@ -95,8 +95,7 @@ export default function ResourcesItemListScreen(props) {
                   navigation.push(nav.item, { resourceID: doc.id });
                 }}
               >
-                More
-                {' '}
+                More&nbsp;
                 <Icon name="chevron-right" />
               </Text>
             </View>
