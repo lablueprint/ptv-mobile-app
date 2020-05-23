@@ -99,6 +99,7 @@ export default class ForumHomeScreen extends React.Component {
             }
           }}
           scrollEventThrottle={200}
+          style={styles.scrollContainer}
         >
           {loading && <ActivityIndicator /> }
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
@@ -134,6 +135,10 @@ const styles = StyleSheet.create({
   homeContainer: {
     height: '100%',
     justifyContent: 'space-between',
+    backgroundColor: theme.colors.background,
+  },
+  scrollContainer: {
+    height: '100%',
     backgroundColor: theme.colors.background,
   },
   fab: {

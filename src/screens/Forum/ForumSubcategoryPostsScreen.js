@@ -15,12 +15,16 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     const { navigation } = this.props;
     this.state = {
       forumPosts: [],
+      postLimit: 15,
+      lastReferencedPost: null,
       loading: true,
+      paddingToBottom: 25,
       categoryID: navigation.getParam('categoryID'),
     };
 
     /* Function to navigate to post when post pressed, fx passed to ForumPost */
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
+    this.reachedEnd = this.reachedEnd.bind(this);
   }
 
   componentDidMount() {
@@ -44,13 +48,18 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
       }
     });
 
+    const { postLimit } = this.state;
+
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .where('categoryID', '==', categoryID)
       .orderBy('createdAt', 'desc')
+      .limit(postLimit)
       .onSnapshot((snapshot) => {
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        this.setState({ forumPosts, loading: false });
+        const lastReferencedPost = forumPosts[forumPosts.length - 1];
+
+        this.setState({ forumPosts, lastReferencedPost, loading: false });
       }, (error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
@@ -66,6 +75,37 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     navigation.navigate('ForumPost', { postID, userID });
   }
 
+  // Return whether user has scrolled to or near the end of the screen
+  reachedEnd({ layoutMeasurement, contentOffset, contentSize }) {
+    const { paddingToBottom } = this.state;
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  }
+
+  // Fetch more data from firestore to load next posts
+  loadMore() {
+    const {
+      categoryID, postLimit, forumPosts, lastReferencedPost,
+    } = this.state;
+
+    firestore().collection('forum_posts')
+      .where('categoryID', '==', categoryID)
+      .orderBy('createdAt', 'desc')
+      .startAfter(lastReferencedPost.createdAt)
+      .limit(postLimit)
+      .onSnapshot((snapshot) => {
+        const newForumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const newLastReferenced = forumPosts[forumPosts.length - 1];
+
+        this.setState({ // Store/append updated data for next postLimit# of posts in state
+          forumPosts: [...forumPosts, ...newForumPosts],
+          lastReferencedPost: newLastReferenced,
+          loading: false,
+        });
+      }, (error) => {
+        this.setState({ errorMessage: error.message, loading: false });
+      });
+  }
+
   render() {
     const {
       forumPosts, loading, errorMessage, currentUserID,
@@ -73,7 +113,16 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
     return (
       <View style={styles.mainContainer}>
-        <ScrollView style={styles.scrollContainer}>
+        <ScrollView
+          onScroll={({ nativeEvent }) => {
+            if (this.reachedEnd(nativeEvent)) { // If reached end, load more posts
+              this.setState({ loading: true });
+              this.loadMore();
+            }
+          }}
+          scrollEventThrottle={200}
+          style={styles.scrollContainer}
+        >
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {loading
           && (
