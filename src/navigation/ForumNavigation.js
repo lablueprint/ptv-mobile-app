@@ -30,7 +30,10 @@ const ForumHomeTopTabNavigation = createMaterialTopTabNavigator(
         fontFamily: theme.fonts.regular.fontFamily,
         fontWeight: theme.fonts.regular.fontWeight,
       },
-      indicatorStyle: { backgroundColor: theme.colors.headerText },
+      indicatorStyle: {
+        backgroundColor: theme.colors.headerText,
+        height: 5,
+      },
       style: { backgroundColor: theme.colors.primary },
     },
   },

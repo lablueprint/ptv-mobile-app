@@ -33,7 +33,7 @@ export const theme = {
     background: '#E6EFF5',
     text: '#194261',
     headerText: '#FFFFFF',
-    inactiveHeader: '#A7D4F4',
+    inactiveHeader: '#E4F2FC',
     postBackground: '#FFFFFF',
   },
 };
