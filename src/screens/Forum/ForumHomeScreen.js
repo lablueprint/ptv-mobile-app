@@ -14,9 +14,13 @@ export default class ForumHomeScreen extends React.Component {
     super(props);
     this.state = {
       forumPosts: [],
+      postLimit: 15,
+      lastReferencedPost: null,
       loading: true,
+      paddingToBottom: 25,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
+    this.reachedEnd = this.reachedEnd.bind(this);
   }
 
   componentDidMount() {
@@ -26,12 +30,16 @@ export default class ForumHomeScreen extends React.Component {
       }
     });
 
+    const { postLimit } = this.state;
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
       .orderBy('createdAt', 'desc')
+      .limit(postLimit)
       .onSnapshot((snapshot) => {
         // Store data for posts in state
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        this.setState({ forumPosts, loading: false });
+        const lastReferencedPost = forumPosts[forumPosts.length - 1];
+
+        this.setState({ forumPosts, lastReferencedPost, loading: false });
       }, (error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
@@ -47,6 +55,34 @@ export default class ForumHomeScreen extends React.Component {
     navigation.navigate('ForumPost', { postID, userID });
   }
 
+  // Return whether user has scrolled to or near the end of the screen
+  reachedEnd({ layoutMeasurement, contentOffset, contentSize }) {
+    const { paddingToBottom } = this.state;
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  }
+
+  // Fetch more data from firestore to load next posts
+  loadMore() {
+    const { postLimit, forumPosts, lastReferencedPost } = this.state;
+
+    firestore().collection('forum_posts')
+      .orderBy('createdAt', 'desc')
+      .startAfter(lastReferencedPost.createdAt)
+      .limit(postLimit)
+      .onSnapshot((snapshot) => {
+        const newForumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const newLastReferenced = forumPosts[forumPosts.length - 1];
+
+        this.setState({ // Store/append updated data for next postLimit# of posts in state
+          forumPosts: [...forumPosts, ...newForumPosts],
+          lastReferencedPost: newLastReferenced,
+          loading: false,
+        });
+      }, (error) => {
+        this.setState({ errorMessage: error.message, loading: false });
+      });
+  }
+
   render() {
     const {
       forumPosts, loading, errorMessage, currentUserID,
@@ -55,7 +91,15 @@ export default class ForumHomeScreen extends React.Component {
 
     return (
       <View style={styles.homeContainer}>
-        <ScrollView>
+        <ScrollView
+          onScroll={({ nativeEvent }) => {
+            if (this.reachedEnd(nativeEvent)) { // If reached end, load more posts
+              this.setState({ loading: true });
+              this.loadMore();
+            }
+          }}
+          scrollEventThrottle={200}
+        >
           {loading && <ActivityIndicator /> }
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {forumPosts.map((post) => {
