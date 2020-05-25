@@ -1,16 +1,18 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import React from 'react';
+import { firebase } from '@react-native-firebase/auth';
 import {
-  Header, ProfileHomeScreen, EditProfileScreen,
+  Header, ProfileHomeScreen, EditProfileScreen, ForumNotifcationsScreen,
 } from '../screens/Profile';
 import { ForumPostScreen } from '../screens/Forum';
+import ForumNotificationsScreen from '../screens/Profile/ForumNotificationsScreen';
 
 
 // const ProfileNavigation = createStackNavigator(
 //   {
 //     ProfileHome: {
-//       screen: ProfileHomeScreen,
+//       screen: ProfileHomeScreen,n
 //     },
 //     EditProfile: {
 //       screen: EditProfileScreen,
@@ -38,7 +40,7 @@ const EditProfileScreenStackNavigator = createStackNavigator(
       screen: EditProfileScreen,
       navigationOptions: {
         header: () => (
-          <Header headerTitle="Edit Profile" backDestination="ProfileHome" />
+          <Header headerTitle="Edit Profile" />
         ),
       },
     },
@@ -51,7 +53,7 @@ const ForumPostStackNavigator = createStackNavigator(
       screen: ForumPostScreen,
       navigationOptions: {
         header: () => (
-          <Header headerTitle="Forum Post" backDestination="ProfileHome" />
+          <Header headerTitle="Forum Post" />
         ),
       },
     },
@@ -79,9 +81,26 @@ const ProfileNavigation = createDrawerNavigator(
   },
   {
     initialRouteName: 'ProfileHome',
-    contentComponent: EditProfileScreen,
+    contentComponent: ForumNotificationsScreen,
     drawerPosition: 'right',
   },
 );
+
+// const defaultGetStateForAction = ProfileNavigation.router.getStateForAction;
+// ProfileNavigation.router.getStateForAction = (action, state) => {
+//   if (state && action.type === 'Navigation/NAVIGATE' && action.routeName === 'DrawerClose') {
+//     const collRef = firebase.firestore().collection('profile_notifications');
+//     const items = collRef.get()
+//       .then((snapshot) => {
+//         snapshot.forEach((doc) => {
+//           const docRef = collRef.doc(doc.id);
+//           docRef.update({ viewed: false });
+//         });
+//       });
+//   }
+
+
+//   return defaultGetStateForAction(action, state);
+// };
 
 export default ProfileNavigation;

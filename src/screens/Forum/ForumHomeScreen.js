@@ -1,11 +1,13 @@
+/* eslint-disable */
 import React from 'react';
 import {
   Text, View, ScrollView, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { ActivityIndicator, FAB } from 'react-native-paper';
-import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
+import { ActivityIndicator, FAB, Button } from 'react-native-paper';
+import PropTypes from 'prop-types';
+
 import ForumPost from './ForumPost';
 import { theme } from '../../style';
 
@@ -17,6 +19,7 @@ export default class ForumHomeScreen extends React.Component {
       loading: true,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
+    this.setNotificationsToViewed = this.setNotificationsToViewed.bind(this);
   }
 
   componentDidMount() {
@@ -34,7 +37,6 @@ export default class ForumHomeScreen extends React.Component {
           const date = post.createdAt ? post.createdAt.toDate() : null;
           const time = date ? date.toTimeString() : null;
           const { currentUserID } = this.state;
-
           return (
             <ForumPost
               belongsToCurrentUser={currentUserID === post.userID}
@@ -60,6 +62,30 @@ export default class ForumHomeScreen extends React.Component {
     this.unsubscribeFromFirestore();
   }
 
+  setNotificationsToViewed() {
+    // const collRef = firebase.firestore().collection('profile_notifications');
+    // const items = collRef.get()
+    //   .then((snapshot) => {
+    //     snapshot.forEach((doc) => {
+    //       const docRef = collRef.doc(doc.id);
+    //       docRef.update({ viewed: true });
+    //       docRef.update({ createdAt: firestore.Timestamp.now() });
+    //       docRef.update({ message: 'Hello World' });
+    //       docRef.update({ type: 'reply' });
+    //       docRef.update({ replies: 5 });
+    //     });
+    //   });
+    firestore().collection('profile_notifications')
+      .add({
+        viewed: false,
+        createdAt: firestore.Timestamp.now(),
+        message: 'Testing3',
+        type: 'reply',
+        replies: 5,
+      });
+  }
+
+
   navigateToPostScreen() {
     const { navigation } = this.props;
     navigation.navigate('ForumPost');
@@ -71,6 +97,7 @@ export default class ForumHomeScreen extends React.Component {
 
     return (
       <View style={styles.homeContainer}>
+        <Button onPress={this.setNotificationsToViewed} disabled={loading}>Send Notification</Button>
         <ScrollView>
           {loading && <ActivityIndicator /> }
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
