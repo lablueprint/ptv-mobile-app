@@ -5,24 +5,7 @@ import {
   Header, ProfileHomeScreen, EditProfileScreen,
 } from '../screens/Profile';
 import { ForumPostScreen } from '../screens/Forum';
-
-
-// const ProfileNavigation = createStackNavigator(
-//   {
-//     ProfileHome: {
-//       screen: ProfileHomeScreen,
-//     },
-//     EditProfile: {
-//       screen: EditProfileScreen,
-//     },
-//     ForumPost: {
-//       screen: ForumPostScreen,
-//     },
-//   },
-//   {
-//     initialRouteName: 'ProfileHome',
-//   },
-// );
+import ForumNotificationsScreen from '../screens/Profile/ForumNotificationsScreen';
 
 const ProfileHomeStackNavigator = createStackNavigator(
   {
@@ -38,7 +21,7 @@ const EditProfileScreenStackNavigator = createStackNavigator(
       screen: EditProfileScreen,
       navigationOptions: {
         header: () => (
-          <Header headerTitle="Edit Profile" backDestination="ProfileHome" />
+          <Header headerTitle="Edit Profile" />
         ),
       },
     },
@@ -51,13 +34,12 @@ const ForumPostStackNavigator = createStackNavigator(
       screen: ForumPostScreen,
       navigationOptions: {
         header: () => (
-          <Header headerTitle="Forum Post" backDestination="ProfileHome" />
+          <Header headerTitle="Forum Post" />
         ),
       },
     },
   },
 );
-
 
 const ProfileNavigation = createDrawerNavigator(
   {
@@ -79,9 +61,8 @@ const ProfileNavigation = createDrawerNavigator(
   },
   {
     initialRouteName: 'ProfileHome',
-    contentComponent: EditProfileScreen,
+    contentComponent: ForumNotificationsScreen,
     drawerPosition: 'right',
   },
 );
-
 export default ProfileNavigation;
