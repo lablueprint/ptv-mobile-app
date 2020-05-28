@@ -1,106 +1,74 @@
 import React from 'react';
-import { View, StyleSheet, AsyncStorage } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Card, Button, Paragraph } from 'react-native-paper';
-import auth from '@react-native-firebase/auth';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import PropTypes from 'prop-types';
 
 export default class Notification extends React.Component {
   constructor(props) {
     super(props);
-    const { viewed } = this.props;
-    this.state = { viewed, visible: true };
+    const { postTitle, replies } = this.props;
     this.onClearPress = this.onClearPress.bind(this);
     this.onViewPress = this.onViewPress.bind(this);
+    this.notificationDescriptions = {
+      reply: `Your post '${postTitle}' has recieved ${replies} replies. Click to go to post.`,
+      approve: `Your post '${postTitle}' has been approved. Click to go to post.`,
+    };
   }
 
-  componentDidMount() {
-    this.unsubscribeFromAuth = auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({ currentUserID: user.uid });
-      }
-    });
-  }
-
-  async onViewPress() {
-    const { notificationID } = this.props;
-    const { currentUserID } = this.state;
-    await AsyncStorage.getItem(currentUserID).then((value) => {
-      const notificationArray = JSON.parse(value);
-      const notif = notificationArray.find((el) => el.id === notificationID);
-      if (notif.viewed === false) {
-        const updatedArray = notificationArray.filter((val) => val.id !== notificationID);
-        notif.viewed = true;
-        updatedArray.push(notif);
-        AsyncStorage.setItem(currentUserID, JSON.stringify(updatedArray));
-        this.setState({ viewed: true });
-      }
-    });
+  onViewPress() {
+    const { notificationID, viewPress } = this.props;
+    viewPress(notificationID);
   }
 
   async onClearPress() {
-    const { notificationID } = this.props;
-    const { currentUserID } = this.state;
-    await AsyncStorage.getItem(currentUserID).then(async (value) => {
-      if (value) {
-        const notificationArray = JSON.parse(value);
-        const updatedArray = notificationArray.filter((val) => val.id !== notificationID);
-        await AsyncStorage.setItem(currentUserID, JSON.stringify(updatedArray));
-        this.setState({ visible: false });
-      }
-    });
+    const { notificationID, clearPress } = this.props;
+    clearPress(notificationID);
   }
 
   render() {
-    const { message, type, replies } = this.props;
-    const { viewed, visible } = this.state;
-    const active = viewed ? notificationStyles.inactiveNotification
+    const { type, viewed } = this.props;
+    const viewStatus = viewed ? notificationStyles.inactiveNotification
       : notificationStyles.activeNotification;
-    const replyText = ` has received ${replies} replies. Click to go to post`;
-    const approvedText = ' has been approved. Click to go to post';
     let text;
     if (type === 'reply') {
-      text = replyText;
+      text = this.notificationDescriptions.reply;
     } else if (type === 'approve') {
-      text = approvedText;
+      text = this.notificationDescriptions.approve;
     }
     const RightActions = () => (
       <View style={notificationStyles.rightSwipeable}>
-        <Button onPress={this.onClearPress} style={{ backgroundColor: '#ffffff', marginLeft: 5 }}>Clear</Button>
+        <Button onPress={this.onClearPress} style={notificationStyles.clearButton}>Clear</Button>
       </View>
     );
     return (
-      visible && (
       <View
-        style={{
-          flex: 1, paddingLeft: 10, paddingRight: 10, paddingBottom: 10,
-        }}
+        style={notificationStyles.container}
       >
-        <Swipeable renderRightActions={RightActions} onRightActionRelease={this.onClearPress}>
+        <Swipeable renderRightActions={RightActions}>
           <Card
-            style={notificationStyles.Cardcontainer}
             onPress={this.onViewPress}
           >
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-              <Button icon={viewed ? 'bell' : 'bell-ring'} style={{ marginRight: 0 }} color={viewed ? '#808080' : '#000000'} />
-              <Paragraph style={active}>
-                Your Post &quot;
-                {message}
-                ...
-                &quot;
+            <View style={notificationStyles.notificationCard}>
+              <Button icon={viewed ? 'bell' : 'bell-ring'} color={viewed ? '#808080' : '#000000'} />
+              <Paragraph style={viewStatus}>
                 {text}
               </Paragraph>
             </View>
           </Card>
         </Swipeable>
       </View>
-      )
-
     );
   }
 }
 
 const notificationStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+  },
   activeNotification: {
     fontSize: 10.5,
     flex: 1,
@@ -127,12 +95,22 @@ const notificationStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  notificationCard: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  clearButton: {
+    backgroundColor: '#ffffff',
+    marginLeft: 5,
+  },
 });
 
 Notification.propTypes = {
-  message: PropTypes.string.isRequired,
+  postTitle: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   viewed: PropTypes.bool.isRequired,
   replies: PropTypes.number.isRequired,
   notificationID: PropTypes.string.isRequired,
+  viewPress: PropTypes.func.isRequired,
+  clearPress: PropTypes.func.isRequired,
 };

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import {
   Text, View, ScrollView, StyleSheet,
@@ -19,7 +18,7 @@ export default class ForumHomeScreen extends React.Component {
       loading: true,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
-    this.setNotificationsToViewed = this.setNotificationsToViewed.bind(this);
+    this.createNotification = this.createNotification.bind(this);
   }
 
   componentDidMount() {
@@ -62,13 +61,20 @@ export default class ForumHomeScreen extends React.Component {
     this.unsubscribeFromFirestore();
   }
 
-  setNotificationsToViewed() {
+  createNotification() {
+    /* TODO: Emulates notification being sent.
+    Remove this and Send Notification button eventually.
+    Emulate this structure for creation of notification
+    Note: userID should denote the receiver of the notification,
+    not the sender */
+    const { currentUserID } = this.state;
     firestore().collection('profile_notifications')
       .add({
+        userID: currentUserID,
         viewed: false,
         createdAt: firestore.Timestamp.now(),
         message: 'Hello World',
-        type: 'reply',
+        type: 'approve',
         replies: 5,
       });
   }
@@ -85,7 +91,7 @@ export default class ForumHomeScreen extends React.Component {
     return (
       <View style={styles.homeContainer}>
         <Button
-          onPress={this.setNotificationsToViewed}
+          onPress={this.createNotification}
           disabled={loading}
         >
           Send Notification

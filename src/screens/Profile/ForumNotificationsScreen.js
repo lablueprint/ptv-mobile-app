@@ -17,9 +17,11 @@ export default class ForumNotificationsScreen extends React.Component {
     super(props);
     this.state = { notifications: [], loading: true, visible: false };
     this.setNotificationsToViewed = this.setNotificationsToViewed.bind(this);
-    this.setVisibleFalse = this.setVisibleFalse.bind(this);
-    this.setVisibleTrue = this.setVisibleTrue.bind(this);
+    this.setButtonVisibleFalse = this.setButtonVisibleFalse.bind(this);
+    this.setButtonVisibleTrue = this.setButtonVisibleTrue.bind(this);
     this.onClearAsyncNotifications = this.onClearAsyncNotifications.bind(this);
+    this.onViewPress = this.onViewPress.bind(this);
+    this.onClearPress = this.onClearPress.bind(this);
     this.lock = new AsyncLock();
   }
 
@@ -33,53 +35,53 @@ export default class ForumNotificationsScreen extends React.Component {
 
     this.unsubscribeFromFirestore = firestore().collection('profile_notifications')
       .orderBy('createdAt', 'desc')
-      .onSnapshot((snapshot) => {
+      .onSnapshot(async (snapshot) => {
         const newNotificationsSnapshot = snapshot.docChanges().filter((change) => change.type === 'added');
         const newNotificationDocs = newNotificationsSnapshot.map((change) => change.doc);
-        const allNotifications = newNotificationDocs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        let newNotifications = newNotificationDocs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const { currentUserID } = this.state;
 
-
-        for (let index = 0; index < allNotifications.length; index += 1) {
-          const date = allNotifications[index].createdAt
-            ? allNotifications[index].createdAt.toDate() : null;
+        /* Timestamps lose their toDate method when we store them in AsyncStorage,
+        so we include it now */
+        newNotifications = newNotifications.map((notification) => {
+          const finalNotification = notification;
+          const date = notification.createdAt
+            ? notification.createdAt.toDate() : null;
           if (date != null) {
-            allNotifications[index].createdAt = date.toString();
+            finalNotification.createdAt = date;
           }
-        }
-        if (allNotifications.length > 0) {
-          this.lock.acquire(currentUserID, async () => {
-            await AsyncStorage.getItem(currentUserID).then(async (value) => {
-              if (value) {
-                const storageValue = allNotifications.concat(JSON.parse(value));
-                await AsyncStorage.setItem(currentUserID, JSON.stringify(storageValue));
-                const newNotificationDocRefs = newNotificationsSnapshot.map(
-                  (change) => change.doc.ref,
-                );
-                newNotificationDocRefs.forEach((docRef) => docRef.delete());
-              } else {
-                const storageValue = allNotifications;
-                await AsyncStorage.setItem(currentUserID, JSON.stringify(storageValue));
-                const newNotificationDocRefs = newNotificationsSnapshot.map(
-                  (change) => change.doc.ref,
-                );
-                newNotificationDocRefs.forEach((docRef) => docRef.delete());
-              }
-            });
-          }, (err) => {
-            this.setState({ errorMessage: err, loading: false });
-          });
-        }
+          return finalNotification;
+        });
 
-        AsyncStorage.getItem(currentUserID).then(async (value) => {
-          if (value) {
-            const notifications = JSON.parse(value);
-            this.setState({ notifications, loading: false });
+        this.lock.acquire(currentUserID, async () => {
+          const prevNotifications = await AsyncStorage.getItem(currentUserID);
+          const allNotifications = prevNotifications
+            ? newNotifications.concat(JSON.parse(prevNotifications)) : newNotifications;
+
+          if (allNotifications) {
+            /* Sorts all of our notifications so unviewed notifications appear first */
+            const unviewedNotifications = allNotifications.filter(
+              (notification) => notification.viewed === false,
+            );
+            const viewedNotifications = allNotifications.filter(
+              (notification) => notification.viewed === true,
+            );
+            const allSortedNotifications = [...unviewedNotifications, ...viewedNotifications];
+            await AsyncStorage.setItem(currentUserID, JSON.stringify(allSortedNotifications));
+            const newNotificationDocRefs = newNotificationsSnapshot.map(
+              (change) => change.doc.ref,
+            );
+            const batch = firestore().batch();
+            newNotificationDocRefs.forEach((docRef) => batch.delete(docRef));
+            batch.commit();
+            this.setState({ notifications: allSortedNotifications, loading: false });
           } else {
             this.setState({ notifications: [], loading: false });
           }
+        }).catch((err) => {
+          this.setState({ errorMessage: err, loading: false });
         });
-      }, (error) => { /* Error handler */
+      }, (error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
   }
@@ -93,31 +95,49 @@ export default class ForumNotificationsScreen extends React.Component {
     const { currentUserID } = this.state;
     await AsyncStorage.removeItem(currentUserID);
     this.setState({ notifications: [], loading: false });
-    this.setVisibleFalse();
+    this.setButtonVisibleFalse();
   }
 
-  setVisibleFalse() {
-    this.setState({ visible: false });
+  async onViewPress(notificationID) {
+    const { currentUserID, notifications } = this.state;
+    const matchNotificationID = (element) => element.id === notificationID;
+    const index = notifications.findIndex(matchNotificationID);
+    if (index > -1) {
+      notifications[index].viewed = true;
+      await AsyncStorage.setItem(currentUserID, JSON.stringify(notifications));
+      this.setState({ notifications });
+    }
   }
 
-  setVisibleTrue() {
-    this.setState({ visible: true });
+  async onClearPress(notificationID) {
+    const { currentUserID, notifications } = this.state;
+    const matchNotificationID = (element) => element.id === notificationID;
+    const index = notifications.findIndex(matchNotificationID);
+    if (index > -1) {
+      notifications.splice(index, 1);
+    }
+    await AsyncStorage.setItem(currentUserID, JSON.stringify(notifications));
+    this.setState({ notifications });
   }
 
   async setNotificationsToViewed() {
-    const { currentUserID } = this.state;
-    this.setVisibleFalse();
-    await AsyncStorage.getItem(currentUserID).then((value) => {
-      const notificationArray = JSON.parse(value);
-      if (notificationArray.length !== 0) {
-        for (let i = 0; i < notificationArray.length; i += 1) {
-          notificationArray[i].viewed = true;
-        }
-        AsyncStorage.setItem(currentUserID, JSON.stringify(notificationArray));
-        this.setState({ notifications: [] });
-        this.setState({ notifications: notificationArray });
-      }
+    const { currentUserID, notifications } = this.state;
+    const viewedNotifications = notifications.map((notification) => {
+      const finalNotification = notification;
+      finalNotification.viewed = true;
+      return finalNotification;
     });
+    await AsyncStorage.setItem(currentUserID, JSON.stringify(viewedNotifications));
+    this.setState({ notifications: viewedNotifications });
+    this.setButtonVisibleFalse();
+  }
+
+  setButtonVisibleFalse() {
+    this.setState({ visible: false });
+  }
+
+  setButtonVisibleTrue() {
+    this.setState({ visible: true });
   }
 
   render() {
@@ -125,18 +145,17 @@ export default class ForumNotificationsScreen extends React.Component {
       loading, notifications, errorMessage, visible, currentUserID,
     } = this.state;
     return (
-      /* TODO: Find way to make Notifcation Top a separate component */
-      <View style={NotificationStyles.container}>
-        <View style={NotificationStyles.headerContainer}>
-          <Title style={NotificationStyles.headerTitle}>Notifications</Title>
+      <View style={notificationStyles.container}>
+        <View style={notificationStyles.headerContainer}>
+          <Title style={notificationStyles.headerTitle}>Notifications</Title>
           <Menu
             alignSelf="flex-end"
             visible={visible}
-            onDismiss={this.setVisibleFalse}
+            onDismiss={this.setButtonVisibleFalse}
             anchor={(
               <IconButton
                 icon="dots-vertical"
-                onPress={this.setVisibleTrue}
+                onPress={this.setButtonVisibleTrue}
               >
                 Show menu
               </IconButton>
@@ -147,21 +166,22 @@ export default class ForumNotificationsScreen extends React.Component {
             <Menu.Item icon="delete" onPress={this.onClearAsyncNotifications} title="Clear All" />
           </Menu>
         </View>
-        <ScrollView style={NotificationStyles.scrollContainer}>
+        <ScrollView style={notificationStyles.scrollContainer}>
           {loading && <ActivityIndicator /> }
-          {errorMessage && <Text style={NotificationStyles.errorMessage}>{errorMessage}</Text>}
-          { notifications.length === 0 ? <DefaultNotifications />
+          {errorMessage && <Text style={notificationStyles.errorMessage}>{errorMessage}</Text>}
+          { notifications.length === 0 ? !loading && (<DefaultNotifications />)
             : notifications.map((notification) => (
               <Notification
                 belongsToCurrentUser={currentUserID === notification.userID}
                 key={notification.id}
-                        /* TODO: Incorporate userID */
+                viewPress={this.onViewPress}
+                clearPress={this.onClearPress}
                 userID={notification.userID}
                 notificationID={notification.id}
                 replies={notification.replies !== 0 ? notification.replies : null}
-                message={notification.message}
+                postTitle={notification.message}
                 type={notification.type}
-                viewed={notification.viewed ? notification.viewed : null}
+                viewed={notification.viewed}
                 createdAt={notification.createdAt}
               />
             ))}
@@ -171,7 +191,7 @@ export default class ForumNotificationsScreen extends React.Component {
   }
 }
 
-const NotificationStyles = StyleSheet.create({
+const notificationStyles = StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -18,27 +18,27 @@ class Header extends React.Component {
 
   onBackPress() {
     const { navigation } = this.props;
-    navigation.navigate('ProfileHome');
+    navigation.goBack(null);
   }
 
   render() {
     const { headerTitle } = this.props;
     return (
       <View>
-        <View style={HeaderStyles.headerContainer}>
+        <View style={headerStyles.headerContainer}>
           <Button
             icon="arrow-left"
             onPress={this.onBackPress}
-            style={HeaderStyles.backButton}
+            style={headerStyles.backButton}
           />
-          <Title style={HeaderStyles.headerTitle}>{headerTitle}</Title>
+          <Title style={headerStyles.headerTitle}>{headerTitle}</Title>
         </View>
       </View>
     );
   }
 }
 
-const HeaderStyles = StyleSheet.create({
+const headerStyles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -59,7 +59,7 @@ const HeaderStyles = StyleSheet.create({
 });
 
 Header.propTypes = {
-  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+  navigation: PropTypes.shape({ goBack: PropTypes.func }).isRequired,
   headerTitle: PropTypes.string.isRequired,
 };
 
