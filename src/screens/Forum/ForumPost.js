@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text, TouchableOpacity, StyleSheet,
 } from 'react-native';
@@ -50,15 +50,17 @@ export default function ForumPost({
   const [isAdmin, setIsAdmin] = useState(false);
   const [userErrorMessage, setUserErrorMessage] = useState();
 
-  /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
-  firestore().collection('users').doc(userID)
-    .get()
-    .then((snapshot) => {
-      const data = snapshot.data();
-      setName(data.name ? data.name : 'No name');
-      setIsAdmin(data.isAdmin);
-    })
-    .catch((error) => setUserErrorMessage(error.message));
+  useEffect(() => {
+    /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
+    firestore().collection('users').doc(userID)
+      .get()
+      .then((snapshot) => {
+        const data = snapshot.data();
+        setName(data.displayName ? data.displayName : 'No name');
+        setIsAdmin(data.isAdmin);
+      })
+      .catch((error) => setUserErrorMessage(error.message));
+  }, [name, userID]);
 
   const handlePress = () => {
     // TODO: navigate to reply screen
@@ -72,7 +74,7 @@ export default function ForumPost({
 
   const [visible, setVisible] = useState(false);
   return (
-    <TouchableOpacity onPress={navigateToPostScreen}>
+    <TouchableOpacity onPress={() => navigateToPostScreen(postID, userID)}>
       {userErrorMessage && <Text style={{ color: 'red' }}>{userErrorMessage}</Text>}
       <Card style={styles.postContainer}>
         <Card.Title

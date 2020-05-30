@@ -4,19 +4,19 @@ import { DefaultTheme, configureFonts } from 'react-native-paper';
 const fontConfig = {
   default: {
     regular: {
-      fontFamily: 'sans-serif',
+      fontFamily: 'Poppins-Regular',
       fontWeight: 'normal',
     },
     medium: {
-      fontFamily: 'sans-serif-medium',
+      fontFamily: 'Poppins-Regular',
       fontWeight: 'normal',
     },
     light: {
-      fontFamily: 'sans-serif-light',
+      fontFamily: 'Poppins-Light',
       fontWeight: 'normal',
     },
     thin: {
-      fontFamily: 'sans-serif-thin',
+      fontFamily: 'Poppins-Thin',
       fontWeight: 'normal',
     },
   },
@@ -28,10 +28,13 @@ export const theme = {
   fonts: configureFonts(fontConfig),
   colors: {
     ...DefaultTheme.colors,
-    primary: '#1F7FC0',
+    primary: '#3190D0',
     accent: '#8EAEC3',
     background: '#E6EFF5',
     text: '#194261',
+    headerText: '#FFFFFF',
+    inactiveHeader: '#A7D4F4',
+    postBackground: '#FFFFFF',
   },
 };
 
