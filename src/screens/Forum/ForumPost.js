@@ -39,12 +39,14 @@ export default function ForumPost({
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
 
-  firestore().collection('forum_comments').where('postID', '==', postID)
-    .get()
-    .then((querySnapshot) => {
-      setNumReplies(querySnapshot.size);
-      setLoading(false);
-    });
+  useEffect(() => {
+    firestore().collection('forum_comments').where('postID', '==', postID)
+      .get()
+      .then((querySnapshot) => {
+        setNumReplies(querySnapshot.size);
+        setLoading(false);
+      });
+  }, [postID]);
 
   const [name, setName] = useState('Name unset');
   const [isAdmin, setIsAdmin] = useState(false);

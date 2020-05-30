@@ -1,16 +1,13 @@
+
 import React from 'react';
 import {
-<<<<<<< HEAD
-  View, Alert, StyleSheet,
-=======
   View, Alert, ScrollView, StyleSheet,
->>>>>>> master
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {
   TextInput, Button, Text,
 } from 'react-native-paper';
-import { theme } from '../../style';
+import styles from '../../style';
 
 const INITIAL_STATE = {
   /* TODO: currently, we have two text inputs that correspond with the first name and last name.
@@ -140,68 +137,6 @@ export default class EditProfileScreen extends React.Component {
     || (newPassword.length !== 0 && retypeNewPassword.length === 0)
     || (newPassword.length === 0 && retypeNewPassword.length !== 0);
     return (
-<<<<<<< HEAD
-      <View style={EditProfileStyles.container}>
-        <Title>Edit Profile</Title>
-        <TextInput
-          autoFocus
-          blurOnSubmit={false}
-          disabled={passwordLoading || emailLoading}
-          secureTextEntry
-          label="Current Password"
-          autoCapitalize="none"
-          mode="outlined"
-          style={EditProfileStyles.textInput}
-          onChangeText={(text) => this.setState({ currentPassword: text })}
-          value={currentPassword}
-          returnKeyType="next"
-          onSubmitEditing={() => this.newPasswordInput.focus()}
-        />
-        <TextInput
-          secureTextEntry
-          disabled={passwordLoading || emailLoading}
-          label="New Password"
-          autoCapitalize="none"
-          mode="outlined"
-          style={EditProfileStyles.textInput}
-          onChangeText={(text) => this.setState({ newPassword: text })}
-          value={newPassword}
-          ref={(input) => { this.newPasswordInput = input; }}
-          returnKeyType="go"
-          onSubmitEditing={this.onChangePasswordPress}
-        />
-        <Button
-          loading={passwordLoading}
-          disabled={passwordLoading || emailLoading}
-          style={EditProfileStyles.button}
-          mode="contained"
-          onPress={this.onChangePasswordPress}
-        >
-          Change Password
-        </Button>
-
-        <TextInput
-          disabled={passwordLoading || emailLoading}
-          keyboardType="email-address"
-          label="New Email"
-          autoCapitalize="none"
-          mode="outlined"
-          style={EditProfileStyles.textInput}
-          onChangeText={(text) => this.setState({ newEmail: text })}
-          value={newEmail}
-          returnKeyType="go"
-          onSubmitEditing={this.onChangeEmailPress}
-        />
-        <Button
-          loading={emailLoading}
-          disabled={passwordLoading || emailLoading}
-          style={EditProfileStyles.button}
-          mode="contained"
-          onPress={this.onChangeEmailPress}
-        >
-          Change Email
-        </Button>
-=======
       <View style={styles.container}>
         <ScrollView style={editProfileStyles.scrollView}>
           <Text style={editProfileStyles.text}>
@@ -320,20 +255,11 @@ export default class EditProfileScreen extends React.Component {
             Save
           </Button>
         </ScrollView>
->>>>>>> master
       </View>
     );
   }
 }
 
-<<<<<<< HEAD
-const EditProfileStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background,
-=======
 const editProfileStyles = StyleSheet.create({
   scrollView: {
     marginLeft: '5%',
@@ -342,23 +268,10 @@ const editProfileStyles = StyleSheet.create({
   text: {
     marginTop: 10,
     marginBottom: 0,
->>>>>>> master
   },
   textInput: {
     height: 40,
     width: '90%',
-<<<<<<< HEAD
-    marginTop: 8,
-    backgroundColor: '#ffffff',
-  },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
-});
-
-export default EditProfileScreen;
-=======
     marginTop: 0,
     backgroundColor: '#ffffff',
   },
@@ -369,4 +282,3 @@ export default EditProfileScreen;
     backgroundColor: '#ffffff',
   },
 });
->>>>>>> master

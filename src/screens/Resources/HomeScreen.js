@@ -8,7 +8,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import {
-  Text, Button, ActivityIndicator,
+  Text, Button, ActivityIndicator, Title,
 } from 'react-native-paper';
 import { theme } from '../../style';
 import { collections } from '../../constants';
@@ -21,6 +21,8 @@ export default function HomeScreen(props) {
   const [errorMessage, setErrorMessage] = useState(err);
   const [snapshot, setSnapshot] = useState(null);
   const [initialLoad, setInitialLoad] = useState(true);
+
+  const { currentUser } = auth();
 
   useEffect(() => {
     firestore()
@@ -62,6 +64,9 @@ export default function HomeScreen(props) {
         && (
         <ActivityIndicator size="large" />
         )}
+      <Title>
+        {`Hi ${currentUser.displayName}!`}
+      </Title>
       <View style={HomeStyles.categoryButtonView}>
         { !initialLoad
           && <HomeIcons snapshot={snapshot} loading={loadingNextScreen} loadScreen={loadScreen} /> }
