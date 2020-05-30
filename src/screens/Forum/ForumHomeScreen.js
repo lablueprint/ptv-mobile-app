@@ -14,7 +14,7 @@ export default class ForumHomeScreen extends React.Component {
     super(props);
     this.state = {
       forumPosts: [],
-      postLimit: 15,
+      postLimit: 10,
       lastReferencedPost: null,
       loading: true,
       loadingMore: false,
@@ -32,23 +32,22 @@ export default class ForumHomeScreen extends React.Component {
     });
 
     const { postLimit } = this.state;
-    this.unsubscribeFromFirestore = firestore().collection('forum_posts')
+    firestore().collection('forum_posts')
       .orderBy('createdAt', 'desc')
       .limit(postLimit)
-      .onSnapshot((snapshot) => {
+      .get()
+      .then((snapshot) => {
         // Store data for posts in state
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const lastReferencedPost = forumPosts[forumPosts.length - 1];
 
         this.setState({ forumPosts, lastReferencedPost, loading: false });
-      }, (error) => {
-        this.setState({ errorMessage: error.message, loading: false });
-      });
+      })
+      .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
   }
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-    this.unsubscribeFromFirestore();
   }
 
   navigateToPostScreen(postID, userID) {
@@ -70,18 +69,18 @@ export default class ForumHomeScreen extends React.Component {
       .orderBy('createdAt', 'desc')
       .startAfter(lastReferencedPost.createdAt)
       .limit(postLimit)
-      .onSnapshot((snapshot) => {
+      .get()
+      .then((snapshot) => {
         const newForumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        const newLastReferenced = forumPosts[forumPosts.length - 1];
+        const newLastReferenced = newForumPosts[newForumPosts.length - 1];
 
         this.setState({ // Store/append updated data for next postLimit# of posts in state
           forumPosts: [...forumPosts, ...newForumPosts],
           lastReferencedPost: newLastReferenced,
           loading: false,
         });
-      }, (error) => {
-        this.setState({ errorMessage: error.message, loadingMore: false });
-      });
+      })
+      .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
   }
 
   render() {
