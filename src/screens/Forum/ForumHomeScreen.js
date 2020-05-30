@@ -13,7 +13,7 @@ export default class ForumHomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
+      forumPosts: [],
       loading: true,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
@@ -27,30 +27,12 @@ export default class ForumHomeScreen extends React.Component {
     });
 
     this.unsubscribeFromFirestore = firestore().collection('forum_posts')
-      .orderBy('createdAt', 'desc') /* Update this to order by time approved, most to least recent */
+      .orderBy('createdAt', 'desc')
       .onSnapshot((snapshot) => {
+        // Store data for posts in state
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        const posts = forumPosts.map((post) => {
-          const date = post.createdAt ? post.createdAt.toDate() : null;
-          const time = date ? date.toTimeString() : null;
-          const { currentUserID } = this.state;
-
-          return (
-            <ForumPost
-              belongsToCurrentUser={currentUserID === post.userID}
-              key={post.id}
-              /* Pass in userID  if it exists, other pass in null */
-              userID={post.userID ? post.userID : null}
-              time={time}
-              postID={post.id}
-              navigateToPostScreen={this.navigateToPostScreen}
-            >
-              {post.title}
-            </ForumPost>
-          );
-        });
-        this.setState({ posts, loading: false });
-      }, (error) => { /* Error handler */
+        this.setState({ forumPosts, loading: false });
+      }, (error) => {
         this.setState({ errorMessage: error.message, loading: false });
       });
   }
@@ -60,13 +42,15 @@ export default class ForumHomeScreen extends React.Component {
     this.unsubscribeFromFirestore();
   }
 
-  navigateToPostScreen() {
+  navigateToPostScreen(postID, userID) {
     const { navigation } = this.props;
-    navigation.navigate('ForumPost');
+    navigation.navigate('ForumPost', { postID, userID });
   }
 
   render() {
-    const { posts, loading, errorMessage } = this.state;
+    const {
+      forumPosts, loading, errorMessage, currentUserID,
+    } = this.state;
     const { navigation } = this.props;
 
     return (
@@ -74,7 +58,23 @@ export default class ForumHomeScreen extends React.Component {
         <ScrollView>
           {loading && <ActivityIndicator /> }
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
-          {posts}
+          {forumPosts.map((post) => {
+            const date = post.createdAt ? post.createdAt.toDate() : null;
+            const time = date ? date.toTimeString() : null;
+
+            return (
+              <ForumPost
+                belongsToCurrentUser={currentUserID === post.userID}
+                key={post.id}
+                userID={post.userID ? post.userID : null}
+                time={time}
+                postID={post.id}
+                navigateToPostScreen={this.navigateToPostScreen}
+              >
+                {post.title}
+              </ForumPost>
+            );
+          })}
         </ScrollView>
         <FAB
           style={styles.fab}
