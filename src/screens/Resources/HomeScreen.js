@@ -98,6 +98,5 @@ const HomeStyles = StyleSheet.create({
 HomeScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
   }).isRequired,
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Text, Button } from 'react-native-paper';
+import PropTypes from 'prop-types';
 
 export default function SubcategoryIcons({ snapshot, loading, loadScreen }) {
   return (
@@ -38,3 +39,11 @@ const SubcategoriesStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+SubcategoryIcons.propTypes = {
+  snapshot: PropTypes.shape({
+    docs: PropTypes.array.isRequired,
+  }).isRequired,
+  loadScreen: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+};

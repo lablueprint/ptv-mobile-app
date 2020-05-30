@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Text } from 'react-native-paper';
+import PropTypes from 'prop-types';
 
 export default function HomeIcons({ snapshot, loading, loadScreen }) {
   return (
@@ -45,3 +46,11 @@ const HomeStyles = StyleSheet.create({
     marginTop: 10,
   },
 });
+
+HomeIcons.propTypes = {
+  snapshot: PropTypes.shape({
+    docs: PropTypes.array.isRequired,
+  }).isRequired,
+  loadScreen: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+};

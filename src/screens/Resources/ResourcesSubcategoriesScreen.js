@@ -57,8 +57,6 @@ ResourcesSubcategoriesScreen.navigationOptions = ({ navigation }) => ({
 
 ResourcesSubcategoriesScreen.propTypes = {
   navigation: PropTypes.shape({
-    setParams: PropTypes.func.isRequired,
     getParam: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
   }).isRequired,
 };

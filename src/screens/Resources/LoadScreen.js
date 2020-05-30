@@ -1,6 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'react-navigation-hooks';
+import PropTypes from 'prop-types';
 import { collections, nav } from '../../constants';
 
 export default function useLoadScreen(navigation) {
@@ -37,3 +38,9 @@ export default function useLoadScreen(navigation) {
 
   return [loading, errorMessage, loadScreen];
 }
+
+useLoadScreen.propTypes = {
+  navigation: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
