@@ -38,12 +38,14 @@ export default class ForumNotificationsScreen extends React.Component {
       .onSnapshot(async (snapshot) => {
         const newNotificationsSnapshot = snapshot.docChanges().filter((change) => change.type === 'added');
         const newNotificationDocs = newNotificationsSnapshot.map((change) => change.doc);
-        let newNotifications = newNotificationDocs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const filledNotifications = newNotificationDocs.map(
+          (doc) => ({ ...doc.data(), id: doc.id }),
+        );
         const { currentUserID } = this.state;
 
         /* Timestamps lose their toDate method when we store them in AsyncStorage,
         so we include it now */
-        newNotifications = newNotifications.map((notification) => {
+        const newNotifications = filledNotifications.map((notification) => {
           const finalNotification = notification;
           const date = notification.createdAt
             ? notification.createdAt.toDate() : null;

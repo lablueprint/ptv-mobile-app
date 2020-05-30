@@ -21,7 +21,7 @@ export default class Notification extends React.Component {
     viewPress(notificationID);
   }
 
-  async onClearPress() {
+  onClearPress() {
     const { notificationID, clearPress } = this.props;
     clearPress(notificationID);
   }
@@ -30,12 +30,7 @@ export default class Notification extends React.Component {
     const { type, viewed } = this.props;
     const viewStatus = viewed ? notificationStyles.inactiveNotification
       : notificationStyles.activeNotification;
-    let text;
-    if (type === 'reply') {
-      text = this.notificationDescriptions.reply;
-    } else if (type === 'approve') {
-      text = this.notificationDescriptions.approve;
-    }
+    const notificationDescription = this.notificationDescriptions[type];
     const RightActions = () => (
       <View style={notificationStyles.rightSwipeable}>
         <Button onPress={this.onClearPress} style={notificationStyles.clearButton}>Clear</Button>
@@ -52,7 +47,7 @@ export default class Notification extends React.Component {
             <View style={notificationStyles.notificationCard}>
               <Button icon={viewed ? 'bell' : 'bell-ring'} color={viewed ? '#808080' : '#000000'} />
               <Paragraph style={viewStatus}>
-                {text}
+                {notificationDescription}
               </Paragraph>
             </View>
           </Card>
