@@ -18,7 +18,8 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
       postLimit: 15,
       lastReferencedPost: null,
       loading: true,
-      paddingToBottom: 25,
+      loadingMore: false,
+      paddingToBottom: 30,
       categoryID: navigation.getParam('categoryID'),
     };
 
@@ -102,13 +103,13 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           loading: false,
         });
       }, (error) => {
-        this.setState({ errorMessage: error.message, loading: false });
+        this.setState({ errorMessage: error.message, loadingMore: false });
       });
   }
 
   render() {
     const {
-      forumPosts, loading, errorMessage, currentUserID,
+      forumPosts, loading, loadingMore, errorMessage, currentUserID,
     } = this.state;
 
     return (
@@ -116,7 +117,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
         <ScrollView
           onScroll={({ nativeEvent }) => {
             if (this.reachedEnd(nativeEvent)) { // If reached end, load more posts
-              this.setState({ loading: true });
+              this.setState({ loadingMore: true });
               this.loadMore();
             }
           }}
@@ -126,7 +127,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {loading
           && (
-          <View>
+          <View style={styles.activityIndicator}>
             <ActivityIndicator />
           </View>
           ) }
@@ -147,6 +148,12 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
               </ForumPost>
             );
           })}
+          {loadingMore
+          && (
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View>
+          ) }
         </ScrollView>
       </View>
     );
@@ -161,6 +168,10 @@ const styles = StyleSheet.create({
   scrollContainer: {
     height: '100%',
     backgroundColor: theme.colors.background,
+  },
+  activityIndicator: {
+    marginVertical: 15,
+    color: theme.colors.primary,
   },
 });
 

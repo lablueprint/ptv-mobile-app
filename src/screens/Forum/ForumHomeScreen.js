@@ -17,7 +17,8 @@ export default class ForumHomeScreen extends React.Component {
       postLimit: 15,
       lastReferencedPost: null,
       loading: true,
-      paddingToBottom: 25,
+      loadingMore: false,
+      paddingToBottom: 30,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
     this.reachedEnd = this.reachedEnd.bind(this);
@@ -79,13 +80,13 @@ export default class ForumHomeScreen extends React.Component {
           loading: false,
         });
       }, (error) => {
-        this.setState({ errorMessage: error.message, loading: false });
+        this.setState({ errorMessage: error.message, loadingMore: false });
       });
   }
 
   render() {
     const {
-      forumPosts, loading, errorMessage, currentUserID,
+      forumPosts, loading, loadingMore, errorMessage, currentUserID,
     } = this.state;
     const { navigation } = this.props;
 
@@ -94,14 +95,18 @@ export default class ForumHomeScreen extends React.Component {
         <ScrollView
           onScroll={({ nativeEvent }) => {
             if (this.reachedEnd(nativeEvent)) { // If reached end, load more posts
-              this.setState({ loading: true });
+              this.setState({ loadingMore: true });
               this.loadMore();
             }
           }}
           scrollEventThrottle={200}
           style={styles.scrollContainer}
         >
-          {loading && <ActivityIndicator /> }
+          {loading && (
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View>
+          )}
           {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
           {forumPosts.map((post) => {
             const date = post.createdAt ? post.createdAt.toDate() : null;
@@ -120,6 +125,11 @@ export default class ForumHomeScreen extends React.Component {
               </ForumPost>
             );
           })}
+          {loadingMore && (
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View>
+          )}
         </ScrollView>
         <FAB
           style={styles.fab}
@@ -146,6 +156,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
+  },
+  activityIndicator: {
+    marginVertical: 15,
+    color: theme.colors.primary,
   },
 });
 
