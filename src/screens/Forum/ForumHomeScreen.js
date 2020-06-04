@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Text, View, ScrollView, StyleSheet,
+  Text, View, FlatList, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { ActivityIndicator, FAB } from 'react-native-paper';
@@ -18,10 +18,10 @@ export default class ForumHomeScreen extends React.Component {
       lastReferencedPost: null,
       loading: true,
       loadingMore: false,
-      paddingToBottom: 30,
+      errorMessage: null,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
-    this.reachedEnd = this.reachedEnd.bind(this);
+    this.loadMore = this.loadMore.bind(this);
   }
 
   componentDidMount() {
@@ -55,14 +55,9 @@ export default class ForumHomeScreen extends React.Component {
     navigation.navigate('ForumPost', { postID, userID });
   }
 
-  // Return whether user has scrolled to or near the end of the screen
-  reachedEnd({ layoutMeasurement, contentOffset, contentSize }) {
-    const { paddingToBottom } = this.state;
-    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-  }
-
   // Fetch more data from firestore to load next posts
   loadMore() {
+    this.setState({ loadingMore: true });
     const { postLimit, forumPosts, lastReferencedPost } = this.state;
 
     firestore().collection('forum_posts')
@@ -77,59 +72,64 @@ export default class ForumHomeScreen extends React.Component {
         this.setState({ // Store/append updated data for next postLimit# of posts in state
           forumPosts: [...forumPosts, ...newForumPosts],
           lastReferencedPost: newLastReferenced,
-          loading: false,
         });
       })
-      .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+      .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
   }
 
   render() {
     const {
-      forumPosts, loading, loadingMore, errorMessage, currentUserID,
+      forumPosts, currentUserID, errorMessage, loading, loadingMore,
     } = this.state;
     const { navigation } = this.props;
 
     return (
       <View style={styles.homeContainer}>
-        <ScrollView
-          onScroll={({ nativeEvent }) => {
-            if (this.reachedEnd(nativeEvent)) { // If reached end, load more posts
-              this.setState({ loadingMore: true });
-              this.loadMore();
-            }
-          }}
-          scrollEventThrottle={200}
-          style={styles.scrollContainer}
-        >
-          {loading && (
-          <View style={styles.activityIndicator}>
-            <ActivityIndicator />
-          </View>
+        <FlatList
+          ListHeaderComponent={(loading
+            && (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
+            )
           )}
-          {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
-          {forumPosts.map((post) => {
-            const date = post.createdAt ? post.createdAt.toDate() : null;
-            const time = date ? date.toTimeString() : null;
+          {...errorMessage && (
+            <Text style={{ color: 'red' }}>
+              {errorMessage}
+            </Text>
+          )}
+          data={forumPosts.map((post) => {
+            const time = post.createdAt ? post.createdAt.toDate().toTimeString() : null;
+            const belongsToCurrentUser = (currentUserID === post.userID);
 
-            return (
-              <ForumPost
-                belongsToCurrentUser={currentUserID === post.userID}
-                key={post.id}
-                userID={post.userID ? post.userID : null}
-                time={time}
-                postID={post.id}
-                navigateToPostScreen={this.navigateToPostScreen}
-              >
-                {post.title}
-              </ForumPost>
-            );
+            return {
+              ...post,
+              time,
+              belongsToCurrentUser,
+            };
           })}
-          {loadingMore && (
-          <View style={styles.activityIndicator}>
-            <ActivityIndicator />
-          </View>
+          keyExtractor={(post) => post.id}
+          renderItem={({ item }) => (
+            <ForumPost
+              belongsToCurrentUser={item.belongsToCurrentUser}
+              userID={item.userID ? item.userID : null}
+              time={item.time}
+              postID={item.id}
+              navigate={this.navigateToPostScreen}
+            >
+              {item.title}
+            </ForumPost>
           )}
-        </ScrollView>
+          onEndReachedThreshold={0.25}
+          onEndReached={this.loadMore}
+          ListFooterComponent={(loadingMore
+            && (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
+            )
+          )}
+        />
         <FAB
           style={styles.fab}
           icon="plus"
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     marginVertical: 15,
+    justifyContent: 'center',
     color: theme.colors.primary,
   },
 });
