@@ -150,7 +150,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
               userID={item.userID ? item.userID : null}
               time={item.time}
               postID={item.id}
-              navigate={this.navigateToPostScreen}
+              navigateToPostScreen={this.navigateToPostScreen}
             >
               {item.title}
             </ForumPost>
