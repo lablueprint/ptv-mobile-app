@@ -18,10 +18,12 @@ export default class ForumHomeScreen extends React.Component {
       lastReferencedPost: null,
       loading: true,
       loadingMore: false,
+      allPostsLoaded: false,
       errorMessage: null,
     };
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
     this.loadMore = this.loadMore.bind(this);
+    this.handleEndReached = this.handleEndReached.bind(this);
   }
 
   componentDidMount() {
@@ -55,9 +57,17 @@ export default class ForumHomeScreen extends React.Component {
     navigation.navigate('ForumPost', { postID, userID });
   }
 
+  handleEndReached() {
+    const { allPostsLoaded } = this.state;
+
+    if (!allPostsLoaded) {
+      this.setState({ loadingMore: true });
+      this.loadMore();
+    } else { this.setState({ loadingMore: false }); }
+  }
+
   // Fetch more data from firestore to load next posts
   loadMore() {
-    this.setState({ loadingMore: true });
     const { postLimit, forumPosts, lastReferencedPost } = this.state;
 
     firestore().collection('forum_posts')
@@ -68,6 +78,10 @@ export default class ForumHomeScreen extends React.Component {
       .then((snapshot) => {
         const newForumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         const newLastReferenced = newForumPosts[newForumPosts.length - 1];
+
+        if (newForumPosts.length === 0) {
+          this.setState({ allPostsLoaded: true, loadingMore: false });
+        }
 
         this.setState({ // Store/append updated data for next postLimit# of posts in state
           forumPosts: [...forumPosts, ...newForumPosts],
@@ -84,7 +98,7 @@ export default class ForumHomeScreen extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={styles.homeContainer}>
+      <View style={styles.mainContainer}>
         <FlatList
           ListHeaderComponent={(loading
             && (
@@ -121,7 +135,7 @@ export default class ForumHomeScreen extends React.Component {
             </ForumPost>
           )}
           onEndReachedThreshold={0.25}
-          onEndReached={this.loadMore}
+          onEndReached={this.handleEndReached}
           ListFooterComponent={(loadingMore
             && (
             <View style={styles.activityIndicator}>
@@ -141,7 +155,7 @@ export default class ForumHomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  homeContainer: {
+  mainContainer: {
     height: '100%',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.background,
