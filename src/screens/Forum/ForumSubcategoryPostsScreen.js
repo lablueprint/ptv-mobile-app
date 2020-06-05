@@ -170,7 +170,7 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
   }
 }
 const styles = StyleSheet.create({
-  postContainer: {
+  mainContainer: {
     height: '100%',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.background,
