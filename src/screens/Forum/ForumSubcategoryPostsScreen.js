@@ -80,13 +80,13 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     const { allPostsLoaded } = this.state;
 
     if (!allPostsLoaded) {
-      this.setState({ loadingMore: true });
       this.loadMore();
-    } else { this.setState({ loadingMore: false }); }
+    }
   }
 
   // Fetch more data from firestore to load next posts
   loadMore() {
+    this.setState({ loadingMore: true });
     const {
       categoryID, postLimit, forumPosts, lastReferencedPost,
     } = this.state;
@@ -103,12 +103,12 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
 
         if (newForumPosts.length === 0) { // All posts loaded
           this.setState({ allPostsLoaded: true, loadingMore: false });
+        } else {
+          this.setState({ // Store/append updated data for next postLimit# of posts in state
+            forumPosts: [...forumPosts, ...newForumPosts],
+            lastReferencedPost: newLastReferenced,
+          });
         }
-
-        this.setState({ // Store/append updated data for next postLimit# of posts in state
-          forumPosts: [...forumPosts, ...newForumPosts],
-          lastReferencedPost: newLastReferenced,
-        });
       })
       .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
   }

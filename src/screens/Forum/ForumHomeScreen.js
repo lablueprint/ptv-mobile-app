@@ -61,13 +61,13 @@ export default class ForumHomeScreen extends React.Component {
     const { allPostsLoaded } = this.state;
 
     if (!allPostsLoaded) {
-      this.setState({ loadingMore: true });
       this.loadMore();
-    } else { this.setState({ loadingMore: false }); }
+    }
   }
 
   // Fetch more data from firestore to load next posts
   loadMore() {
+    this.setState({ loadingMore: true });
     const { postLimit, forumPosts, lastReferencedPost } = this.state;
 
     firestore().collection('forum_posts')
@@ -81,12 +81,12 @@ export default class ForumHomeScreen extends React.Component {
 
         if (newForumPosts.length === 0) {
           this.setState({ allPostsLoaded: true, loadingMore: false });
+        } else {
+          this.setState({ // Store/append updated data for next postLimit# of posts in state
+            forumPosts: [...forumPosts, ...newForumPosts],
+            lastReferencedPost: newLastReferenced,
+          });
         }
-
-        this.setState({ // Store/append updated data for next postLimit# of posts in state
-          forumPosts: [...forumPosts, ...newForumPosts],
-          lastReferencedPost: newLastReferenced,
-        });
       })
       .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
   }
