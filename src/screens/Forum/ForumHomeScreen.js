@@ -21,9 +21,11 @@ export default class ForumHomeScreen extends React.Component {
       allPostsLoaded: false,
       errorMessage: null,
     };
+
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.handleEndReached = this.handleEndReached.bind(this);
+    this.renderHeaderComponent = this.renderHeaderComponent.bind(this);
   }
 
   componentDidMount() {
@@ -91,27 +93,48 @@ export default class ForumHomeScreen extends React.Component {
       .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
   }
 
+  renderHeaderComponent() {
+    const { loading, errorMessage } = this.state;
+
+    if (loading && !errorMessage) {
+      return (
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+    if (errorMessage && !loading) {
+      return (
+        <Text style={{ color: 'red' }}>
+          {errorMessage}
+        </Text>
+      );
+    }
+    if (errorMessage && loading) {
+      return (
+        <View>
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View>
+          <Text style={{ color: 'red' }}>
+            {errorMessage}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  }
+
   render() {
     const {
-      forumPosts, currentUserID, errorMessage, loading, loadingMore,
+      forumPosts, currentUserID, loadingMore,
     } = this.state;
     const { navigation } = this.props;
 
     return (
       <View style={styles.mainContainer}>
         <FlatList
-          ListHeaderComponent={(loading
-            && (
-            <View style={styles.activityIndicator}>
-              <ActivityIndicator />
-            </View>
-            )
-          )}
-          {...errorMessage && (
-            <Text style={{ color: 'red' }}>
-              {errorMessage}
-            </Text>
-          )}
+          ListHeaderComponent={this.renderHeaderComponent}
           data={forumPosts.map((post) => {
             const time = post.createdAt ? post.createdAt.toDate().toTimeString() : null;
             const belongsToCurrentUser = (currentUserID === post.userID);
