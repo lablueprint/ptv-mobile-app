@@ -8,6 +8,7 @@ import {
 } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
+import { theme } from '../../style';
 
 
 class Header extends React.Component {
@@ -28,6 +29,7 @@ class Header extends React.Component {
         <View style={headerStyles.headerContainer}>
           <Button
             icon="arrow-left"
+            color="#ffffff"
             onPress={this.onBackPress}
             style={headerStyles.backButton}
           />
@@ -42,9 +44,10 @@ const headerStyles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: theme.colors.primary,
   },
   headerTitle: {
+    color: theme.colors.headerText,
     alignSelf: 'center',
     marginTop: 20,
     marginBottom: 20,

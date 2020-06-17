@@ -57,6 +57,7 @@ class ProfileHomeTop extends React.Component {
           <Title style={profileHomeTopStyles.headerTitle}>Profile</Title>
           <Button
             icon="bell"
+            color="#ffffff"
             onPress={this.onNotificationPress}
             style={profileHomeTopStyles.notificationButton}
           />
@@ -92,15 +93,16 @@ const profileHomeTopStyles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: theme.colors.primary,
   },
   headerTitle: {
+    color: theme.colors.headerText,
     alignSelf: 'center',
     marginTop: 20,
     marginBottom: 20,
   },
   notificationButton: {
-    marginTop: 15,
+    marginTop: 13,
     marginBottom: 20,
     position: 'absolute',
     right: 0,
