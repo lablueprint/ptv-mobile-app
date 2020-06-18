@@ -11,6 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncLock from 'async-lock';
 import Notification from './Notification';
 import DefaultNotifications from './DefaultNotifications';
+import { theme } from '../../style';
 
 export default class ForumNotificationsScreen extends React.Component {
   constructor(props) {
@@ -151,12 +152,13 @@ export default class ForumNotificationsScreen extends React.Component {
         <View style={notificationStyles.headerContainer}>
           <Title style={notificationStyles.headerTitle}>Notifications</Title>
           <Menu
-            alignSelf="flex-end"
             visible={visible}
             onDismiss={this.setButtonVisibleFalse}
             anchor={(
               <IconButton
+                style={notificationStyles.menuButton}
                 icon="dots-vertical"
+                color="#ffffff"
                 onPress={this.setButtonVisibleTrue}
               >
                 Show menu
@@ -199,14 +201,16 @@ const notificationStyles = StyleSheet.create({
   },
   headerTitle: {
     alignSelf: 'center',
+    marginLeft: 45,
     marginTop: 20,
     marginBottom: 20,
-    backgroundColor: '#ffffff',
+    color: theme.colors.headerText,
     textAlign: 'center',
   },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
   },
   scrollContainer: {
     paddingTop: 15,
@@ -216,5 +220,8 @@ const notificationStyles = StyleSheet.create({
   },
   errorMessage: {
     color: 'red',
+  },
+  menuButton: {
+    marginTop: 13,
   },
 });

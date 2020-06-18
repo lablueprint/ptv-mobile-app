@@ -247,7 +247,7 @@ export default class EditProfileScreen extends React.Component {
           <Button
             disabled={isDisabled || saveLoading}
             loading={saveLoading}
-            style={styles.button}
+            style={editProfileStyles.button}
             mode="contained"
             onPress={this.onSavePress}
           >
@@ -279,5 +279,11 @@ const editProfileStyles = StyleSheet.create({
     width: '45%',
     marginTop: 0,
     backgroundColor: '#ffffff',
+  },
+
+  button: {
+    width: '90%',
+    marginTop: 30,
+
   },
 });
