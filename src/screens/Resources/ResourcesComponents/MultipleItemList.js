@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Text } from 'react-native-paper';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import PropTypes from 'prop-types';
 import { nav } from '../../../constants';
+import ListStyles from './ItemListStyles';
 
 
 export default function MultipleItemList({ snapshot, navigation, setLoading }) {
@@ -12,13 +13,13 @@ export default function MultipleItemList({ snapshot, navigation, setLoading }) {
 
   function renderHeader(doc, _, isActive) {
     return (
-      <View style={MultipleItemStyles.accordionHeader}>
-        <View style={MultipleItemStyles.accordionHeaderText}>
-          <Text style={MultipleItemStyles.resourceText}>
+      <View style={ListStyles.header}>
+        <View style={ListStyles.headerText}>
+          <Text style={ListStyles.resourceText}>
             {doc.data.title}
           </Text>
         </View>
-        <View style={MultipleItemStyles.accordionHeaderIcon}>
+        <View style={ListStyles.headerIcon}>
           <Icon name={isActive ? 'chevron-up' : 'chevron-down'} />
         </View>
       </View>
@@ -27,14 +28,14 @@ export default function MultipleItemList({ snapshot, navigation, setLoading }) {
 
   function renderContent(doc) {
     return (
-      <View style={MultipleItemStyles.accordionContent}>
+      <View style={ListStyles.content}>
         <Text>
           {doc.data.description}
         </Text>
 
-        <View style={MultipleItemStyles.moreButton}>
+        <View style={ListStyles.moreButton}>
           <Text
-            style={MultipleItemStyles.resourceText}
+            style={ListStyles.resourceText}
             onPress={() => {
               setLoading(true);
               navigation.push(nav.item, { resourceID: doc.id });
@@ -63,39 +64,6 @@ export default function MultipleItemList({ snapshot, navigation, setLoading }) {
     />
   );
 }
-
-const MultipleItemStyles = StyleSheet.create({
-
-  accordionHeader: {
-    flexDirection: 'row',
-    padding: 15,
-    backgroundColor: '#ffffff',
-  },
-  accordionHeaderText: {
-    flex: 0.5,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  accordionHeaderIcon: {
-    flex: 0.5,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  accordionContent: {
-    padding: 15,
-    paddingTop: 0,
-    backgroundColor: '#ffffff',
-  },
-  moreButton: {
-    alignItems: 'flex-end',
-    marginTop: 10,
-  },
-  resourceText: {
-    fontWeight: 'bold',
-  },
-});
 
 MultipleItemList.propTypes = {
   navigation: PropTypes.shape({

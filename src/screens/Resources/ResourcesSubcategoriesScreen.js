@@ -24,11 +24,18 @@ export default function ResourcesSubcategoriesScreen(props) {
           {errorMessage}
         </Text>
         )}
-      {loadingNextScreen
+      {loadingNextScreen && !errorMessage
         && (
         <ActivityIndicator size="large" />
         )}
-      <SubcategoryIcons snapshot={snapshot} loading={loadingNextScreen} loadScreen={loadScreen} />
+      {!loadingNextScreen && !errorMessage
+        && (
+        <SubcategoryIcons
+          snapshot={snapshot}
+          loading={loadingNextScreen}
+          loadScreen={loadScreen}
+        />
+        )}
     </ScrollView>
   );
 }

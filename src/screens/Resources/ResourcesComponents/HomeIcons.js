@@ -5,6 +5,10 @@ import { Text } from 'react-native-paper';
 import PropTypes from 'prop-types';
 
 export default function HomeIcons({ snapshot, loading, loadScreen }) {
+  if (snapshot === null) {
+    return (null);
+  }
+
   return (
     snapshot.docs.map((doc) => {
       const {
@@ -48,9 +52,6 @@ const HomeStyles = StyleSheet.create({
 });
 
 HomeIcons.propTypes = {
-  snapshot: PropTypes.shape({
-    docs: PropTypes.array.isRequired,
-  }).isRequired,
   loadScreen: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 };

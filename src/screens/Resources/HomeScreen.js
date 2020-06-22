@@ -20,11 +20,12 @@ export default function HomeScreen(props) {
   const [loadingNextScreen, err, loadScreen] = useLoadScreen(navigation);
   const [errorMessage, setErrorMessage] = useState(err);
   const [snapshot, setSnapshot] = useState(null);
-  const [initialLoad, setInitialLoad] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(false);
 
   const { currentUser } = auth();
 
   useEffect(() => {
+    setInitialLoad(true);
     firestore()
       .collection(collections.categories)
       .get()
@@ -60,24 +61,32 @@ export default function HomeScreen(props) {
           {errorMessage}
         </Text>
         )}
-      { (loadingNextScreen || initialLoad)
+      { (loadingNextScreen || initialLoad) && !errorMessage
         && (
         <ActivityIndicator size="large" />
         )}
-      <Title>
-        {`Hi ${currentUser.displayName}!`}
-      </Title>
-      <View style={HomeStyles.categoryButtonView}>
-        { !initialLoad
-          && <HomeIcons snapshot={snapshot} loading={loadingNextScreen} loadScreen={loadScreen} /> }
-      </View>
-      <Button
-        style={HomeStyles.button}
-        mode="contained"
-        onPress={handleSignOut}
-      >
-        Sign Out
-      </Button>
+      { !initialLoad && !loadingNextScreen && !errorMessage
+      && (
+      <>
+        <Title>
+          {`Hi ${currentUser.displayName}!`}
+        </Title>
+        <View style={HomeStyles.categoryButtonView}>
+          <HomeIcons
+            snapshot={snapshot}
+            loading={loadingNextScreen}
+            loadScreen={loadScreen}
+          />
+        </View>
+        <Button
+          style={HomeStyles.button}
+          mode="contained"
+          onPress={handleSignOut}
+        >
+          Sign Out
+        </Button>
+      </>
+      )}
     </ScrollView>
   );
 }
