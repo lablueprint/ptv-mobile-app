@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-  View, Alert,
+  View, Alert, StyleSheet,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
   Text, Title, Button, TextInput,
 } from 'react-native-paper';
-import styles from '../../style';
+import { theme } from '../../style';
 
 export default function ForgotPasswordScreen(props) {
   const { navigation } = props;
@@ -36,7 +36,7 @@ export default function ForgotPasswordScreen(props) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={ForgotPasswordStyles.container}>
       <Title>Forgot Password?</Title>
       {errorMessage
         && (
@@ -47,7 +47,7 @@ export default function ForgotPasswordScreen(props) {
       <TextInput
         autoFocus
         disabled={loading}
-        style={styles.textInput}
+        style={ForgotPasswordStyles.textInput}
         autoCapitalize="none"
         keyboardType="email-address"
         label="Email"
@@ -60,7 +60,7 @@ export default function ForgotPasswordScreen(props) {
       <Button
         loading={loading}
         disabled={loading}
-        style={styles.button}
+        style={ForgotPasswordStyles.button}
         mode="contained"
         onPress={handleForgotPassword}
       >
@@ -76,6 +76,25 @@ export default function ForgotPasswordScreen(props) {
     </View>
   );
 }
+
+const ForgotPasswordStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  textInput: {
+    height: 40,
+    width: '90%',
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
+  },
+});
 
 ForgotPasswordScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
