@@ -6,7 +6,7 @@ export default function DefaultNotifications() {
   return (
     <View style={defaultNotificationStyles.container}>
       <IconButton icon="bell" />
-      <Text>No New Notifications</Text>
+      <Text style={defaultNotificationStyles.defaultNotifications}>No New Notifications</Text>
     </View>
 
   );
@@ -18,5 +18,8 @@ const defaultNotificationStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: '50%',
+  },
+  defaultNotifications: {
+    marginBottom: 12,
   },
 });
