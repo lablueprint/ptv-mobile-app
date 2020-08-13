@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Text, View, ScrollView, StyleSheet,
+  Text, View, FlatList, StyleSheet,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -15,12 +15,19 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     const { navigation } = this.props;
     this.state = {
       forumPosts: [],
+      postLimit: 10,
+      lastReferencedPost: null,
       loading: true,
+      loadingMore: false,
+      allPostsLoaded: false,
       categoryID: navigation.getParam('categoryID'),
     };
 
     /* Function to navigate to post when post pressed, fx passed to ForumPost */
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
+    this.loadMore = this.loadMore.bind(this);
+    this.handleEndReached = this.handleEndReached.bind(this);
+    this.renderHeaderComponent = this.renderHeaderComponent.bind(this);
   }
 
   componentDidMount() {
@@ -44,21 +51,25 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
       }
     });
 
+    const { postLimit } = this.state;
     /* Only query posts w/ categoryID matching categoryID passed in from navigation */
-    this.unsubscribeFromFirestore = firestore().collection('forum_posts')
+    firestore().collection('forum_posts')
       .where('categoryID', '==', categoryID)
       .orderBy('createdAt', 'desc')
-      .onSnapshot((snapshot) => {
+      .limit(postLimit)
+      .get()
+      .then((snapshot) => {
+        // Store data for posts in state
         const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        this.setState({ forumPosts, loading: false });
-      }, (error) => {
-        this.setState({ errorMessage: error.message, loading: false });
-      });
+        const lastReferencedPost = forumPosts[forumPosts.length - 1];
+
+        this.setState({ forumPosts, lastReferencedPost, loading: false });
+      })
+      .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
   }
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-    this.unsubscribeFromFirestore();
   }
 
   navigateToPostScreen(postID, userID) {
@@ -66,45 +77,122 @@ export default class ForumSubcategoryPostsScreen extends React.Component {
     navigation.navigate('ForumPost', { postID, userID });
   }
 
+  handleEndReached() {
+    const { allPostsLoaded } = this.state;
+
+    if (!allPostsLoaded) {
+      this.loadMore();
+    }
+  }
+
+  // Fetch more data from firestore to load next posts
+  loadMore() {
+    this.setState({ loadingMore: true });
+    const {
+      categoryID, postLimit, forumPosts, lastReferencedPost,
+    } = this.state;
+
+    firestore().collection('forum_posts')
+      .where('categoryID', '==', categoryID)
+      .orderBy('createdAt', 'desc')
+      .startAfter(lastReferencedPost.createdAt)
+      .limit(postLimit)
+      .get()
+      .then((snapshot) => {
+        const newForumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const newLastReferenced = newForumPosts[newForumPosts.length - 1];
+
+        if (newForumPosts.length === 0) { // All posts loaded
+          this.setState({ allPostsLoaded: true, loadingMore: false });
+        } else {
+          this.setState({ // Store/append updated data for next postLimit# of posts in state
+            forumPosts: [...forumPosts, ...newForumPosts],
+            lastReferencedPost: newLastReferenced,
+          });
+        }
+      })
+      .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
+  }
+
+  renderHeaderComponent() {
+    const { loading, errorMessage } = this.state;
+
+    if (loading && !errorMessage) {
+      return (
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+    if (errorMessage && !loading) {
+      return (
+        <Text style={{ color: 'red' }}>
+          {errorMessage}
+        </Text>
+      );
+    }
+    if (errorMessage && loading) {
+      return (
+        <View>
+          <View style={styles.activityIndicator}>
+            <ActivityIndicator />
+          </View>
+          <Text style={{ color: 'red' }}>
+            {errorMessage}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  }
+
   render() {
     const {
-      forumPosts, loading, errorMessage, currentUserID,
+      forumPosts, loadingMore, currentUserID,
     } = this.state;
 
     return (
       <View style={styles.mainContainer}>
-        <ScrollView style={styles.scrollContainer}>
-          {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
-          {loading
-          && (
-          <View>
-            <ActivityIndicator />
-          </View>
-          ) }
-          {forumPosts.map((post) => {
-            const date = post.createdAt ? post.createdAt.toDate() : null;
-            const time = date ? date.toTimeString() : null;
+        <FlatList
+          ListHeaderComponent={this.renderHeaderComponent}
+          data={forumPosts.map((post) => {
+            const time = post.createdAt ? post.createdAt.toDate().toTimeString() : null;
+            const belongsToCurrentUser = (currentUserID === post.userID);
 
-            return (
-              <ForumPost
-                belongsToCurrentUser={currentUserID === post.userID}
-                key={post.id}
-                userID={post.userID ? post.userID : null}
-                time={time}
-                postID={post.id}
-                navigateToPostScreen={this.navigateToPostScreen}
-              >
-                {post.title}
-              </ForumPost>
-            );
+            return {
+              ...post,
+              time,
+              belongsToCurrentUser,
+            };
           })}
-        </ScrollView>
+          keyExtractor={(post) => post.id}
+          renderItem={({ item }) => (
+            <ForumPost
+              belongsToCurrentUser={item.belongsToCurrentUser}
+              userID={item.userID ? item.userID : null}
+              time={item.time}
+              postID={item.id}
+              navigateToPostScreen={this.navigateToPostScreen}
+            >
+              {item.title}
+            </ForumPost>
+          )}
+          onEndReachedThreshold={0.25}
+          onEndReached={this.handleEndReached}
+          ListFooterComponent={(loadingMore
+            && (
+            <View style={styles.activityIndicator}>
+              <ActivityIndicator />
+            </View>
+            )
+          )}
+        />
       </View>
     );
   }
 }
 const styles = StyleSheet.create({
-  postContainer: {
+  mainContainer: {
     height: '100%',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.background,
@@ -112,6 +200,10 @@ const styles = StyleSheet.create({
   scrollContainer: {
     height: '100%',
     backgroundColor: theme.colors.background,
+  },
+  activityIndicator: {
+    marginVertical: 15,
+    color: theme.colors.primary,
   },
 });
 
