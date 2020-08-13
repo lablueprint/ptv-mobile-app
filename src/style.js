@@ -51,10 +51,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: '#ffffff',
   },
-  button: {
-    width: '90%',
-    marginTop: 10,
-  },
 });
 
 export default styles;

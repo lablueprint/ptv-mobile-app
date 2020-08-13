@@ -1,10 +1,21 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import { HomeScreen, ResourcesItemScreen } from '../screens/Home';
+import {
+  HomeScreen, ResourcesItemScreen, ResourcesSubcategoriesScreen, ResourcesItemListScreen,
+} from '../screens/Resources';
 
 const HomeNavigation = createStackNavigator(
   {
     HomeDefault: {
       screen: HomeScreen,
+      navigationOptions: () => ({
+        headerTitle: 'Resources',
+      }),
+    },
+    ResourcesSubcategories: {
+      screen: ResourcesSubcategoriesScreen,
+    },
+    ResourcesItemList: {
+      screen: ResourcesItemListScreen,
     },
     ResourcesItem: {
       screen: ResourcesItemScreen,

@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
 import { theme } from '../../style';
 
+
 const INITIAL_STATE = {
   name: '',
 };
@@ -20,6 +21,7 @@ class ProfileHomeTop extends React.Component {
     super(props);
     this.state = INITIAL_STATE;
     this.onEditProfilePress = this.onEditProfilePress.bind(this);
+    this.onNotificationPress = this.onNotificationPress.bind(this);
   }
 
   componentDidMount() {
@@ -39,12 +41,29 @@ class ProfileHomeTop extends React.Component {
     navigation.navigate('EditProfile');
   }
 
+
+  onNotificationPress() {
+    const { navigation } = this.props;
+    navigation.openDrawer();
+  }
+
   render() {
     const {
       name,
     } = this.state;
     return (
       <View>
+        <View style={profileHomeTopStyles.headerContainer}>
+          <Title style={profileHomeTopStyles.headerTitle}>Profile</Title>
+          <Button
+            icon="bell"
+            color="#ffffff"
+            onPress={this.onNotificationPress}
+            style={profileHomeTopStyles.notificationButton}
+          />
+        </View>
+
+
         <Avatar.Icon size={150} style={profileHomeTopStyles.avatar} icon="account" />
         <View style={profileHomeTopStyles.rowContainer}>
           <Title style={{ alignSelf: 'center' }}>
@@ -71,10 +90,27 @@ const profileHomeTopStyles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 12,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
+  },
+  headerTitle: {
+    color: theme.colors.headerText,
+    alignSelf: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  notificationButton: {
+    marginTop: 13,
+    marginBottom: 20,
+    position: 'absolute',
+    right: 0,
+  },
 });
 
 ProfileHomeTop.propTypes = {
-  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+  navigation: PropTypes.shape({ navigate: PropTypes.func, openDrawer: PropTypes.func }).isRequired,
 };
 
 export default withNavigation(ProfileHomeTop);

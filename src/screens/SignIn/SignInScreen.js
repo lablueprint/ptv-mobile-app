@@ -1,11 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import PropTypes from 'prop-types';
 import {
   TextInput, Title, Text, Button,
 } from 'react-native-paper';
-import styles from '../../style';
+import { theme } from '../../style';
 
 const INITIAL_STATE = {
   email: '',
@@ -46,7 +46,7 @@ class SignInScreen extends React.Component {
     } = this.state;
     const { navigation } = this.props;
     return (
-      <View style={styles.container}>
+      <View style={SignInStyles.container}>
         <Title>Login</Title>
         {errorMessage
           && (
@@ -58,7 +58,7 @@ class SignInScreen extends React.Component {
           autoFocus
           blurOnSubmit={false}
           disabled={loading}
-          style={styles.textInput}
+          style={SignInStyles.textInput}
           autoCapitalize="none"
           keyboardType="email-address"
           label="Email"
@@ -71,7 +71,7 @@ class SignInScreen extends React.Component {
         <TextInput
           disabled={loading}
           secureTextEntry
-          style={styles.textInput}
+          style={SignInStyles.textInput}
           autoCapitalize="none"
           label="Password"
           mode="outlined"
@@ -84,14 +84,14 @@ class SignInScreen extends React.Component {
         <Button
           loading={loading}
           disabled={loading}
-          style={styles.button}
+          style={SignInStyles.button}
           mode="contained"
           onPress={this.handleLogin}
         >
           Login
         </Button>
         <Button
-          style={styles.button}
+          style={SignInStyles.button}
           disabled={loading}
           mode="contained"
           onPress={() => navigation.navigate('SignUpScreen')}
@@ -109,6 +109,25 @@ class SignInScreen extends React.Component {
     );
   }
 }
+
+const SignInStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  textInput: {
+    height: 40,
+    width: '90%',
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+  },
+  button: {
+    width: '90%',
+    marginTop: 10,
+  },
+});
 
 SignInScreen.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
