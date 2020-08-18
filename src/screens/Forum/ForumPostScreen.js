@@ -189,7 +189,7 @@ export default function ForumPostScreen({ navigation }) {
   /* Reply data */
   const [replies, setReplies] = useState([]);
 
-  /* Data retreival state */
+  /* Data retrieval state */
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -200,62 +200,60 @@ export default function ForumPostScreen({ navigation }) {
   /* Dialog box state */
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  /* Retreives data from Firebase/Firestore */
+  /* Retrieves data from Firebase/Firestore */
   const getData = useCallback(async () => {
     setLoading(true);
 
-    /* Query forum post data from post id passed in through navigation */
+    /* Query forum post data from postid passed in through navigation */
+    const postSnap = await firestore().collection('forum_posts').doc(postID)
+      .get();
+    const postData = postSnap.data();
+
+    /* Query post author's user data */
+    const authorSnapshot = firestore().collection('users').doc(postData.userID).get();
+    const authorSnap = await Promise.all([authorSnapshot]);
+    setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
+
+    /* Get rest of post data; set post hook w/ post and author data */
+    const postTitle = postData.title ? postData.title : 'Title unset';
+    const postName = authorName || 'Name unset';
+    const postDate = postData.createdAt ? postData.createdAt.toDate().toLocaleTimeString('en-US') : 'Date unset';
+    const postBody = postData.body ? postData.body : 'Body unset';
+    setPost(<ForumPost
+      title={postTitle}
+      name={postName}
+      date={postDate}
+      body={postBody}
+    />);
+
     try {
-      const postSnap = await firestore().collection('forum_posts').doc(postID)
+      /* Get replies/comments, sorted by createdAt timestamp from oldest to youngest */
+      const snapshot = await firestore().collection('forum_comments')
+        .where('postID', '==', postID)
+        .orderBy('createdAt')
         .get();
-      const postData = postSnap.data();
+      const sortedRepliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-      /* Query post author user data */
-      const authorSnapshot = firestore().collection('users').doc(postData.userID).get();
-      const authorSnap = await Promise.all([authorSnapshot]);
+      /* Get comment author's user data */
+      const userSnapshot = sortedRepliesData.map((reply) => firestore().collection('users').doc(reply.userID).get());
+      const userSnap = await Promise.all(userSnapshot);
+      const usersData = userSnap.map((doc) => doc.data());
 
-      setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
-
-      /* Set post hook with post and author data */
-      setPost(<ForumPost
-        title={postData.title}
-        name={authorSnap.length ? authorSnap[0].get('displayName') : null}
-        date={postData.createdAt.toDate().toLocaleTimeString('en-US')}
-        body={postData.body}
-      />);
-
-      try {
-        const snapshot = await firestore().collection('forum_comments')
-          .where('postID', '==', postID)
-          .orderBy('createdAt') /* sort by createdAt timestamp, from oldest to youngest */
-          .get();
-
-        const sortedRepliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-
-        /* Query comment author user data */
-        const userSnapshot = sortedRepliesData.map((reply) => firestore().collection('users').doc(reply.userID).get());
-        const userSnap = await Promise.all(userSnapshot);
-        const usersData = userSnap.map((doc) => doc.data());
-
-        /* Set replies hook with comment and comment author data */
-        setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
-          ...(<ForumReply
-            name={usersData[i].displayName}
-            date={reply.createdAt.toDate().toLocaleTimeString('en-US')}
-            body={reply.body}
-          />),
-          key: reply.id,
-        })));
-        setLoading(false);
-      } catch (error) {
-        setErrorMessage(error.message);
-        setLoading(false);
-      }
+      /* Set replies hook with comment and comment author data */
+      setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
+        ...(<ForumReply
+          name={usersData[i].displayName ? usersData[i].displayName : 'Name unset'}
+          date={reply.createdAt ? reply.createdAt.toDate().toLocaleTimeString('en-US') : 'Date unset'}
+          body={reply.body ? reply.body : 'Body unset'}
+        />),
+        key: reply.id,
+      })));
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
     }
-  }, [postID]);
+  }, [authorName, postID]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
