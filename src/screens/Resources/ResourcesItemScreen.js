@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useCallback,
 } from 'react';
 import {
-  View, StyleSheet, ScrollView, ActivityIndicator,
+  View, StyleSheet, ScrollView, ActivityIndicator, Image,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
@@ -18,14 +18,16 @@ const resourcesStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  image: {
+    height: 430,
+  },
   itemContainer: {
     flex: 1,
     backgroundColor: 'white',
-    top: 400,
+    marginTop: -30,
     width: '100%',
     borderRadius: 20,
     padding: 20,
-    paddingBottom: 420,
   },
   map: {
     alignSelf: 'center',
@@ -62,6 +64,7 @@ export default function ResourcesItemScreen(props) {
   const [body, setBody] = useState(null);
   const [steps, setSteps] = useState(null);
   const [subheader, setSubheader] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
   const [authorName, setAuthorName] = useState(null);
   const [markers, setMarkers] = useState(null);
   const [averageCoordinate, setAverageCoordinate] = useState(null);
@@ -89,6 +92,9 @@ export default function ResourcesItemScreen(props) {
       setDescription(resourceData.description);
       setType(resourceData.type);
       setSubheader(resourceData.subheader);
+      if (resourceData.thumbnail) {
+        setThumbnail(resourceData.thumbnail.src);
+      }
 
       /* Query all map markers */
       firestore().collection('resource_items').doc(resourceID).collection('map_markers')
@@ -189,6 +195,7 @@ export default function ResourcesItemScreen(props) {
   return (
     <View style={resourcesStyles.container}>
       <ScrollView style={resourcesStyles.container}>
+        {thumbnail && (<Image source={{ uri: thumbnail }} style={resourcesStyles.image} />)}
         <View style={resourcesStyles.itemContainer}>
           {errorMessage && <Text>{errorMessage}</Text>}
           {title && (<Title>{title}</Title>)}
