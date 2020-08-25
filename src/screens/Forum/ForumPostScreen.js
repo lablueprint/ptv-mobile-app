@@ -9,15 +9,41 @@ import {
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import { firebase } from '@react-native-firebase/auth';
+import { theme } from '../../style';
 
 const styles = StyleSheet.create({
-  container: {
+  secondaryBackground: {
     flex: 1,
-    backgroundColor: 'azure',
+    backgroundColor: theme.colors.background,
   },
-  post: {
+  postContainer: {
     borderRadius: 15,
     margin: 20,
+    backgroundColor: theme.colors.postBackground,
+  },
+  postTitleText: {
+    color: theme.colors.accent,
+    fontSize: 18,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: 'bold',
+  },
+  sidePostText: {
+    color: theme.colors.accent,
+    fontSize: 12,
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
+  },
+  mainPostText: {
+    color: theme.colors.text,
+    fontSize: 15,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+  },
+  alertText: {
+    color: theme.colors.alertText,
+    fontSize: 14,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
   },
   card: {
     borderRadius: 15,
@@ -84,10 +110,26 @@ function ForumPost({
   title, name, date, body,
 }) {
   return (
-    <Card style={styles.post}>
-      <Card.Title title={title} subtitle={`${name} ${date}`} left={(props) => <Avatar.Text {...props} label={name.charAt(0).toUpperCase()} />} />
+    <Card style={styles.postContainer}>
+      <Card.Title
+        title={`${name} ${date}`} // Name and date go above post title
+        /* title={(
+          <View>
+            <Text style={{ fontWeight: 'bold' }}>{name}</Text>
+            <Text>
+              {' '}
+              {date}
+            </Text>
+          </View>
+        )} */
+        titleStyle={styles.sidePostText}
+        subtitle={title}
+        subtitleStyle={styles.postTitleText}
+        style={{ alignItems: 'center' }}
+        left={(props) => <Avatar.Text {...props} label={name.charAt(0).toUpperCase()} />}
+      />
       <Card.Content>
-        <Paragraph>{body}</Paragraph>
+        <Paragraph style={styles.mainPostText}>{body}</Paragraph>
       </Card.Content>
     </Card>
   );
@@ -116,10 +158,10 @@ function ReplyDialog({
         onDismiss={() => {
           setVisible(false);
         }}
+        style={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <Dialog.Title>Thanks!</Dialog.Title>
         <Dialog.Content>
-          <Paragraph>
+          <Paragraph style={styles.alertText}>
             Thank you for contributing to our community!
             Your reply is being sent to our team for approval.
           </Paragraph>
@@ -215,10 +257,10 @@ export default function ForumPostScreen({ navigation }) {
     setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
 
     /* Get rest of post data; set post hook w/ post and author data */
-    const postTitle = postData.title ? postData.title : 'Title unset';
+    const postTitle = postData.title || 'Title unset';
     const postName = authorName || 'Name unset';
     const postDate = postData.createdAt ? postData.createdAt.toDate().toLocaleTimeString('en-US') : 'Date unset';
-    const postBody = postData.body ? postData.body : 'Body unset';
+    const postBody = postData.body || 'Body unset';
     setPost(<ForumPost
       title={postTitle}
       name={postName}
@@ -242,9 +284,9 @@ export default function ForumPostScreen({ navigation }) {
       /* Set replies hook with comment and comment author data */
       setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
         ...(<ForumReply
-          name={usersData[i].displayName ? usersData[i].displayName : 'Name unset'}
+          name={usersData[i].displayName || 'Name unset'}
           date={reply.createdAt ? reply.createdAt.toDate().toLocaleTimeString('en-US') : 'Date unset'}
-          body={reply.body ? reply.body : 'Body unset'}
+          body={reply.body || 'Body unset'}
         />),
         key: reply.id,
       })));
@@ -287,7 +329,7 @@ export default function ForumPostScreen({ navigation }) {
   }, [getData]);
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
+    <KeyboardAvoidingView style={styles.secondaryBackground} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
       <ReplyDialog
         visible={dialogVisible}
         setVisible={setDialogVisible}

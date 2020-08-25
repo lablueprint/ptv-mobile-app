@@ -28,13 +28,14 @@ export const theme = {
   fonts: configureFonts(fontConfig),
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3190D0',
-    accent: '#8EAEC3',
-    background: '#E6EFF5',
-    text: '#194261',
+    primary: '#0F7AC3', // header background
     headerText: '#FFFFFF',
     inactiveHeader: '#E4F2FC',
+    background: '#E6EFF5', // secondary background
+    text: '#194261', // post main text
+    accent: '#5A7A8F', // accents and post side text
     postBackground: '#FFFFFF',
+    alertText: '#242424', // dialog pop-ups, alerts
   },
 };
 
