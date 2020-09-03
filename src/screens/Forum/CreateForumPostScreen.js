@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Picker, Alert, StyleSheet,
+  ScrollView, Picker, Alert, StyleSheet, View,
 } from 'react-native';
 import {
   TextInput, Button, Text,
@@ -8,7 +8,7 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
-import styles, { theme } from '../../style'
+import { theme } from '../../style';
 
 const INITIAL_STATE = {
   title: '',
@@ -90,7 +90,6 @@ export default class CreateForumPostScreen extends React.Component {
     }
   }
 
-
   render() {
     const {
       title, body, errorMessageTitle, errorMessageBody, categoryID, forumCategories,
@@ -105,16 +104,16 @@ export default class CreateForumPostScreen extends React.Component {
       />
     ));
     return (
-      <View style={styles.container}>
+      <ScrollView style={createForumPostStyles.container}>
         {errorMessageFirestore
         && (
           <Text style={{ color: 'red' }}>
             {errorMessageFirestore}
           </Text>
         )}
-        <Text style={textStyles.text}>Title</Text>
+        <Text style={createForumPostStyles.text}>Title</Text>
         <TextInput
-          style={styles.textInput}
+          style={createForumPostStyles.titleTextInput}
           onChangeText={(text) => this.setState({ title: text })}
           placeholder="Enter Title"
           value={title}
@@ -127,18 +126,19 @@ export default class CreateForumPostScreen extends React.Component {
             {errorMessageTitle}
           </Text>
           )}
+        <View style={createForumPostStyles.pickerBorder}>
+          <Picker
+            selectedValue={categoryID}
+            style={createForumPostStyles.picker}
+            onValueChange={(itemValue) => this.setState({ categoryID: itemValue })}
+          >
+            {pickerItems}
+          </Picker>
+        </View>
 
-        <Picker
-          selectedValue={categoryID}
-          style={textStyles}
-          onValueChange={(itemValue) => this.setState({ categoryID: itemValue })}
-        >
-          {pickerItems}
-        </Picker>
-
-        <Text style={textStyles.text}>Body</Text>
+        <Text style={createForumPostStyles.text}>Body</Text>
         <TextInput
-          style={styles.textInput}
+          style={createForumPostStyles.bodyTextInput}
           onChangeText={(text) => this.setState({ body: text })}
           placeholder="Enter Forum Post"
           value={body}
@@ -157,23 +157,50 @@ export default class CreateForumPostScreen extends React.Component {
           Post
         </Button>
 
-      </View>
+      </ScrollView>
     );
   }
 }
 
-const textStyles = StyleSheet.create({
+const createForumPostStyles = StyleSheet.create({
+  container: {
+    backgroundColor: theme.colors.background,
+    paddingTop: 20,
+    paddingLeft: 20,
+  },
   text: {
     color: theme.colors.text,
     fontFamily: theme.fonts.regular.fontFamily,
     fontWeight: theme.fonts.regular.fontWeight,
+    fontSize: 16,
+    marginLeft: 12,
   },
-  picker: {
+  titleTextInput: {
+    height: 40,
+    width: '90%',
+    borderColor: '#3190D0',
+    borderRadius: 20,
+    borderWidth: 2,
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+  },
+  bodyTextInput: {
+    height: 275,
+    width: '90%',
+    borderWidth: 2,
+    borderColor: '#3190D0',
+    borderRadius: 20,
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+  },
+  pickerBorder: {
     height: 50,
-    width: 200,
-    color: theme.colors.text,
-    fontFamily: theme.fonts.regular.fontFamily,
-    fontWeight: theme.fonts.regular.fontWeight,
+    width: '90%',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#8EAEC3',
+    marginTop: 20,
+    marginBottom: 15,
   },
 });
 
