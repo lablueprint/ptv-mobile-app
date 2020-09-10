@@ -31,10 +31,12 @@ export const theme = {
     primary: '#0F7AC3', // header background
     headerText: '#FFFFFF',
     inactiveHeader: '#E4F2FC',
-    background: '#E6EFF5', // secondary background
+    background: '#E6EFF5', // light blue secondary background for categories, etc
     text: '#194261', // post main text
     accent: '#5A7A8F', // accents and post side text
     postBackground: '#FFFFFF',
+    extendedBackground: '#D8E5EE', // replies bg, slightly darker than secondary bg
+
     alertText: '#242424', // dialog pop-ups, alerts
   },
 };

@@ -62,7 +62,7 @@ export default function ForumPost({
         setIsAdmin(data.isAdmin);
       })
       .catch((error) => setUserErrorMessage(error.message));
-  }, [name, userID]);
+  }, [userID]); // [name, userID] caused memory leak
 
   const handlePress = () => {
     // TODO: navigate to reply screen

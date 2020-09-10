@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Keyboard,
+  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Keyboard, Image,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
@@ -9,21 +9,19 @@ import {
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import { firebase } from '@react-native-firebase/auth';
+import Condense from '../../assets/icons/condense.svg';
+// import Submit from '../../assets/icons/send_24px.svg';
 import { theme } from '../../style';
 
 const styles = StyleSheet.create({
-  secondaryBackground: {
+  keyboardAvoiding: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.postBackground,
   },
   postContainer: {
     borderRadius: 15,
     margin: 20,
-    backgroundColor: theme.colors.postBackground,
-  },
-  postTitleText: {
-    color: theme.colors.accent,
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: theme.fonts.medium.fontFamily,
     fontWeight: 'bold',
   },
@@ -37,6 +35,10 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: 15,
     fontFamily: theme.fonts.medium.fontFamily,
+    backgroundColor: theme.colors.postBackground,
+  },
+  postTitleText: {
+    color: theme.colors.accent,
     fontWeight: theme.fonts.medium.fontWeight,
   },
   alertText: {
@@ -57,18 +59,25 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   replyBox: {
     height: '15%',
     flexDirection: 'row',
+    backgroundColor: theme.colors.postBackground,
   },
   expandedReplyBox: {
     height: '80%',
+    backgroundColor: theme.colors.postBackground,
     flexDirection: 'column',
   },
   replyInput: {
     flex: 1,
-    backgroundColor: 'azure',
+    backgroundColor: theme.colors.postBackground,
+    color: '#000000',
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+    fontSize: 15,
   },
   submit: {
     right: 0,
@@ -90,19 +99,19 @@ const styles = StyleSheet.create({
     zIndex: 1,
     right: '7%',
     top: 0,
-    width: '5%',
-    height: '15%',
+    // width: '5%',
+    // height: '15%',
     position: 'absolute',
-    backgroundColor: 'green',
+    backgroundColor: 'grey',
   },
   expandedExpand: {
     zIndex: 1,
     right: '7%',
     top: 0,
-    width: '5%',
-    height: '2%',
+    // width: '5%',
+    // height: '2%',
     position: 'absolute',
-    backgroundColor: 'green',
+    backgroundColor: 'grey',
   },
 });
 
@@ -113,15 +122,6 @@ function ForumPost({
     <Card style={styles.postContainer}>
       <Card.Title
         title={`${name} ${date}`} // Name and date go above post title
-        /* title={(
-          <View>
-            <Text style={{ fontWeight: 'bold' }}>{name}</Text>
-            <Text>
-              {' '}
-              {date}
-            </Text>
-          </View>
-        )} */
         titleStyle={styles.sidePostText}
         subtitle={title}
         subtitleStyle={styles.postTitleText}
@@ -195,15 +195,23 @@ function ReplyBox({
         onPress={() => {
           setExpandReply(!expandReply);
         }}
-      />
+      >
+        <Image
+          source={Condense}
+          style={{ width: 100, height: 50 }}
+        />
+      </IconButton>
       <TextInput
         style={styles.replyInput}
         label={`Replying to ${authorName}'s post`}
         multiline={expandReply}
-        value={replyText}
+        placeholder="Type your reply here"
+        underlineColorAndroid="transparent" // remove underline and border line
+        theme={{ colors: { primary: styles.replyInput.color } }} // make label grey
         onChangeText={(t) => {
           setReplyText(t);
         }}
+        value={replyText}
       />
       <IconButton
         style={expandReply ? styles.expandedSubmit : styles.submit}
@@ -329,7 +337,12 @@ export default function ForumPostScreen({ navigation }) {
   }, [getData]);
 
   return (
-    <KeyboardAvoidingView style={styles.secondaryBackground} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoiding}
+      behavior="padding"
+      enabled={!expandReply}
+      keyboardVerticalOffset={86}
+    >
       <ReplyDialog
         visible={dialogVisible}
         setVisible={setDialogVisible}
@@ -340,7 +353,7 @@ export default function ForumPostScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {errorMessage && <Text>{errorMessage}</Text>}
+        {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
         {post}
         <View style={styles.cardBackground}>
           {replies}
@@ -350,7 +363,7 @@ export default function ForumPostScreen({ navigation }) {
       <ReplyBox
         expandReply={expandReply}
         setExpandReply={setExpandReply}
-        authorName={authorName || ''}
+        authorName={authorName || 'Name unset'}
         replyText={replyText || ''}
         setReplyText={setReplyText}
         sendData={sendData}
