@@ -64,6 +64,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: theme.colors.postBackground,
   },
+  expandedReplyBox: {
+    height: '80%', // 80
+    backgroundColor: theme.colors.postBackground,
+    flexDirection: 'column',
+  },
   replyInput: {
     flex: 1,
     backgroundColor: theme.colors.postBackground,
@@ -73,11 +78,31 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   submitButton: {
-    right: 4,
+    right: 5,
     top: 4,
     position: 'absolute',
     backgroundColor: theme.colors.postBackground,
   },
+  /* expandedSubmitButton: {
+    right: 0,
+    top: 0,
+    position: 'absolute',
+    backgroundColor: 'grey',
+  },
+   expandButton: {
+    zIndex: 1,
+    right: '7%',
+    top: 0,
+    position: 'absolute',
+    backgroundColor: 'cyan',
+  },
+  expandedExpandButton: {
+    zIndex: 1,
+    right: '7%',
+    top: 0,
+    position: 'absolute',
+    backgroundColor: 'grey',
+  }, */
 });
 
 function ForumPost({
@@ -146,17 +171,27 @@ function ReplyDialog({
 }
 
 function ReplyBox({
+  expandedReply,
+  setExpandedReply,
   authorName,
   replyText,
   setReplyText,
   sendData,
 }) {
   return (
-    <View style={styles.replyBox}>
+    <View style={expandedReply ? styles.expandedReplyBox : styles.replyBox}>
+      <IconButton
+        // icon="arrow-expand"
+        icon={expandedReply ? 'arrow-collapse' : 'arrow-expand'}
+        style={expandedReply ? styles.expandedExpandButton : styles.expandButton}
+        onPress={() => {
+          setExpandedReply(!expandedReply);
+        }}
+      />
       <TextInput
         style={styles.replyInput}
         label="Type your reply here"
-        multiline
+        multiline //= {expandedReply}
         placeholder={`Replying to ${authorName}'s post`}
         underlineColorAndroid="transparent" // remove underline and border line
         theme={{ colors: { primary: styles.replyInput.color } }} // make label grey
@@ -168,7 +203,7 @@ function ReplyBox({
       <IconButton
         icon="send"
         size={25}
-        style={styles.submitButton}
+        style={expandedReply ? styles.expandedSubmitButton : styles.submitButton}
         disabled={replyText == null || replyText === ''}
         onPress={() => {
           sendData();
@@ -197,6 +232,8 @@ export default function ForumPostScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  /* Reply box state, expandedReply is true when the reply box is expanded */
+  const [expandedReply, setExpandedReply] = useState(false);
   const [replyText, setReplyText] = useState(null);
 
   /* Dialog box state */
@@ -275,6 +312,7 @@ export default function ForumPostScreen({ navigation }) {
       });
 
       setReplyText('');
+      setExpandedReply(false);
       Keyboard.dismiss();
       setDialogVisible(true);
       onRefresh();
@@ -288,11 +326,10 @@ export default function ForumPostScreen({ navigation }) {
   }, [getData]);
 
   return (
-    // KeyboardAvoidingView automatically takes care of expanded/non-expanded reply box
     <KeyboardAvoidingView
       style={styles.keyboardAvoiding}
       behavior="padding"
-      enabled
+      enabled={!expandedReply}
       keyboardVerticalOffset={86}
     >
       <ReplyDialog
@@ -315,6 +352,8 @@ export default function ForumPostScreen({ navigation }) {
         </View>
       </ScrollView>
       <ReplyBox
+        expandedReply={expandedReply}
+        setExpandedReply={setExpandedReply}
         authorName={authorName || 'Name unset'}
         replyText={replyText || ''}
         setReplyText={setReplyText}
@@ -351,6 +390,8 @@ ReplyDialog.propTypes = {
 };
 
 ReplyBox.propTypes = {
+  expandedReply: PropTypes.bool.isRequired,
+  setExpandedReply: PropTypes.func.isRequired,
   authorName: PropTypes.string.isRequired,
   replyText: PropTypes.string.isRequired,
   setReplyText: PropTypes.func.isRequired,
