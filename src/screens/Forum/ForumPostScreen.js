@@ -14,7 +14,8 @@ import { theme } from '../../style';
 const styles = StyleSheet.create({
   keyboardAvoiding: {
     flex: 1,
-    backgroundColor: theme.colors.postBackground,
+    backgroundColor: 'cyan',
+    // backgroundColor: theme.colors.postBackground,
   },
   postContainer: {
     borderRadius: 15,
@@ -60,12 +61,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   replyBox: {
-    height: '15%', // 15%
+    height: '15%',
     flexDirection: 'row',
     backgroundColor: theme.colors.postBackground,
   },
   expandedReplyBox: {
-    height: '80%', // 80
+    height: '80%',
     backgroundColor: theme.colors.postBackground,
     flexDirection: 'column',
   },
@@ -78,31 +79,28 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   submitButton: {
-    right: 5,
-    top: 4,
+    right: '2%',
+    top: 0,
     position: 'absolute',
     backgroundColor: theme.colors.postBackground,
   },
-  /* expandedSubmitButton: {
-    right: 0,
-    top: 0,
+  expandedSubmitButton: {
+    right: '2%',
+    top: '84%',
     position: 'absolute',
-    backgroundColor: 'grey',
   },
-   expandButton: {
+  expandButton: {
     zIndex: 1,
-    right: '7%',
-    top: 0,
+    right: '11%',
+    top: '1%',
     position: 'absolute',
-    backgroundColor: 'cyan',
   },
   expandedExpandButton: {
     zIndex: 1,
-    right: '7%',
-    top: 0,
+    right: '2%',
+    top: '2%',
     position: 'absolute',
-    backgroundColor: 'grey',
-  }, */
+  },
 });
 
 function ForumPost({
@@ -184,6 +182,7 @@ function ReplyBox({
         // icon="arrow-expand"
         icon={expandedReply ? 'arrow-collapse' : 'arrow-expand'}
         style={expandedReply ? styles.expandedExpandButton : styles.expandButton}
+        size={22}
         onPress={() => {
           setExpandedReply(!expandedReply);
         }}
@@ -202,7 +201,7 @@ function ReplyBox({
       />
       <IconButton
         icon="send"
-        size={25}
+        size={22}
         style={expandedReply ? styles.expandedSubmitButton : styles.submitButton}
         disabled={replyText == null || replyText === ''}
         onPress={() => {
@@ -330,7 +329,7 @@ export default function ForumPostScreen({ navigation }) {
       style={styles.keyboardAvoiding}
       behavior="padding"
       enabled={!expandedReply}
-      keyboardVerticalOffset={86}
+      keyboardVerticalOffset={5}
     >
       <ReplyDialog
         visible={dialogVisible}
