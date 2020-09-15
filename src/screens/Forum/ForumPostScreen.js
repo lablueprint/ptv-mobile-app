@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Keyboard, Image,
+  View, Text, StyleSheet, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Keyboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
@@ -9,8 +9,6 @@ import {
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import { firebase } from '@react-native-firebase/auth';
-import Condense from '../../assets/icons/condense.svg';
-// import Submit from '../../assets/icons/send_24px.svg';
 import { theme } from '../../style';
 
 const styles = StyleSheet.create({
@@ -62,14 +60,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   replyBox: {
-    height: '15%',
+    height: '15%', // 15%
     flexDirection: 'row',
     backgroundColor: theme.colors.postBackground,
-  },
-  expandedReplyBox: {
-    height: '80%',
-    backgroundColor: theme.colors.postBackground,
-    flexDirection: 'column',
   },
   replyInput: {
     flex: 1,
@@ -79,39 +72,11 @@ const styles = StyleSheet.create({
     fontWeight: theme.fonts.medium.fontWeight,
     fontSize: 15,
   },
-  submit: {
-    right: 0,
-    top: 0,
-    width: '5%',
-    height: '15%',
+  submitButton: {
+    right: 4,
+    top: 4,
     position: 'absolute',
-    backgroundColor: 'red',
-  },
-  expandedSubmit: {
-    right: 0,
-    top: 0,
-    width: '5%',
-    height: '2%',
-    position: 'absolute',
-    backgroundColor: 'red',
-  },
-  expand: {
-    zIndex: 1,
-    right: '7%',
-    top: 0,
-    // width: '5%',
-    // height: '15%',
-    position: 'absolute',
-    backgroundColor: 'grey',
-  },
-  expandedExpand: {
-    zIndex: 1,
-    right: '7%',
-    top: 0,
-    // width: '5%',
-    // height: '2%',
-    position: 'absolute',
-    backgroundColor: 'grey',
+    backgroundColor: theme.colors.postBackground,
   },
 });
 
@@ -181,31 +146,18 @@ function ReplyDialog({
 }
 
 function ReplyBox({
-  expandReply,
-  setExpandReply,
   authorName,
   replyText,
   setReplyText,
   sendData,
 }) {
   return (
-    <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
-      <IconButton
-        style={expandReply ? styles.expandedExpand : styles.expand}
-        onPress={() => {
-          setExpandReply(!expandReply);
-        }}
-      >
-        <Image
-          source={Condense}
-          style={{ width: 100, height: 50 }}
-        />
-      </IconButton>
+    <View style={styles.replyBox}>
       <TextInput
         style={styles.replyInput}
-        label={`Replying to ${authorName}'s post`}
-        multiline={expandReply}
-        placeholder="Type your reply here"
+        label="Type your reply here"
+        multiline
+        placeholder={`Replying to ${authorName}'s post`}
         underlineColorAndroid="transparent" // remove underline and border line
         theme={{ colors: { primary: styles.replyInput.color } }} // make label grey
         onChangeText={(t) => {
@@ -214,7 +166,9 @@ function ReplyBox({
         value={replyText}
       />
       <IconButton
-        style={expandReply ? styles.expandedSubmit : styles.submit}
+        icon="send"
+        size={25}
+        style={styles.submitButton}
         disabled={replyText == null || replyText === ''}
         onPress={() => {
           sendData();
@@ -243,8 +197,6 @@ export default function ForumPostScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  /* Reply box state */
-  const [expandReply, setExpandReply] = useState(false);
   const [replyText, setReplyText] = useState(null);
 
   /* Dialog box state */
@@ -323,7 +275,6 @@ export default function ForumPostScreen({ navigation }) {
       });
 
       setReplyText('');
-      setExpandReply(false);
       Keyboard.dismiss();
       setDialogVisible(true);
       onRefresh();
@@ -337,10 +288,11 @@ export default function ForumPostScreen({ navigation }) {
   }, [getData]);
 
   return (
+    // KeyboardAvoidingView automatically takes care of expanded/non-expanded reply box
     <KeyboardAvoidingView
       style={styles.keyboardAvoiding}
       behavior="padding"
-      enabled={!expandReply}
+      enabled
       keyboardVerticalOffset={86}
     >
       <ReplyDialog
@@ -355,14 +307,14 @@ export default function ForumPostScreen({ navigation }) {
       >
         {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
         {post}
-        <View style={styles.cardBackground}>
+        <View
+          style={styles.cardBackground}
+        >
           {replies}
           {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
       <ReplyBox
-        expandReply={expandReply}
-        setExpandReply={setExpandReply}
         authorName={authorName || 'Name unset'}
         replyText={replyText || ''}
         setReplyText={setReplyText}
@@ -399,8 +351,6 @@ ReplyDialog.propTypes = {
 };
 
 ReplyBox.propTypes = {
-  expandReply: PropTypes.bool.isRequired,
-  setExpandReply: PropTypes.func.isRequired,
   authorName: PropTypes.string.isRequired,
   replyText: PropTypes.string.isRequired,
   setReplyText: PropTypes.func.isRequired,
