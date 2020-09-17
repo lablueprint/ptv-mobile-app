@@ -14,8 +14,7 @@ import { theme } from '../../style';
 const styles = StyleSheet.create({
   keyboardAvoiding: {
     flex: 1,
-    backgroundColor: 'cyan',
-    // backgroundColor: theme.colors.postBackground,
+    backgroundColor: theme.colors.postBackground,
   },
   postContainer: {
     borderRadius: 15,
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 20,
   },
-  cardBackground: {
+  cardBackground: { // TODO
     borderRadius: 15,
     paddingVertical: 15,
     backgroundColor: 'lavender',
@@ -179,7 +178,6 @@ function ReplyBox({
   return (
     <View style={expandedReply ? styles.expandedReplyBox : styles.replyBox}>
       <IconButton
-        // icon="arrow-expand"
         icon={expandedReply ? 'arrow-collapse' : 'arrow-expand'}
         style={expandedReply ? styles.expandedExpandButton : styles.expandButton}
         size={22}
@@ -190,7 +188,7 @@ function ReplyBox({
       <TextInput
         style={styles.replyInput}
         label="Type your reply here"
-        multiline //= {expandedReply}
+        multiline={expandedReply}
         placeholder={`Replying to ${authorName}'s post`}
         underlineColorAndroid="transparent" // remove underline and border line
         theme={{ colors: { primary: styles.replyInput.color } }} // make label grey
