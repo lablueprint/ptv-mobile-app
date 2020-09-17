@@ -327,7 +327,7 @@ export default function ForumPostScreen({ navigation }) {
       style={styles.keyboardAvoiding}
       behavior="padding"
       enabled={!expandedReply}
-      keyboardVerticalOffset={5}
+      keyboardVerticalOffset={86}
     >
       <ReplyDialog
         visible={dialogVisible}
