@@ -32,7 +32,7 @@ const ForumHomeTopTabNavigation = createMaterialTopTabNavigator(
       },
       indicatorStyle: {
         backgroundColor: theme.colors.headerText,
-        height: 5,
+        height: '9%',
       },
       style: { backgroundColor: theme.colors.primary },
     },

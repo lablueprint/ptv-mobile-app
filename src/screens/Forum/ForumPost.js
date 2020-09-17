@@ -38,6 +38,7 @@ export default function ForumPost({
 }) {
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
+  const [userErrorMessage, setUserErrorMessage] = useState();
 
   useEffect(() => {
     firestore().collection('forum_comments').where('postID', '==', postID)
@@ -45,12 +46,12 @@ export default function ForumPost({
       .then((querySnapshot) => {
         setNumReplies(querySnapshot.size);
         setLoading(false);
-      });
+      })
+      .catch((error) => setUserErrorMessage(error.message));
   }, [postID]);
 
   const [name, setName] = useState('Name unset');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [userErrorMessage, setUserErrorMessage] = useState();
 
   useEffect(() => {
     /* Get user w/ this userID from database, the user's display name, and if they are PTV staff */
@@ -62,7 +63,7 @@ export default function ForumPost({
         setIsAdmin(data.isAdmin);
       })
       .catch((error) => setUserErrorMessage(error.message));
-  }, [userID]); // [name, userID] caused memory leak
+  }, [userID]);
 
   const handlePress = () => {
     // TODO: navigate to reply screen
