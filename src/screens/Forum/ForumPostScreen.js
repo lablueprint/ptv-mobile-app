@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   },
   replyInput: {
     flex: 1,
+    paddingTop: '1%',
     backgroundColor: theme.colors.postBackground,
     color: '#000000',
     fontFamily: theme.fonts.medium.fontFamily,
@@ -79,25 +80,24 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     right: '2%',
-    top: 0,
+    top: '0%',
     position: 'absolute',
-    backgroundColor: theme.colors.postBackground,
   },
   expandedSubmitButton: {
-    right: '2%',
-    top: '84%',
+    right: '0%',
+    top: '85%',
     position: 'absolute',
   },
   expandButton: {
     zIndex: 1,
     right: '11%',
-    top: '1%',
+    top: '0%',
     position: 'absolute',
   },
   expandedExpandButton: {
     zIndex: 1,
-    right: '2%',
-    top: '2%',
+    right: '0%',
+    top: '0%',
     position: 'absolute',
   },
 });
@@ -180,7 +180,7 @@ function ReplyBox({
       <IconButton
         icon={expandedReply ? 'arrow-collapse' : 'arrow-expand'}
         style={expandedReply ? styles.expandedExpandButton : styles.expandButton}
-        size={22}
+        size={21}
         onPress={() => {
           setExpandedReply(!expandedReply);
         }}
@@ -199,7 +199,7 @@ function ReplyBox({
       />
       <IconButton
         icon="send"
-        size={22}
+        size={21}
         style={expandedReply ? styles.expandedSubmitButton : styles.submitButton}
         disabled={replyText == null || replyText === ''}
         onPress={() => {
