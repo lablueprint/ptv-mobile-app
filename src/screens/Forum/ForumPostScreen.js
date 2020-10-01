@@ -78,6 +78,16 @@ const styles = StyleSheet.create({
     fontFamily: theme.fonts.medium.fontFamily,
     fontWeight: theme.fonts.medium.fontWeight,
     fontSize: 15,
+    height: 60,
+  },
+  expandedReplyInput: {
+    flex: 1,
+    paddingTop: '1%',
+    backgroundColor: theme.colors.postBackground,
+    color: '#000000',
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+    fontSize: 15,
   },
   submitButton: {
     right: '2%',
@@ -187,7 +197,7 @@ function ReplyBox({
         }}
       />
       <TextInput
-        style={styles.replyInput}
+        style={expandedReply ? styles.expandedReplyInput : styles.replyInput}
         label="Type your reply here"
         multiline={expandedReply}
         placeholder={`Replying to ${authorName}'s post`}
