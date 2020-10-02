@@ -36,7 +36,6 @@ export const theme = {
     accent: '#5A7A8F', // accents and post side text
     postBackground: '#FFFFFF',
     extendedBackground: '#D8E5EE', // replies bg, slightly darker than secondary bg
-
     alertText: '#242424', // dialog pop-ups, alerts
   },
 };
