@@ -9,74 +9,106 @@ import {
 } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import { firebase } from '@react-native-firebase/auth';
+import { theme } from '../../style';
 
 const styles = StyleSheet.create({
-  container: {
+  keyboardAvoiding: {
     flex: 1,
-    backgroundColor: 'azure',
+    backgroundColor: theme.colors.postBackground,
   },
-  post: {
+  postContainer: {
     borderRadius: 15,
     margin: 20,
+    fontSize: 20,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: 'bold',
+  },
+  sidePostText: {
+    color: theme.colors.accent,
+    fontSize: 12,
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
+  },
+  mainPostText: {
+    color: theme.colors.text,
+    fontSize: 15,
+    fontFamily: theme.fonts.medium.fontFamily,
+    backgroundColor: theme.colors.postBackground,
+  },
+  postTitleText: {
+    color: theme.colors.accent,
+    fontWeight: theme.fonts.medium.fontWeight,
+  },
+  alertText: {
+    color: theme.colors.alertText,
+    fontSize: 14,
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
   },
   card: {
     borderRadius: 15,
     marginVertical: 10,
     marginHorizontal: 20,
   },
-  cardBackground: {
+  cardBackground: { // TODO
     borderRadius: 15,
     paddingVertical: 15,
     backgroundColor: 'lavender',
   },
   contentContainer: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   replyBox: {
     height: '15%',
     flexDirection: 'row',
+    backgroundColor: theme.colors.postBackground,
   },
   expandedReplyBox: {
     height: '80%',
+    backgroundColor: theme.colors.postBackground,
     flexDirection: 'column',
   },
   replyInput: {
     flex: 1,
-    backgroundColor: 'azure',
+    paddingTop: '1%',
+    backgroundColor: theme.colors.postBackground,
+    color: '#000000',
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+    fontSize: 15,
+    height: 60,
   },
-  submit: {
-    right: 0,
-    top: 0,
-    width: '5%',
-    height: '15%',
+  expandedReplyInput: {
+    flex: 1,
+    paddingTop: '1%',
+    backgroundColor: theme.colors.postBackground,
+    color: '#000000',
+    fontFamily: theme.fonts.medium.fontFamily,
+    fontWeight: theme.fonts.medium.fontWeight,
+    fontSize: 15,
+  },
+  submitButton: {
+    right: '2%',
+    top: '0%',
     position: 'absolute',
-    backgroundColor: 'red',
   },
-  expandedSubmit: {
-    right: 0,
-    top: 0,
-    width: '5%',
-    height: '2%',
+  expandedSubmitButton: {
+    right: '0%',
+    top: '85%',
     position: 'absolute',
-    backgroundColor: 'red',
   },
-  expand: {
+  expandButton: {
     zIndex: 1,
-    right: '7%',
-    top: 0,
-    width: '5%',
-    height: '15%',
+    right: '11%',
+    top: '0%',
     position: 'absolute',
-    backgroundColor: 'green',
   },
-  expandedExpand: {
+  expandedExpandButton: {
     zIndex: 1,
-    right: '7%',
-    top: 0,
-    width: '5%',
-    height: '2%',
+    right: '0%',
+    top: '0%',
     position: 'absolute',
-    backgroundColor: 'green',
   },
 });
 
@@ -84,10 +116,17 @@ function ForumPost({
   title, name, date, body,
 }) {
   return (
-    <Card style={styles.post}>
-      <Card.Title title={title} subtitle={`${name} ${date}`} left={(props) => <Avatar.Text {...props} label={name.charAt(0).toUpperCase()} />} />
+    <Card style={styles.postContainer}>
+      <Card.Title
+        title={`${name} ${date}`} // Name and date go above post title
+        titleStyle={styles.sidePostText}
+        subtitle={title}
+        subtitleStyle={styles.postTitleText}
+        style={{ alignItems: 'center' }}
+        left={(props) => <Avatar.Text {...props} label={name.charAt(0).toUpperCase()} />}
+      />
       <Card.Content>
-        <Paragraph>{body}</Paragraph>
+        <Paragraph style={styles.mainPostText}>{body}</Paragraph>
       </Card.Content>
     </Card>
   );
@@ -116,10 +155,10 @@ function ReplyDialog({
         onDismiss={() => {
           setVisible(false);
         }}
+        style={{ justifyContent: 'center', alignItems: 'center' }}
       >
-        <Dialog.Title>Thanks!</Dialog.Title>
         <Dialog.Content>
-          <Paragraph>
+          <Paragraph style={styles.alertText}>
             Thank you for contributing to our community!
             Your reply is being sent to our team for approval.
           </Paragraph>
@@ -139,32 +178,39 @@ function ReplyDialog({
 }
 
 function ReplyBox({
-  expandReply,
-  setExpandReply,
+  expandedReply,
+  setExpandedReply,
   authorName,
   replyText,
   setReplyText,
   sendData,
 }) {
   return (
-    <View style={expandReply ? styles.expandedReplyBox : styles.replyBox}>
+    <View style={expandedReply ? styles.expandedReplyBox : styles.replyBox}>
       <IconButton
-        style={expandReply ? styles.expandedExpand : styles.expand}
+        icon={expandedReply ? 'arrow-collapse' : 'arrow-expand'}
+        style={expandedReply ? styles.expandedExpandButton : styles.expandButton}
+        size={21}
         onPress={() => {
-          setExpandReply(!expandReply);
+          setExpandedReply(!expandedReply);
         }}
       />
       <TextInput
-        style={styles.replyInput}
-        label={`Replying to ${authorName}'s post`}
-        multiline={expandReply}
-        value={replyText}
+        style={expandedReply ? styles.expandedReplyInput : styles.replyInput}
+        label="Type your reply here"
+        multiline={expandedReply}
+        placeholder={`Replying to ${authorName}'s post`}
+        underlineColorAndroid="transparent" // remove underline and border line
+        theme={{ colors: { primary: styles.replyInput.color } }} // make label grey
         onChangeText={(t) => {
           setReplyText(t);
         }}
+        value={replyText}
       />
       <IconButton
-        style={expandReply ? styles.expandedSubmit : styles.submit}
+        icon="send"
+        size={21}
+        style={expandedReply ? styles.expandedSubmitButton : styles.submitButton}
         disabled={replyText == null || replyText === ''}
         onPress={() => {
           sendData();
@@ -189,73 +235,71 @@ export default function ForumPostScreen({ navigation }) {
   /* Reply data */
   const [replies, setReplies] = useState([]);
 
-  /* Data retreival state */
+  /* Data retrieval state */
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  /* Reply box state */
-  const [expandReply, setExpandReply] = useState(false);
+  /* Reply box state, expandedReply is true when the reply box is expanded */
+  const [expandedReply, setExpandedReply] = useState(false);
   const [replyText, setReplyText] = useState(null);
 
   /* Dialog box state */
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  /* Retreives data from Firebase/Firestore */
+  /* Retrieves data from Firebase/Firestore */
   const getData = useCallback(async () => {
     setLoading(true);
 
-    /* Query forum post data from post id passed in through navigation */
+    /* Query forum post data from postid passed in through navigation */
+    const postSnap = await firestore().collection('forum_posts').doc(postID)
+      .get();
+    const postData = postSnap.data();
+
+    /* Query post author's user data */
+    const authorSnapshot = firestore().collection('users').doc(postData.userID).get();
+    const authorSnap = await Promise.all([authorSnapshot]);
+    setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
+
+    /* Get rest of post data; set post hook w/ post and author data */
+    const postTitle = postData.title || 'Title unset';
+    const postName = authorName || 'Name unset';
+    const postDate = postData.createdAt ? postData.createdAt.toDate().toLocaleTimeString('en-US') : 'Date unset';
+    const postBody = postData.body || 'Body unset';
+    setPost(<ForumPost
+      title={postTitle}
+      name={postName}
+      date={postDate}
+      body={postBody}
+    />);
+
     try {
-      const postSnap = await firestore().collection('forum_posts').doc(postID)
+      /* Get replies/comments, sorted by createdAt timestamp from oldest to youngest */
+      const snapshot = await firestore().collection('forum_comments')
+        .where('postID', '==', postID)
+        .orderBy('createdAt')
         .get();
-      const postData = postSnap.data();
+      const sortedRepliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-      /* Query post author user data */
-      const authorSnapshot = firestore().collection('users').doc(postData.userID).get();
-      const authorSnap = await Promise.all([authorSnapshot]);
+      /* Get comment author's user data */
+      const userSnapshot = sortedRepliesData.map((reply) => firestore().collection('users').doc(reply.userID).get());
+      const userSnap = await Promise.all(userSnapshot);
+      const usersData = userSnap.map((doc) => doc.data());
 
-      setAuthorName(authorSnap.length ? authorSnap[0].get('displayName') : null);
-
-      /* Set post hook with post and author data */
-      setPost(<ForumPost
-        title={postData.title}
-        name={authorSnap.length ? authorSnap[0].get('displayName') : null}
-        date={postData.createdAt.toDate().toLocaleTimeString('en-US')}
-        body={postData.body}
-      />);
-
-      try {
-        const snapshot = await firestore().collection('forum_comments')
-          .where('postID', '==', postID)
-          .orderBy('createdAt') /* sort by createdAt timestamp, from oldest to youngest */
-          .get();
-
-        const sortedRepliesData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-
-        /* Query comment author user data */
-        const userSnapshot = sortedRepliesData.map((reply) => firestore().collection('users').doc(reply.userID).get());
-        const userSnap = await Promise.all(userSnapshot);
-        const usersData = userSnap.map((doc) => doc.data());
-
-        /* Set replies hook with comment and comment author data */
-        setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
-          ...(<ForumReply
-            name={usersData[i].displayName}
-            date={reply.createdAt.toDate().toLocaleTimeString('en-US')}
-            body={reply.body}
-          />),
-          key: reply.id,
-        })));
-        setLoading(false);
-      } catch (error) {
-        setErrorMessage(error.message);
-        setLoading(false);
-      }
+      /* Set replies hook with comment and comment author data */
+      setReplies(sortedRepliesData.filter((reply) => reply.body != null).map((reply, i) => ({
+        ...(<ForumReply
+          name={usersData[i].displayName || 'Name unset'}
+          date={reply.createdAt ? reply.createdAt.toDate().toLocaleTimeString('en-US') : 'Date unset'}
+          body={reply.body || 'Body unset'}
+        />),
+        key: reply.id,
+      })));
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
     }
-  }, [postID]);
+  }, [authorName, postID]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -275,7 +319,7 @@ export default function ForumPostScreen({ navigation }) {
       });
 
       setReplyText('');
-      setExpandReply(false);
+      setExpandedReply(false);
       Keyboard.dismiss();
       setDialogVisible(true);
       onRefresh();
@@ -289,7 +333,12 @@ export default function ForumPostScreen({ navigation }) {
   }, [getData]);
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled={!expandReply} keyboardVerticalOffset={86}>
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoiding}
+      behaviour="padding"
+      enabled={!expandedReply}
+      keyboardVerticalOffset={86}
+    >
       <ReplyDialog
         visible={dialogVisible}
         setVisible={setDialogVisible}
@@ -300,17 +349,19 @@ export default function ForumPostScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {errorMessage && <Text>{errorMessage}</Text>}
+        {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
         {post}
-        <View style={styles.cardBackground}>
+        <View
+          style={styles.cardBackground}
+        >
           {replies}
           {loading && <ActivityIndicator />}
         </View>
       </ScrollView>
       <ReplyBox
-        expandReply={expandReply}
-        setExpandReply={setExpandReply}
-        authorName={authorName || ''}
+        expandedReply={expandedReply}
+        setExpandedReply={setExpandedReply}
+        authorName={authorName || 'Name unset'}
         replyText={replyText || ''}
         setReplyText={setReplyText}
         sendData={sendData}
@@ -346,8 +397,8 @@ ReplyDialog.propTypes = {
 };
 
 ReplyBox.propTypes = {
-  expandReply: PropTypes.bool.isRequired,
-  setExpandReply: PropTypes.func.isRequired,
+  expandedReply: PropTypes.bool.isRequired,
+  setExpandedReply: PropTypes.func.isRequired,
   authorName: PropTypes.string.isRequired,
   replyText: PropTypes.string.isRequired,
   setReplyText: PropTypes.func.isRequired,
