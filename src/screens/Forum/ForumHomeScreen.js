@@ -59,6 +59,7 @@ export default class ForumHomeScreen extends React.Component {
     navigation.navigate('ForumPost', { postID, userID });
   }
 
+  // Calls loadMore fx to load more posts when end of screen has been reached
   handleEndReached() {
     const { allPostsLoaded } = this.state;
 
@@ -67,7 +68,7 @@ export default class ForumHomeScreen extends React.Component {
     }
   }
 
-  // Fetch more data from firestore to load next posts
+  // Fetch more data from firestore to load next posts for infinite scrolling
   loadMore() {
     this.setState({ loadingMore: true });
     const { postLimit, forumPosts, lastReferencedPost } = this.state;
@@ -93,6 +94,7 @@ export default class ForumHomeScreen extends React.Component {
       .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
   }
 
+  // Fx to render the error message and loading, since directly rendering causes an error
   renderHeaderComponent() {
     const { loading, errorMessage } = this.state;
 
