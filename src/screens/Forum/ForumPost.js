@@ -65,14 +65,11 @@ export default function ForumPost({
       .catch((error) => setUserErrorMessage(error.message));
   }, [userID]);
 
-  const handlePress = () => {
-    // TODO: navigate to reply screen
-  };
   const handleEdit = () => {
-    // TODO: navigate to edit screen
+    // TODO: add ability to edit post if belongsToCurrentUser
   };
   const handleDelete = () => {
-    // TODO: delete current post
+    // TODO: delete this post if belongsToCurrentUser
   };
 
   const [visible, setVisible] = useState(false);
@@ -109,7 +106,7 @@ export default function ForumPost({
           <TouchableOpacity>
             {loading && <ActivityIndicator /> }
             {!loading && (
-            <Text style={styles.sideText} onPress={handlePress}>
+            <Text style={styles.sideText}>
               {`${numReplies} Replies`}
             </Text>
             ) }

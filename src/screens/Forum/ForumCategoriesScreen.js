@@ -5,11 +5,12 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import ForumCategoryCard from './ForumCategoryCard';
+import { theme } from '../../style';
 
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: '#daecf5',
+    backgroundColor: theme.colors.background,
   },
 });
 
