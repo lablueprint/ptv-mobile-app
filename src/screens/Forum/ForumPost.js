@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Text, TouchableOpacity, StyleSheet,
+  Alert, Text, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import {
   Card, Title, ActivityIndicator, IconButton, Menu, Divider,
@@ -68,8 +68,47 @@ export default function ForumPost({
   const handleEdit = () => {
     // TODO: add ability to edit post if belongsToCurrentUser
   };
+
   const handleDelete = () => {
     // TODO: delete this post if belongsToCurrentUser
+    // let deletingPostID;
+    // firestore().collection('forum_posts').doc(postID)
+    //   .get()
+    //   .then((snapshot) => {
+    //     const data = snapshot.data();
+    //     deletingPostID = data.userID;
+    //   });
+
+    // if (userID === deletingPostID) {
+    // Pop up confirmation
+    Alert.alert(
+      'Are you sure you would like to delete this post?',
+      'Alert message here...',
+      [
+        { text: 'Delete', onPress: () => deletePost(postID) },
+        { text: 'Cancel', onPress: () => console.warn('YES Pressed') },
+      ],
+      // { cancelable: false },
+    );
+    // } else {
+    //   // throw error for deleting a post that is not user's -> should never happen
+    // }
+  };
+
+  const deletePost = (id) => {
+    firestore().collection('forum_posts').doc(id).delete()
+      .then(() => {
+        console.log('Document successfully deleted!');
+        Alert.alert(
+          'Your post has been deleted.',
+          'Alert message here...',
+          [
+            { text: 'Close', onPress: () => console.warn('Close Pressed') },
+          ],
+          // { cancelable: false },
+        );
+      })
+      .catch((error) => setUserErrorMessage(error.message));
   };
 
   const [visible, setVisible] = useState(false);
