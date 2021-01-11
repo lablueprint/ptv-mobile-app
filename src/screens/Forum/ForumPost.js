@@ -70,29 +70,25 @@ export default function ForumPost({
   };
 
   const handleDelete = () => {
-    // TODO: delete this post if belongsToCurrentUser
-    // let deletingPostID;
-    // firestore().collection('forum_posts').doc(postID)
-    //   .get()
-    //   .then((snapshot) => {
-    //     const data = snapshot.data();
-    //     deletingPostID = data.userID;
-    //   });
+    // Delete this post if belongsToCurrentUser
 
-    // if (userID === deletingPostID) {
     // Pop up confirmation
     Alert.alert(
+      'Confirmation',
       'Are you sure you would like to delete this post?',
-      'Alert message here...',
       [
-        { text: 'Delete', onPress: () => deletePost(postID) },
-        { text: 'Cancel', onPress: () => console.warn('YES Pressed') },
+        {
+          text: 'Delete',
+          onPress: () => deletePost(postID),
+        },
+        {
+          text: 'Cancel',
+          onPress: () => console.warn('Deletion process canceled.'),
+          style: 'cancel',
+        },
       ],
       // { cancelable: false },
     );
-    // } else {
-    //   // throw error for deleting a post that is not user's -> should never happen
-    // }
   };
 
   const deletePost = (id) => {
@@ -100,8 +96,8 @@ export default function ForumPost({
       .then(() => {
         console.log('Document successfully deleted!');
         Alert.alert(
+          'Confirmed',
           'Your post has been deleted.',
-          'Alert message here...',
           [
             { text: 'Close', onPress: () => console.warn('Close Pressed') },
           ],
