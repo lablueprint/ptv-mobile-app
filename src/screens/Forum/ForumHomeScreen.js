@@ -66,6 +66,10 @@ export default class ForumHomeScreen extends React.Component {
       .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
   }
 
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
+
   navigateToPostScreen(postID, userID) {
     const { navigation } = this.props;
     navigation.navigate('ForumPost', { postID, userID });

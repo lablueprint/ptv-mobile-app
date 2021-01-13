@@ -70,8 +70,6 @@ export default function ForumPost({
   };
 
   const handleDelete = () => {
-    // Delete this post if belongsToCurrentUser
-
     // Pop up confirmation
     Alert.alert(
       'Confirmation',
@@ -83,25 +81,25 @@ export default function ForumPost({
         },
         {
           text: 'Cancel',
-          onPress: () => console.warn('Deletion process canceled.'),
+          onPress: () => {}, // console.warn('Deletion process canceled.'),
           style: 'cancel',
         },
       ],
-      // { cancelable: false },
+      { cancelable: false },
     );
   };
 
   const deletePost = (id) => {
     firestore().collection('forum_posts').doc(id).delete()
       .then(() => {
-        console.log('Document successfully deleted!');
+        // console.log('Document successfully deleted!');
         Alert.alert(
           'Confirmed',
           'Your post has been deleted.',
           [
-            { text: 'Close', onPress: () => console.warn('Close Pressed') },
+            { text: 'Close', onPress: () => {} }, // console.log('Close Pressed') },
           ],
-          // { cancelable: false },
+          { cancelable: false },
         );
       })
       .catch((error) => setUserErrorMessage(error.message));
