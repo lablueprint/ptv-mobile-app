@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Alert, Text, TouchableOpacity, StyleSheet,
+  Text, TouchableOpacity, StyleSheet, // KeyboardAvoidingView, Platform,
 } from 'react-native';
 import {
-  Card, Title, ActivityIndicator, IconButton, Menu, Divider,
+  Card, Title, ActivityIndicator, IconButton, Menu, Divider, Portal, Dialog, Paragraph, Button,
 } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
@@ -31,7 +31,86 @@ const styles = StyleSheet.create({
     fontFamily: theme.fonts.regular.fontFamily,
     fontWeight: theme.fonts.regular.fontWeight,
   },
+  deleteDialogParagraph: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
+
+const deletePost = (id) => {
+  firestore().collection('forum_posts').doc(id).delete();
+};
+
+function DeleteDialog({
+  visible, setVisible, confirmedDelete,
+}) {
+  return (
+    <Portal>
+      <Dialog
+        visible={visible}
+        onDismiss={() => {
+          setVisible(false);
+        }}
+        style={styles.deleteDialog}
+      >
+        <Dialog.Content>
+          <Paragraph style={styles.alertText}>
+            Are you sure you would like to delete this post?
+          </Paragraph>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button
+            onPress={() => {
+              setVisible(false);
+              confirmedDelete(true);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            onPress={() => {
+              setVisible(false);
+            }}
+            color="black"
+          >
+            Cancel
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+}
+
+function DeleteConfirmationDialog({
+  visible, setVisible, id,
+}) {
+  return (
+    <Portal>
+      <Dialog
+        visible={visible}
+        onDismiss={() => {
+          setVisible(false);
+        }}
+        style={styles.deleteDialogParagraph}
+      >
+        <Dialog.Content>
+          <Paragraph style={styles.alertText}>
+            Your post has been deleted.
+          </Paragraph>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => {
+            deletePost(id);
+            setVisible(false);
+          }}
+          >
+            Close
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+}
 
 export default function ForumPost({
   userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
@@ -69,43 +148,16 @@ export default function ForumPost({
     // TODO: add ability to edit post if belongsToCurrentUser
   };
 
+  const [deleteWarningDialogVisible, setDeleteWarningDialogVisible] = useState(false);
+  const [deleteConfirmationDialogVisible, setDeleteConfirmationDialogVisible] = useState(false);
+
   const handleDelete = () => {
     // Pop up confirmation
-    Alert.alert(
-      'Confirmation',
-      'Are you sure you would like to delete this post?',
-      [
-        {
-          text: 'Delete',
-          onPress: () => deletePost(postID),
-        },
-        {
-          text: 'Cancel',
-          onPress: () => {}, // console.warn('Deletion process canceled.'),
-          style: 'cancel',
-        },
-      ],
-      { cancelable: false },
-    );
-  };
-
-  const deletePost = (id) => {
-    firestore().collection('forum_posts').doc(id).delete()
-      .then(() => {
-        // console.log('Document successfully deleted!');
-        Alert.alert(
-          'Confirmed',
-          'Your post has been deleted.',
-          [
-            { text: 'Close', onPress: () => {} }, // console.log('Close Pressed') },
-          ],
-          { cancelable: false },
-        );
-      })
-      .catch((error) => setUserErrorMessage(error.message));
+    setDeleteWarningDialogVisible(true);
   };
 
   const [visible, setVisible] = useState(false);
+
   return (
     <TouchableOpacity onPress={() => navigateToPostScreen(postID, userID)}>
       {userErrorMessage && <Text style={{ color: 'red' }}>{userErrorMessage}</Text>}
@@ -125,6 +177,16 @@ export default function ForumPost({
               >
                 <Menu.Item icon="pencil" onPress={handleEdit} title="Edit" />
                 <Menu.Item icon="delete" onPress={handleDelete} title="Delete" />
+                <DeleteDialog
+                  visible={deleteWarningDialogVisible}
+                  setVisible={setDeleteWarningDialogVisible}
+                  confirmedDelete={setDeleteConfirmationDialogVisible}
+                />
+                <DeleteConfirmationDialog
+                  visible={deleteConfirmationDialogVisible}
+                  setVisible={setDeleteConfirmationDialogVisible}
+                  id={postID}
+                />
                 <Divider />
               </Menu>
             )
@@ -157,4 +219,16 @@ ForumPost.propTypes = {
   postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
   navigateToPostScreen: PropTypes.func.isRequired,
+};
+
+DeleteDialog.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  setVisible: PropTypes.func.isRequired,
+  confirmedDelete: PropTypes.func.isRequired,
+};
+
+DeleteConfirmationDialog.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  setVisible: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
 };
