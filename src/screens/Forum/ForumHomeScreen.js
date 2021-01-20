@@ -50,6 +50,22 @@ export default class ForumHomeScreen extends React.Component {
       .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
   }
 
+  componentDidUpdate() {
+    const { postLimit } = this.state;
+    firestore().collection('forum_posts')
+      .orderBy('createdAt', 'desc')
+      .limit(postLimit)
+      .get()
+      .then((snapshot) => {
+        // Store data for posts in state
+        const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const lastReferencedPost = forumPosts[forumPosts.length - 1];
+
+        this.setState({ forumPosts, lastReferencedPost, loading: false });
+      })
+      .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+  }
+
   componentWillUnmount() {
     this.unsubscribeFromAuth();
   }
