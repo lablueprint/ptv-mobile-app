@@ -113,7 +113,7 @@ function DeleteConfirmationDialog({
 }
 
 export default function ForumPost({
-  userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
+  userID, time, children, postID, navigateToPostScreen, navigateToEditScreen, belongsToCurrentUser,
 }) {
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
@@ -145,7 +145,8 @@ export default function ForumPost({
   }, [userID]);
 
   const handleEdit = () => {
-    // TODO: add ability to edit post if belongsToCurrentUser
+    // TODO: add ability to edit post if belongsToCurrentUser]
+    navigateToEditScreen(postID, userID);
   };
 
   const [deleteWarningDialogVisible, setDeleteWarningDialogVisible] = useState(false);
@@ -159,6 +160,7 @@ export default function ForumPost({
   const [visible, setVisible] = useState(false);
 
   return (
+    // const { navigation } = this.props;
     <TouchableOpacity onPress={() => navigateToPostScreen(postID, userID)}>
       {userErrorMessage && <Text style={{ color: 'red' }}>{userErrorMessage}</Text>}
       <Card style={styles.postContainer}>
@@ -175,8 +177,8 @@ export default function ForumPost({
                   <IconButton icon="dots-horizontal" onPress={() => setVisible(true)}>Show menu</IconButton>
             }
               >
-                <Menu.Item icon="pencil" onPress={handleEdit} title="Edit" />
-                <Menu.Item icon="delete" onPress={handleDelete} title="Delete" />
+                <Menu.Item icon="pencil" onPress={() => { handleEdit(); setVisible(false); }} title="Edit" />
+                <Menu.Item icon="delete" onPress={() => { handleDelete(); setVisible(false); }} title="Delete" />
                 <DeleteDialog
                   visible={deleteWarningDialogVisible}
                   setVisible={setDeleteWarningDialogVisible}
@@ -219,6 +221,7 @@ ForumPost.propTypes = {
   postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
   navigateToPostScreen: PropTypes.func.isRequired,
+  navigateToEditScreen: PropTypes.func.isRequired,
 };
 
 DeleteDialog.propTypes = {

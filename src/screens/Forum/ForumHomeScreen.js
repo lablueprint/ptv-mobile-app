@@ -23,6 +23,7 @@ export default class ForumHomeScreen extends React.Component {
     };
 
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
+    this.navigateToEditScreen = this.navigateToEditScreen.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.handleEndReached = this.handleEndReached.bind(this);
     this.renderHeaderComponent = this.renderHeaderComponent.bind(this);
@@ -73,6 +74,12 @@ export default class ForumHomeScreen extends React.Component {
   navigateToPostScreen(postID, userID) {
     const { navigation } = this.props;
     navigation.navigate('ForumPost', { postID, userID });
+  }
+
+  navigateToEditScreen(postID, userID) {
+    const { navigation } = this.props;
+    // navigation.navigate('ForumPost', { postID, userID });
+    navigation.navigate('EditForumPost', { postID, userID });
   }
 
   // Calls loadMore fx to load more posts when end of screen has been reached
@@ -171,6 +178,7 @@ export default class ForumHomeScreen extends React.Component {
               time={item.time}
               postID={item.id}
               navigateToPostScreen={this.navigateToPostScreen}
+              navigateToEditScreen={this.navigateToEditScreen}
             >
               {item.title}
             </ForumPost>

@@ -50,7 +50,6 @@ export default class CreateForumPostScreen extends React.Component {
 
   handleAlertPress() {
     const { navigation } = this.props;
-    /* TODO: Navigation will navigate to a Pending Post Screen */
     navigation.navigate('ForumHome');
   }
 
@@ -145,7 +144,6 @@ export default class CreateForumPostScreen extends React.Component {
           ref={(input) => { this.bodyInput = input; }}
           onSubmitEditing={this.handleSubmit}
           returnKeyType="go"
-
         />
         {errorMessageBody
           && (
