@@ -57,12 +57,7 @@ export default class CreateForumPostScreen extends React.Component {
     const {
       title, body, userID, categoryID, approved,
     } = this.state;
-    if (title.length === 0) {
-      this.setState({ errorMessageTitle: 'Please Enter Title Before Submitting' });
-    }
-    if (body.length === 0) {
-      this.setState({ errorMessageBody: 'Please Enter Text Before Submitting' });
-    }
+
     if (title.length > 0 && body.length > 0) {
       firestore().collection('forum_posts')
         .add({
@@ -86,6 +81,13 @@ export default class CreateForumPostScreen extends React.Component {
         .catch((error) => {
           this.setState({ errorMessageFirestore: error.message });
         });
+    } else {
+      if (title.length === 0) {
+        this.setState({ errorMessageTitle: 'Please Enter Title Before Submitting' });
+      }
+      if (body.length === 0) {
+        this.setState({ errorMessageBody: 'Please Enter Text Before Submitting' });
+      }
     }
   }
 

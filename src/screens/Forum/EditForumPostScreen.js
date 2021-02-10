@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useCallback, useRef,
 } from 'react';
 import {
-  ScrollView, Picker, Alert, StyleSheet, View,
+  ScrollView, Alert, StyleSheet, // Picker, View
 } from 'react-native';
 import {
   TextInput, Button, Text,
@@ -21,11 +21,12 @@ export default function EditForumPostScreen({ navigation }) {
 
   const postID = navigation.getParam('postID');
 
-  const [categoryID, setCategoryID] = useState('');
 
   /* TO DO: Mount Categories ID */
   /*
+    const [categoryID, setCategoryID] = useState('');
     const [forumCategories, setForumCategories] = useState([]);
+
     firestore().collection('forum_categories')
         .get()
         .then((snapshot) => {
@@ -40,8 +41,6 @@ export default function EditForumPostScreen({ navigation }) {
   */
 
   const getData = useCallback(async () => {
-    // setLoading(true);
-
     /* Query forum post data from postid passed in through navigation */
     const postSnap = await firestore().collection('forum_posts').doc(postID)
       .get();
@@ -60,12 +59,6 @@ export default function EditForumPostScreen({ navigation }) {
     const postTitle = title;
     const postBody = body;
 
-    if (title.length === 0) {
-      setErrorMessageTitle('Please Do Not Leave Title Empty');
-    }
-    if (body.length === 0) {
-      setErrorMessageBody('Please Do Not Leave Text Empty');
-    }
     if (title.length > 0 && body.length > 0) {
       firestore().collection('forum_posts').doc(postID)
         .update({
@@ -84,6 +77,13 @@ export default function EditForumPostScreen({ navigation }) {
         .catch((error) => {
           setErrorMessageFirestore(error.message);
         });
+    } else {
+      if (title.length === 0) {
+        setErrorMessageTitle('Please Do Not Leave Title Empty');
+      }
+      if (body.length === 0) {
+        setErrorMessageBody('Please Do Not Leave Text Empty');
+      }
     }
   }, [body, title, postID, navigation]);
 
@@ -95,6 +95,7 @@ export default function EditForumPostScreen({ navigation }) {
   const titleInput = useRef(null);
   const bodyInput = useRef(null);
 
+  // For adding categories (TODO)
   // const pickerItems = forumCategories.map((categoryValue) => (
   //   <Picker.Item
   //     label={categoryValue.title}
@@ -110,6 +111,7 @@ export default function EditForumPostScreen({ navigation }) {
           {errorMessageFirestore}
         </Text>
       )}
+
       <Text style={editForumPostStyles.text}>Title</Text>
       <TextInput
         style={editForumPostStyles.titleTextInput}
@@ -125,16 +127,22 @@ export default function EditForumPostScreen({ navigation }) {
           {errorMessageTitle}
         </Text>
       )}
-      <View style={editForumPostStyles.pickerBorder}>
+      {/* For adding categories (TODO) */}
+      {/* <View style={editForumPostStyles.pickerBorder}>
         <Picker
           selectedValue={categoryID}
           style={editForumPostStyles.picker}
           onValueChange={(itemValue) => setCategoryID(itemValue)}
         >
-          {/* {pickerItems} */}
+          {pickerItems}
         </Picker>
-      </View>
-
+      </View> */}
+      {errorMessageBody
+        && (
+        <Text style={{ color: 'red' }}>
+          {errorMessageBody}
+        </Text>
+        )}
       <Text style={editForumPostStyles.text}>Body</Text>
       <TextInput
         style={editForumPostStyles.bodyTextInput}
@@ -145,14 +153,8 @@ export default function EditForumPostScreen({ navigation }) {
         onSubmitEditing={sendData}
         returnKeyType="go"
       />
-      {errorMessageBody
-        && (
-        <Text style={{ color: 'red' }}>
-          {errorMessageBody}
-        </Text>
-        )}
       <Button onPress={sendData}>
-        Post
+        Update
       </Button>
     </ScrollView>
   );
@@ -199,10 +201,6 @@ const editForumPostStyles = StyleSheet.create({
     marginBottom: 15,
   },
 });
-
-// EditForumPostScreen.propTypes = {
-//   navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
-// };
 
 EditForumPostScreen.propTypes = {
   navigation: PropTypes.shape({
