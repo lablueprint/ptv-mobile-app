@@ -174,7 +174,10 @@ export default function ForumPost({
         <Card.Title
           subtitleStyle={styles.sideText}
           subtitle={isAdmin ? `${name} (PTV Staff) ${time}` : `${name} ${time}`}
-          right={(props) => (belongsToCurrentUser && navigateToPostScreen && navigateToEditScreen && refreshHomeScreen
+          right={(props) => (belongsToCurrentUser
+                            && navigateToPostScreen
+                            && navigateToEditScreen
+                            && refreshHomeScreen
             ? (
               <Menu
                 {...props}
