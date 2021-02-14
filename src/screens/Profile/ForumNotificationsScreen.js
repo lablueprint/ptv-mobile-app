@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   View, StyleSheet, ScrollView,
-  AsyncStorage,
 } from 'react-native';
 import {
   Title, IconButton, ActivityIndicator, Text, Menu, Divider,
 } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncLock from 'async-lock';
 import Notification from './Notification';
 import DefaultNotifications from './DefaultNotifications';
