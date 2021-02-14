@@ -174,7 +174,7 @@ export default function ForumPost({
         <Card.Title
           subtitleStyle={styles.sideText}
           subtitle={isAdmin ? `${name} (PTV Staff) ${time}` : `${name} ${time}`}
-          right={(props) => (belongsToCurrentUser
+          right={(props) => (belongsToCurrentUser && navigateToPostScreen && navigateToEditScreen && refreshHomeScreen
             ? (
               <Menu
                 {...props}
@@ -228,9 +228,16 @@ ForumPost.propTypes = {
   time: PropTypes.string.isRequired,
   postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
-  navigateToPostScreen: PropTypes.func.isRequired,
-  navigateToEditScreen: PropTypes.func.isRequired,
-  refreshHomeScreen: PropTypes.func.isRequired,
+  navigateToPostScreen: PropTypes.func,
+  navigateToEditScreen: PropTypes.func,
+  refreshHomeScreen: PropTypes.func,
+};
+
+
+ForumPost.defaultProps = {
+  navigateToPostScreen: null,
+  navigateToEditScreen: null,
+  refreshHomeScreen: null,
 };
 
 DeleteDialog.propTypes = {
