@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
 import { theme } from '../../style';
 
-
 class Header extends React.Component {
   constructor(props) {
     super(props);
