@@ -202,12 +202,13 @@ const notificationStyles = StyleSheet.create({
   headerTitle: {
     alignSelf: 'center',
     marginLeft: 45,
-    marginTop: 20,
+    marginTop: 15,
     marginBottom: 20,
     color: theme.colors.headerText,
     textAlign: 'center',
   },
   headerContainer: {
+    paddingTop: 30,
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: theme.colors.primary,

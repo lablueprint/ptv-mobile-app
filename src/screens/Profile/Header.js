@@ -49,11 +49,11 @@ const headerStyles = StyleSheet.create({
   headerTitle: {
     color: theme.colors.headerText,
     alignSelf: 'center',
-    marginTop: 20,
+    marginTop: 45,
     marginBottom: 20,
   },
   backButton: {
-    marginTop: 15,
+    marginTop: 45,
     marginBottom: 20,
     position: 'absolute',
     left: 0,

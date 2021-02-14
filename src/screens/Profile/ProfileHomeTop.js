@@ -91,6 +91,7 @@ const profileHomeTopStyles = StyleSheet.create({
     marginTop: 12,
   },
   headerContainer: {
+    paddingTop: 25,
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: theme.colors.primary,
@@ -102,7 +103,7 @@ const profileHomeTopStyles = StyleSheet.create({
     marginBottom: 20,
   },
   notificationButton: {
-    marginTop: 13,
+    marginTop: 43,
     marginBottom: 20,
     position: 'absolute',
     right: 0,

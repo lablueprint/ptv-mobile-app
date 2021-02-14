@@ -281,7 +281,6 @@ const editProfileStyles = StyleSheet.create({
     marginTop: 0,
     backgroundColor: '#ffffff',
   },
-
   button: {
     width: '90%',
     marginTop: 30,
