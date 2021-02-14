@@ -82,7 +82,7 @@ function DeleteDialog({
 }
 
 function DeleteConfirmationDialog({
-  visible, setVisible, id,
+  visible, setVisible, id, refreshHomeScreen,
 }) {
   return (
     <Portal>
@@ -102,6 +102,7 @@ function DeleteConfirmationDialog({
           <Button onPress={() => {
             deletePost(id);
             setVisible(false);
+            refreshHomeScreen();
           }}
           >
             Close
@@ -113,7 +114,14 @@ function DeleteConfirmationDialog({
 }
 
 export default function ForumPost({
-  userID, time, children, postID, navigateToPostScreen, navigateToEditScreen, belongsToCurrentUser,
+  userID,
+  time,
+  children,
+  postID,
+  navigateToPostScreen,
+  navigateToEditScreen,
+  belongsToCurrentUser,
+  refreshHomeScreen,
 }) {
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
@@ -176,8 +184,8 @@ export default function ForumPost({
                   <IconButton icon="dots-horizontal" onPress={() => setVisible(true)}>Show menu</IconButton>
             }
               >
-                <Menu.Item icon="pencil" onPress={() => { handleEdit(); setVisible(false); }} title="Edit" />
-                <Menu.Item icon="delete" onPress={() => { handleDelete(); setVisible(false); }} title="Delete" />
+                <Menu.Item icon="pencil" onPress={() => { handleEdit(); }} title="Edit" />
+                <Menu.Item icon="delete" onPress={() => { handleDelete(); }} title="Delete" />
                 <DeleteDialog
                   visible={deleteWarningDialogVisible}
                   setVisible={setDeleteWarningDialogVisible}
@@ -187,6 +195,7 @@ export default function ForumPost({
                   visible={deleteConfirmationDialogVisible}
                   setVisible={setDeleteConfirmationDialogVisible}
                   id={postID}
+                  refreshHomeScreen={refreshHomeScreen}
                 />
                 <Divider />
               </Menu>
@@ -221,6 +230,7 @@ ForumPost.propTypes = {
   children: PropTypes.string.isRequired,
   navigateToPostScreen: PropTypes.func.isRequired,
   navigateToEditScreen: PropTypes.func.isRequired,
+  refreshHomeScreen: PropTypes.func.isRequired,
 };
 
 DeleteDialog.propTypes = {
@@ -233,4 +243,5 @@ DeleteConfirmationDialog.propTypes = {
   visible: PropTypes.bool.isRequired,
   setVisible: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
+  refreshHomeScreen: PropTypes.func.isRequired,
 };
