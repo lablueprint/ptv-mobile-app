@@ -48,6 +48,9 @@ const headerStyles = StyleSheet.create({
   headerTitle: {
     color: theme.colors.headerText,
     alignSelf: 'center',
+    textAlign: 'center',
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
     marginTop: 45,
     marginBottom: 20,
   },

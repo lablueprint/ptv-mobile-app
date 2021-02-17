@@ -43,7 +43,7 @@ const ForumNavigation = createStackNavigator(
   {
     ForumHome: {
       screen: ForumHomeTopTabNavigation,
-      navigationOptions: () => ({ title: 'Home' }),
+      navigationOptions: () => ({ title: 'Forum' }),
     },
     ForumPost: {
       screen: ForumPostScreen,

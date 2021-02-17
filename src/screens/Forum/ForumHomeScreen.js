@@ -80,7 +80,15 @@ export default class ForumHomeScreen extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-    this.unsubscribeFromFocus();
+  }
+
+  // Calls loadMore fx to load more posts when end of screen has been reached
+  handleEndReached() {
+    const { allPostsLoaded } = this.state;
+
+    if (!allPostsLoaded) {
+      this.loadMore();
+    }
   }
 
   refreshHomePage() {
@@ -99,15 +107,6 @@ export default class ForumHomeScreen extends React.Component {
     const { navigation } = this.props;
     // navigation.navigate('ForumPost', { postID, userID });
     navigation.navigate('EditForumPost', { postID, userID });
-  }
-
-  // Calls loadMore fx to load more posts when end of screen has been reached
-  handleEndReached() {
-    const { allPostsLoaded } = this.state;
-
-    if (!allPostsLoaded) {
-      this.loadMore();
-    }
   }
 
   // Fetch more data from firestore to load next posts for infinite scrolling
