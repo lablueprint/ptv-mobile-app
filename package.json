@@ -22,6 +22,7 @@
     "react": "^16.9.0",
     "react-dom": "^16.13.1",
     "react-native": "0.61.5",
+    "react-native-calendars": "^1.1249.0",
     "react-native-collapsible": "^1.5.2",
     "react-native-gesture-handler": "^1.5.3",
     "react-native-maps": "0.27.1",

@@ -15,19 +15,22 @@ export default function HomeIcons({ snapshot, loading, loadScreen }) {
         title, thumbnail,
       } = doc.data();
 
-      return (
-        <TouchableOpacity
-          style={HomeStyles.categoryButton}
-          key={doc.id}
-          disabled={loading}
-          onPress={() => loadScreen(doc.id, title)}
-        >
-          <Image source={{ uri: thumbnail.src }} style={HomeStyles.categoryImage} />
-          <Text style={HomeStyles.categoryText}>
-            {title}
-          </Text>
-        </TouchableOpacity>
-      );
+      if (doc.id!="new")
+      {
+        return (
+          <TouchableOpacity
+            style={HomeStyles.categoryButton}
+            key={doc.id}
+            disabled={loading}
+            onPress={() => loadScreen(doc.id, title)}
+          >
+            <Image source={{ uri: thumbnail.src }} style={HomeStyles.categoryImage} />
+            <Text style={HomeStyles.categoryText}>
+              {title}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
     })
   );
 }
