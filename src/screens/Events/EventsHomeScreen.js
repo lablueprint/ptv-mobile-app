@@ -4,9 +4,7 @@ import React, {
 import {
   Text, ScrollView, View, FlatList, StyleSheet,
 } from 'react-native';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { theme } from '../../style';
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
@@ -51,12 +49,8 @@ export default function EventsHomeScreen() {
         })}
         renderItem={({ item }) => (
           <EventPost 
-            date={item.date}
-            description={item.description}
-            location={item.location}
+            date={item.date.toDate()}
             title={item.title}
-            type={item.type}
-            postID={item.id}
           />
         )}
         />

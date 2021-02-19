@@ -3,15 +3,14 @@ import {
   Text, Image, TouchableOpacity, StyleSheet, // KeyboardAvoidingView, Platform,
 } from 'react-native';
 import {
-  Card, Title, ActivityIndicator, IconButton, Menu, Divider, Portal, Dialog, Paragraph, Button,
+  Card, Title, Paragraph,
 } from 'react-native-paper';
-import firestore from '@react-native-firebase/firestore';
 import PropTypes from 'prop-types';
 import { theme } from '../../style';
 import calendarIcon from '../../assets/Icons/calendarIcon.png';
 
 export default function EventPost({
-  date, description, location, title, type, postID,
+  date, title,
 }) {
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -52,9 +51,5 @@ const styles = StyleSheet.create({
 
 EventPost.propTypes = {
   date: PropTypes.instanceOf(Date),
-  description: PropTypes.string,
-  location: PropTypes.string,
   title: PropTypes.string,
-  type: PropTypes.string,
-  postID: PropTypes.string.isRequired,
 };
