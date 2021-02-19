@@ -98,6 +98,7 @@ const HomeStyles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   categoryButtonView: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
