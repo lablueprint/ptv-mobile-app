@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
 import { theme } from '../../style';
 
-
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -49,11 +48,14 @@ const headerStyles = StyleSheet.create({
   headerTitle: {
     color: theme.colors.headerText,
     alignSelf: 'center',
-    marginTop: 20,
+    textAlign: 'center',
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
+    marginTop: 45,
     marginBottom: 20,
   },
   backButton: {
-    marginTop: 15,
+    marginTop: 45,
     marginBottom: 20,
     position: 'absolute',
     left: 0,

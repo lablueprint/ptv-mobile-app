@@ -24,7 +24,10 @@ const ListStyles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    padding: 15,
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
     paddingTop: 0,
     backgroundColor: '#ffffff',
   },

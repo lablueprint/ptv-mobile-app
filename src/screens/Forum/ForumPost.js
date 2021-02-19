@@ -82,7 +82,7 @@ function DeleteDialog({
 }
 
 function DeleteConfirmationDialog({
-  visible, setVisible, id,
+  visible, setVisible, id, refreshHomeScreen,
 }) {
   return (
     <Portal>
@@ -102,6 +102,7 @@ function DeleteConfirmationDialog({
           <Button onPress={() => {
             deletePost(id);
             setVisible(false);
+            refreshHomeScreen();
           }}
           >
             Close
@@ -113,7 +114,14 @@ function DeleteConfirmationDialog({
 }
 
 export default function ForumPost({
-  userID, time, children, postID, navigateToPostScreen, belongsToCurrentUser,
+  userID,
+  time,
+  children,
+  postID,
+  navigateToPostScreen,
+  navigateToEditScreen,
+  belongsToCurrentUser,
+  refreshHomeScreen,
 }) {
   const [loading, setLoading] = useState(true);
   const [numReplies, setNumReplies] = useState(0);
@@ -145,7 +153,8 @@ export default function ForumPost({
   }, [userID]);
 
   const handleEdit = () => {
-    // TODO: add ability to edit post if belongsToCurrentUser
+    // TODO: add ability to edit post if belongsToCurrentUser]
+    navigateToEditScreen(postID, userID);
   };
 
   const [deleteWarningDialogVisible, setDeleteWarningDialogVisible] = useState(false);
@@ -166,6 +175,9 @@ export default function ForumPost({
           subtitleStyle={styles.sideText}
           subtitle={isAdmin ? `${name} (PTV Staff) ${time}` : `${name} ${time}`}
           right={(props) => (belongsToCurrentUser
+                            && navigateToPostScreen
+                            && navigateToEditScreen
+                            && refreshHomeScreen
             ? (
               <Menu
                 {...props}
@@ -175,8 +187,8 @@ export default function ForumPost({
                   <IconButton icon="dots-horizontal" onPress={() => setVisible(true)}>Show menu</IconButton>
             }
               >
-                <Menu.Item icon="pencil" onPress={handleEdit} title="Edit" />
-                <Menu.Item icon="delete" onPress={handleDelete} title="Delete" />
+                <Menu.Item icon="pencil" onPress={() => { handleEdit(); }} title="Edit" />
+                <Menu.Item icon="delete" onPress={() => { handleDelete(); }} title="Delete" />
                 <DeleteDialog
                   visible={deleteWarningDialogVisible}
                   setVisible={setDeleteWarningDialogVisible}
@@ -186,6 +198,7 @@ export default function ForumPost({
                   visible={deleteConfirmationDialogVisible}
                   setVisible={setDeleteConfirmationDialogVisible}
                   id={postID}
+                  refreshHomeScreen={refreshHomeScreen}
                 />
                 <Divider />
               </Menu>
@@ -218,7 +231,16 @@ ForumPost.propTypes = {
   time: PropTypes.string.isRequired,
   postID: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
-  navigateToPostScreen: PropTypes.func.isRequired,
+  navigateToPostScreen: PropTypes.func,
+  navigateToEditScreen: PropTypes.func,
+  refreshHomeScreen: PropTypes.func,
+};
+
+
+ForumPost.defaultProps = {
+  navigateToPostScreen: null,
+  navigateToEditScreen: null,
+  refreshHomeScreen: null,
 };
 
 DeleteDialog.propTypes = {
@@ -231,4 +253,5 @@ DeleteConfirmationDialog.propTypes = {
   visible: PropTypes.bool.isRequired,
   setVisible: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
+  refreshHomeScreen: PropTypes.func.isRequired,
 };

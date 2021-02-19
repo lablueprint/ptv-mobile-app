@@ -20,12 +20,15 @@ export default class ForumHomeScreen extends React.Component {
       loadingMore: false,
       allPostsLoaded: false,
       errorMessage: null,
+      needToBeRefreshed: false,
     };
 
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
+    this.navigateToEditScreen = this.navigateToEditScreen.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.handleEndReached = this.handleEndReached.bind(this);
     this.renderHeaderComponent = this.renderHeaderComponent.bind(this);
+    this.refreshHomePage = this.refreshHomePage.bind(this);
   }
 
   componentDidMount() {
@@ -33,6 +36,11 @@ export default class ForumHomeScreen extends React.Component {
       if (user) {
         this.setState({ currentUserID: user.uid });
       }
+    });
+
+    const { navigation } = this.props;
+    this.unsubscribeFromFocus = navigation.addListener('didFocus', () => {
+      this.refreshHomePage();
     });
 
     const { postLimit } = this.state;
@@ -51,28 +59,27 @@ export default class ForumHomeScreen extends React.Component {
   }
 
   componentDidUpdate() {
-    const { postLimit } = this.state;
-    firestore().collection('forum_posts')
-      .orderBy('createdAt', 'desc')
-      .limit(postLimit)
-      .get()
-      .then((snapshot) => {
+    const { needToBeRefreshed } = this.state;
+    if (needToBeRefreshed) {
+      firestore().collection('forum_posts')
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get()
+        .then((snapshot) => {
         // Store data for posts in state
-        const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        const lastReferencedPost = forumPosts[forumPosts.length - 1];
+          const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+          const lastReferencedPost = forumPosts[forumPosts.length - 1];
 
-        this.setState({ forumPosts, lastReferencedPost, loading: false });
-      })
-      .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+          this.setState({
+            forumPosts, lastReferencedPost, loading: false, needToBeRefreshed: false,
+          });
+        })
+        .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+    }
   }
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-  }
-
-  navigateToPostScreen(postID, userID) {
-    const { navigation } = this.props;
-    navigation.navigate('ForumPost', { postID, userID });
   }
 
   // Calls loadMore fx to load more posts when end of screen has been reached
@@ -82,6 +89,24 @@ export default class ForumHomeScreen extends React.Component {
     if (!allPostsLoaded) {
       this.loadMore();
     }
+  }
+
+  refreshHomePage() {
+    this.setState({
+      needToBeRefreshed: true,
+    });
+  }
+
+  navigateToPostScreen(postID, userID) {
+    const { refreshHomePage } = this.state;
+    const { navigation } = this.props;
+    navigation.navigate('ForumPost', { postID, userID, refreshHomePage });
+  }
+
+  navigateToEditScreen(postID, userID) {
+    const { navigation } = this.props;
+    // navigation.navigate('ForumPost', { postID, userID });
+    navigation.navigate('EditForumPost', { postID, userID });
   }
 
   // Fetch more data from firestore to load next posts for infinite scrolling
@@ -171,6 +196,8 @@ export default class ForumHomeScreen extends React.Component {
               time={item.time}
               postID={item.id}
               navigateToPostScreen={this.navigateToPostScreen}
+              navigateToEditScreen={this.navigateToEditScreen}
+              refreshHomeScreen={this.refreshHomePage}
             >
               {item.title}
             </ForumPost>
@@ -219,5 +246,8 @@ const styles = StyleSheet.create({
 });
 
 ForumHomeScreen.propTypes = {
-  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+    addListener: PropTypes.func.isRequired,
+  }).isRequired,
 };
