@@ -1,22 +1,40 @@
+import React from 'react';
+import { Image } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import ProfileNavigation from './ProfileNavigation';
 import ForumNavigation from './ForumNavigation';
 import HomeNavigation from './HomeNavigation';
+import forumIcon from '../assets/Icons/Forum.png';
+import homeIcon from '../assets/Icons/Home.png';
+import personIcon from '../assets/Icons/Person.png';
 import { theme } from '../style';
 
 const AppNavigation = createBottomTabNavigator(
   {
     Home: {
       screen: HomeNavigation,
+      navigationOptions: () => ({
+        tabBarIcon: () => (
+          <Image style={{ width: 20, height: 20 }} source={homeIcon} />
+        ),
+      }),
     },
     Forum: {
       screen: ForumNavigation,
       navigationOptions: ({ navigation }) => ({
         tabBarVisible: navigation.state.routes[navigation.state.index].routeName !== 'ForumPost',
+        tabBarIcon: () => (
+          <Image style={{ width: 20, height: 20 }} source={forumIcon} />
+        ),
       }),
     },
     Profile: {
       screen: ProfileNavigation,
+      navigationOptions: () => ({
+        tabBarIcon: () => (
+          <Image style={{ width: 20, height: 20 }} source={personIcon} />
+        ),
+      }),
     },
   },
   {
