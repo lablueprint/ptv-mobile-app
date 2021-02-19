@@ -20,7 +20,7 @@ export default function EventPost({
       <Card style={styles.eventContainer}>
         <Card.Content>
           <Title style={styles.titleText}>
-            <Image source={calendarIcon}/>  {monthNames[date.toDate().getMonth()]} {date.toDate().getDate()}
+            <Image source={calendarIcon}/>  {monthNames[date.getMonth()]} {date.getDate()}
           </Title>
           <Paragraph>{title}</Paragraph>
         </Card.Content>
