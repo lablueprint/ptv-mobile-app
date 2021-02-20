@@ -87,7 +87,7 @@ const profileHomeTopStyles = StyleSheet.create({
     marginTop: 12,
   },
   headerContainer: {
-    paddingTop: 25,
+    paddingTop: 30,
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: theme.colors.primary,
