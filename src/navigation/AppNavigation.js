@@ -8,6 +8,7 @@ import forumIcon from '../assets/Icons/Forum.png';
 import homeIcon from '../assets/Icons/Home.png';
 import personIcon from '../assets/Icons/Person.png';
 import { theme } from '../style';
+import EventsNavigation from './EventsNavigation';
 
 const AppNavigation = createBottomTabNavigator(
   {
@@ -28,6 +29,10 @@ const AppNavigation = createBottomTabNavigator(
         ),
       }),
     },
+    Events: {
+      screen: EventsNavigation,
+    },
+
     Profile: {
       screen: ProfileNavigation,
       navigationOptions: () => ({
