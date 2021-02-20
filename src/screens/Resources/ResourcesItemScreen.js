@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useCallback,
 } from 'react';
 import {
-  View, StyleSheet, ScrollView, ActivityIndicator,
+  View, StyleSheet, ScrollView, ActivityIndicator, ImageBackground,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firestore from '@react-native-firebase/firestore';
@@ -11,12 +11,17 @@ import {
 } from 'react-native-paper';
 import MapView, { Marker } from 'react-native-maps';
 import { theme } from '../../style';
+import backImage from '../../assets/images/redbus.jpg';
 
 /* Resource item screen styles */
 const resourcesStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   itemContainer: {
     flex: 1,
@@ -188,13 +193,17 @@ export default function ResourcesItemScreen(props) {
 
   return (
     <View style={resourcesStyles.container}>
-      <ScrollView style={resourcesStyles.container}>
-        <View style={resourcesStyles.itemContainer}>
-          {errorMessage && <Text>{errorMessage}</Text>}
-          {title && (<Title>{title}</Title>)}
-          {description && (<Paragraph>{description}</Paragraph>)}
-          <Text>{'\n'}</Text>
-          {steps && (
+      <ImageBackground
+        style={resourcesStyles.image}
+        source={backImage}
+      >
+        <ScrollView style={resourcesStyles.container}>
+          <View style={resourcesStyles.itemContainer}>
+            {errorMessage && <Text>{errorMessage}</Text>}
+            {title && (<Title>{title}</Title>)}
+            {description && (<Paragraph>{description}</Paragraph>)}
+            <Text>{'\n'}</Text>
+            {steps && (
             <View>
               <List.Section>
                 <List.Subheader>{subheader}</List.Subheader>
@@ -202,39 +211,40 @@ export default function ResourcesItemScreen(props) {
               </List.Section>
               {markers && <List.Subheader>Location</List.Subheader>}
             </View>
-          )}
-          {body && (
-          <View>
-            <Subheading>{subheader}</Subheading>
-            <Paragraph>
-              {body}
-              {'\n'}
-            </Paragraph>
-            {markers && (
-            <Subheading>
-              Location
-              {'\n'}
-            </Subheading>
             )}
+            {body && (
+            <View>
+              <Subheading>{subheader}</Subheading>
+              <Paragraph>
+                {body}
+                {'\n'}
+              </Paragraph>
+              {markers && (
+              <Subheading>
+                Location
+                {'\n'}
+              </Subheading>
+              )}
+            </View>
+            )}
+            {markers && (
+            <MapView
+              style={resourcesStyles.map}
+              initialRegion={{
+                latitude: averageCoordinate.latitude,
+                longitude: averageCoordinate.longitude,
+                latitudeDelta: maxDelta.latitude,
+                longitudeDelta: maxDelta.longitude,
+              }}
+            >
+              {markers}
+            </MapView>
+            )}
+            {authorName && (<Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>)}
+            {loading && <ActivityIndicator />}
           </View>
-          )}
-          {markers && (
-          <MapView
-            style={resourcesStyles.map}
-            initialRegion={{
-              latitude: averageCoordinate.latitude,
-              longitude: averageCoordinate.longitude,
-              latitudeDelta: maxDelta.latitude,
-              longitudeDelta: maxDelta.longitude,
-            }}
-          >
-            {markers}
-          </MapView>
-          )}
-          {authorName && (<Caption style={resourcesStyles.authorName}>{`Written by ${authorName}`}</Caption>)}
-          {loading && <ActivityIndicator />}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </ImageBackground>
     </View>
   );
 }
