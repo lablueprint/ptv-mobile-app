@@ -2,7 +2,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import {
   ForumHomeScreen, ForumCategoriesScreen, ForumPostScreen, ForumSubcategoryPostsScreen,
-  CreateForumPostScreen,
+  CreateForumPostScreen, EditForumPostScreen,
 } from '../screens/Forum';
 import { theme } from '../style';
 
@@ -43,7 +43,7 @@ const ForumNavigation = createStackNavigator(
   {
     ForumHome: {
       screen: ForumHomeTopTabNavigation,
-      navigationOptions: () => ({ title: 'Home' }),
+      navigationOptions: () => ({ title: 'Forum' }),
     },
     ForumPost: {
       screen: ForumPostScreen,
@@ -59,6 +59,10 @@ const ForumNavigation = createStackNavigator(
     CreateForumPost: {
       screen: CreateForumPostScreen,
       navigationOptions: () => ({ title: 'New Post' }),
+    },
+    EditForumPost: {
+      screen: EditForumPostScreen,
+      navigationOptions: () => ({ title: 'Edit Post' }),
     },
   },
   {

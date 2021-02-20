@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   View, StyleSheet, ScrollView,
-  AsyncStorage,
 } from 'react-native';
 import {
   Title, IconButton, ActivityIndicator, Text, Menu, Divider,
 } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncLock from 'async-lock';
 import Notification from './Notification';
 import DefaultNotifications from './DefaultNotifications';
@@ -202,12 +202,13 @@ const notificationStyles = StyleSheet.create({
   headerTitle: {
     alignSelf: 'center',
     marginLeft: 45,
-    marginTop: 20,
+    marginTop: 15,
     marginBottom: 20,
     color: theme.colors.headerText,
     textAlign: 'center',
   },
   headerContainer: {
+    paddingTop: 30,
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: theme.colors.primary,

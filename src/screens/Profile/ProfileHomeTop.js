@@ -11,7 +11,6 @@ import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
 import { theme } from '../../style';
 
-
 const INITIAL_STATE = {
   name: '',
 };
@@ -41,7 +40,6 @@ class ProfileHomeTop extends React.Component {
     navigation.navigate('EditProfile');
   }
 
-
   onNotificationPress() {
     const { navigation } = this.props;
     navigation.openDrawer();
@@ -62,8 +60,6 @@ class ProfileHomeTop extends React.Component {
             style={profileHomeTopStyles.notificationButton}
           />
         </View>
-
-
         <Avatar.Icon size={150} style={profileHomeTopStyles.avatar} icon="account" />
         <View style={profileHomeTopStyles.rowContainer}>
           <Title style={{ alignSelf: 'center' }}>
@@ -91,6 +87,7 @@ const profileHomeTopStyles = StyleSheet.create({
     marginTop: 12,
   },
   headerContainer: {
+    paddingTop: 25,
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: theme.colors.primary,
@@ -98,11 +95,14 @@ const profileHomeTopStyles = StyleSheet.create({
   headerTitle: {
     color: theme.colors.headerText,
     alignSelf: 'center',
+    textAlign: 'center',
+    fontFamily: theme.fonts.regular.fontFamily,
+    fontWeight: theme.fonts.regular.fontWeight,
     marginTop: 20,
     marginBottom: 20,
   },
   notificationButton: {
-    marginTop: 13,
+    marginTop: 43,
     marginBottom: 20,
     position: 'absolute',
     right: 0,

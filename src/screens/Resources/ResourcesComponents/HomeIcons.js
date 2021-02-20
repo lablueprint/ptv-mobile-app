@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Text } from 'react-native-paper';
 import PropTypes from 'prop-types';
 
 export default function HomeIcons({ snapshot, loading, loadScreen }) {
@@ -41,11 +40,11 @@ const HomeStyles = StyleSheet.create({
     marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
     borderRadius: 20,
   },
   categoryImage: {
-    width: '40%',
+    flex: 0.001,
+    width: '45%',
     aspectRatio: 1,
   },
   categoryText: {
