@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PropTypes from 'prop-types';
 
@@ -14,17 +14,22 @@ export default function HomeIcons({ snapshot, loading, loadScreen }) {
         title, thumbnail,
       } = doc.data();
 
-      return (
-        <TouchableOpacity
-          style={HomeStyles.categoryButton}
-          key={doc.id}
-          disabled={loading}
-          onPress={() => loadScreen(doc.id, title)}
-        >
-          <Image source={{ uri: thumbnail.src }} style={HomeStyles.categoryImage} />
-
-        </TouchableOpacity>
-      );
+      if (doc.id!="new")
+      {
+        return (
+          <TouchableOpacity
+            style={HomeStyles.categoryButton}
+            key={doc.id}
+            disabled={loading}
+            onPress={() => loadScreen(doc.id, title)}
+          >
+            <Image source={{ uri: thumbnail.src }} style={HomeStyles.categoryImage} />
+            <Text style={HomeStyles.categoryText}>
+              {title}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
     })
   );
 }
