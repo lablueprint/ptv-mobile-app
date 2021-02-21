@@ -3,7 +3,7 @@ import SignInScreen from '../screens/SignIn';
 import SignUpScreen from '../screens/SignUp';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
-import IntroScreen from '../screens/IntroScreen';
+// import IntroScreen from '../screens/IntroScreen';
 import JoinScreen from '../screens/JoinScreen';
 
 const AuthNavigation = createStackNavigator(
@@ -12,7 +12,7 @@ const AuthNavigation = createStackNavigator(
     SignInScreen,
     SignUpScreen,
     ForgotPasswordScreen,
-    IntroScreen,
+    // IntroScreen,
     JoinScreen,
   },
   {
