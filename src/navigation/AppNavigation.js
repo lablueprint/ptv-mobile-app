@@ -7,6 +7,7 @@ import HomeNavigation from './HomeNavigation';
 import forumIcon from '../assets/Icons/Forum.png';
 import homeIcon from '../assets/Icons/Home.png';
 import personIcon from '../assets/Icons/Person.png';
+import eventIcon from '../assets/Icons/Event.png';
 import { theme } from '../style';
 import EventsNavigation from './EventsNavigation';
 
@@ -31,6 +32,11 @@ const AppNavigation = createBottomTabNavigator(
     },
     Events: {
       screen: EventsNavigation,
+			navigationOptions: () => ({
+        tabBarIcon: () => (
+          <Image style={{ width: 20, height: 20 }} source={eventIcon} />
+        ),
+      }),
     },
 
     Profile: {
