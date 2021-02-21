@@ -7,6 +7,7 @@ import { ActivityIndicator, FAB } from 'react-native-paper';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import ForumPost from './ForumPost';
+import SearchBar from './SearchBar';
 import { theme } from '../../style';
 
 export default class ForumHomeScreen extends React.Component {
@@ -21,6 +22,8 @@ export default class ForumHomeScreen extends React.Component {
       allPostsLoaded: false,
       errorMessage: null,
       needToBeRefreshed: false,
+      filtering: false,
+      filterQuery: '',
     };
 
     this.navigateToPostScreen = this.navigateToPostScreen.bind(this);
@@ -29,6 +32,7 @@ export default class ForumHomeScreen extends React.Component {
     this.handleEndReached = this.handleEndReached.bind(this);
     this.renderHeaderComponent = this.renderHeaderComponent.bind(this);
     this.refreshHomePage = this.refreshHomePage.bind(this);
+    this.filterForumPosts = this.filterForumPosts.bind(this);
   }
 
   componentDidMount() {
@@ -59,27 +63,59 @@ export default class ForumHomeScreen extends React.Component {
   }
 
   componentDidUpdate() {
-    const { needToBeRefreshed } = this.state;
+    const { needToBeRefreshed, filtering, filterQuery } = this.state;
     if (needToBeRefreshed) {
-      firestore().collection('forum_posts')
-        .orderBy('createdAt', 'desc')
-        .limit(10)
-        .get()
-        .then((snapshot) => {
-        // Store data for posts in state
-          const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-          const lastReferencedPost = forumPosts[forumPosts.length - 1];
+      if(filtering) {
+        this.filterForumPosts(filterQuery);
+      } else {
+        firestore().collection('forum_posts')
+          .orderBy('createdAt', 'desc')
+          .limit(10)
+          .get()
+          .then((snapshot) => {
+          // Store data for posts in state
+            const forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+            const lastReferencedPost = forumPosts[forumPosts.length - 1];
 
-          this.setState({
-            forumPosts, lastReferencedPost, loading: false, needToBeRefreshed: false,
-          });
-        })
-        .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+            this.setState({
+              forumPosts, lastReferencedPost, loading: false, needToBeRefreshed: false,
+            });
+          })
+          .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+      }
     }
   }
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
+  }
+
+  async filterForumPosts(searchQuery) {
+    if(searchQuery && searchQuery.length !== 0) { // Valid search query
+      const { postLimit } = this.state;
+      
+      let forumPosts;
+
+      await firestore().collection('forum_posts')
+        .orderBy('createdAt', 'desc')
+        // .limit(postLimit)
+        .get()
+        .then((snapshot) => {
+          forumPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        })
+        .catch((error) => this.setState({ errorMessage: error.message, loading: false }));
+  
+      const searchRegexp = new RegExp(searchQuery, 'ig');
+      let i;
+      for (i = 0; i < forumPosts.length; ++i) {
+        let element = forumPosts[i];
+        if (!searchRegexp.test(element.title) &&!searchRegexp.test(element.body)) { // && !searchRegexp.test(displayName)
+          forumPosts.splice(i, 1);
+          --i;
+        }
+      }
+      this.setState({ forumPosts, filtering: true });
+    }
   }
 
   // Calls loadMore fx to load more posts when end of screen has been reached
@@ -93,6 +129,7 @@ export default class ForumHomeScreen extends React.Component {
 
   refreshHomePage() {
     this.setState({
+      filterQuery: '',
       needToBeRefreshed: true,
     });
   }
@@ -111,6 +148,8 @@ export default class ForumHomeScreen extends React.Component {
 
   // Fetch more data from firestore to load next posts for infinite scrolling
   loadMore() {
+    const { filtering } = this.state;
+    if(!filtering) {
     this.setState({ loadingMore: true });
     const { postLimit, forumPosts, lastReferencedPost } = this.state;
 
@@ -133,6 +172,7 @@ export default class ForumHomeScreen extends React.Component {
         }
       })
       .catch((error) => this.setState({ errorMessage: error.message, loadingMore: false }));
+    }
   }
 
   // Fx to render the error message and loading, since directly rendering causes an error
@@ -176,6 +216,10 @@ export default class ForumHomeScreen extends React.Component {
 
     return (
       <View style={styles.mainContainer}>
+        <SearchBar
+          filterQuery={this.state.filterQuery}
+          filterFunction={this.filterForumPosts}
+        />
         <FlatList
           ListHeaderComponent={this.renderHeaderComponent}
           data={forumPosts.map((post) => {
