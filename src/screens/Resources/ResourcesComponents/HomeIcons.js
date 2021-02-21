@@ -14,8 +14,7 @@ export default function HomeIcons({ snapshot, loading, loadScreen }) {
         title, thumbnail,
       } = doc.data();
 
-      if (doc.id!="new")
-      {
+      if (doc.id !== 'new') {
         return (
           <TouchableOpacity
             style={HomeStyles.categoryButton}
@@ -30,6 +29,7 @@ export default function HomeIcons({ snapshot, loading, loadScreen }) {
           </TouchableOpacity>
         );
       }
+      return null;
     })
   );
 }
@@ -44,12 +44,13 @@ const HomeStyles = StyleSheet.create({
   },
   categoryImage: {
     flex: 0.001,
-    width: '45%',
+    width: '40%',
     aspectRatio: 1,
   },
   categoryText: {
     fontWeight: 'bold',
     marginTop: 10,
+    marginBottom: 10,
   },
 });
 
